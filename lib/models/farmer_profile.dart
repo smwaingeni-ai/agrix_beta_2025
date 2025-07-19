@@ -2,19 +2,13 @@ import 'dart:convert';
 
 /// 🧑‍🌾 Farmer Profile Model
 class FarmerProfile {
-  /// Unique ID for the farmer
-  final String farmerId;
-
-  /// Full name of the farmer
+  /// Required fields
+  final String farmerId;       // alias: id
   final String fullName;
-
-  /// Contact number (phone)
-  final String contactNumber;
-
-  /// National ID or similar identifier
+  final String contactNumber;  // alias: contact
   final String idNumber;
 
-  /// Regional and location info
+  /// Optional location and identity fields
   final String? region;
   final String? province;
   final String? district;
@@ -23,26 +17,18 @@ class FarmerProfile {
   final String? cell;
 
   /// Farm details
-  final double? farmSizeHectares;
+  final double? farmSizeHectares; // alias: farmSize
   final String? farmType;
   final String? farmLocation;
 
-  /// Whether the farmer is on a subsidy program
+  /// Other metadata
   final bool subsidised;
-
-  /// Whether the farmer is affiliated with government programs
   final bool govtAffiliated;
-
-  /// Language preference
   final String? language;
-
-  /// Timestamp when profile was created
   final String? createdAt;
-
-  /// Timestamp when farmer was registered
   final String? registeredAt;
 
-  /// Optional image paths
+  /// Optional visual assets
   final String? qrImagePath;
   final String? photoPath;
 
@@ -69,33 +55,31 @@ class FarmerProfile {
     this.farmLocation,
   });
 
-  /// ✅ Decode from JSON
-  factory FarmerProfile.fromJson(Map<String, dynamic> json) {
-    return FarmerProfile(
-      farmerId: json['farmerId'] ?? '',
-      fullName: json['fullName'] ?? '',
-      contactNumber: json['contactNumber'] ?? '',
-      idNumber: json['idNumber'] ?? '',
-      region: json['region'],
-      province: json['province'],
-      district: json['district'],
-      ward: json['ward'],
-      village: json['village'],
-      cell: json['cell'],
-      farmSizeHectares: (json['farmSizeHectares'] as num?)?.toDouble(),
-      farmType: json['farmType'],
-      subsidised: json['subsidised'] ?? false,
-      govtAffiliated: json['govtAffiliated'] ?? false,
-      language: json['language'],
-      createdAt: json['createdAt'],
-      registeredAt: json['registeredAt'],
-      qrImagePath: json['qrImagePath'],
-      photoPath: json['photoPath'],
-      farmLocation: json['farmLocation'],
-    );
-  }
+  /// Decode from JSON
+  factory FarmerProfile.fromJson(Map<String, dynamic> json) => FarmerProfile(
+        farmerId: json['farmerId'] ?? '',
+        fullName: json['fullName'] ?? '',
+        contactNumber: json['contactNumber'] ?? '',
+        idNumber: json['idNumber'] ?? '',
+        region: json['region'],
+        province: json['province'],
+        district: json['district'],
+        ward: json['ward'],
+        village: json['village'],
+        cell: json['cell'],
+        farmSizeHectares: (json['farmSizeHectares'] as num?)?.toDouble(),
+        farmType: json['farmType'],
+        subsidised: json['subsidised'] ?? false,
+        govtAffiliated: json['govtAffiliated'] ?? false,
+        language: json['language'],
+        createdAt: json['createdAt'],
+        registeredAt: json['registeredAt'],
+        qrImagePath: json['qrImagePath'],
+        photoPath: json['photoPath'],
+        farmLocation: json['farmLocation'],
+      );
 
-  /// ✅ Encode to JSON
+  /// Encode to JSON
   Map<String, dynamic> toJson() => {
         'farmerId': farmerId,
         'fullName': fullName,
@@ -230,7 +214,5 @@ class FarmerProfile {
   String get name => fullName;
   String get contact => contactNumber;
   double? get farmSize => farmSizeHectares;
-
-  /// ✅ Getter alias for `id`
   String get id => farmerId;
 }
