@@ -1,172 +1,148 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:agrix_beta_2025/models/farmer_profile.dart';
+import '../../models/farmer_profile.dart';
 
 class FarmerProfileService {
-  static const String _storageKey = 'active_farmer_profile';
+  static const String _fileName = 'farmer_profiles.json';
+  static const String _activeFileName = 'active_farmer_profile.json';
 
-  /// Save the farmer profile to SharedPreferences
+  /// Picks an image from the device using camera or gallery
+  static Future<String?> pickProfileImage({bool camera = false}) async {
+    try {
+      final picker = ImagePicker();
+      final XFile? file = camera
+          ? await picker.pickImage(source: ImageSource.camera)
+          : await picker.pickImage(source: ImageSource.gallery);
+      return file?.path;
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      return null;
+    }
+  }
+
+  /// Builds a widget to show profile image or default icon
+  static Widget buildProfileImage(String? imagePath, {double size = 100}) {
+    if (imagePath == null || imagePath.isEmpty || !File(imagePath).existsSync()) {
+      return Icon(Icons.person, size: size, color: Colors.grey);
+    }
+    return ClipOval(
+      child: Image.file(
+        File(imagePath),
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Icon(Icons.person, size: size, color: Colors.grey),
+      ),
+    );
+  }
+
+  /// Saves the provided [FarmerProfile] to local JSON storage
   static Future<void> saveProfile(FarmerProfile profile) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = jsonEncode(profile.toJson());
-      await prefs.setString(_storageKey, jsonString);
-      debugPrint('✅ Farmer profile saved successfully.');
+      final profiles = await loadProfiles();
+      profiles.removeWhere((p) => p.farmerId == profile.farmerId);
+      profiles.add(profile);
+      await _writeProfiles(profiles);
+      await setActiveProfile(profile);
     } catch (e) {
-      debugPrint('❌ Error saving farmer profile: $e');
+      debugPrint('Error saving profile: $e');
     }
   }
 
-  /// Load the farmer profile from SharedPreferences
-  static Future<FarmerProfile?> loadProfile() async {
+  /// Loads all farmer profiles from storage
+  static Future<List<FarmerProfile>> loadProfiles() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_storageKey);
-      if (jsonString != null) {
-        final profile = FarmerProfile.fromJson(jsonDecode(jsonString));
-        debugPrint('✅ Farmer profile loaded.');
-        return profile;
+      final file = await _getLocalFile(_fileName);
+      if (!await file.exists()) return [];
+      final content = await file.readAsString();
+      final decoded = jsonDecode(content) as List;
+      return decoded.map((e) => FarmerProfile.fromJson(e)).toList();
+    } catch (e) {
+      debugPrint('Error loading profiles: $e');
+      return [];
+    }
+  }
+
+  /// Deletes a farmer profile by ID
+  static Future<void> deleteProfile(String farmerId) async {
+    try {
+      final profiles = await loadProfiles();
+      profiles.removeWhere((p) => p.farmerId == farmerId);
+      await _writeProfiles(profiles);
+    } catch (e) {
+      debugPrint('Error deleting profile: $e');
+    }
+  }
+
+  /// Updates an existing profile by ID
+  static Future<void> updateProfile(FarmerProfile updatedProfile) async {
+    try {
+      final profiles = await loadProfiles();
+      final index = profiles.indexWhere((p) => p.farmerId == updatedProfile.farmerId);
+      if (index != -1) {
+        profiles[index] = updatedProfile;
+        await _writeProfiles(profiles);
       }
     } catch (e) {
-      debugPrint('❌ Failed to load farmer profile: $e');
-    }
-    return null;
-  }
-
-  /// Check if a profile is saved
-  static Future<bool> isProfileSaved() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey(_storageKey);
-  }
-
-  /// Remove the profile and associated files (photo/QR)
-  static Future<void> clearProfile() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final profile = await loadProfile();
-      await prefs.remove(_storageKey);
-
-      // Cleanup files
-      if (profile?.photoPath != null) deleteLocalFile(profile!.photoPath!);
-      if (profile?.qrImagePath != null) deleteLocalFile(profile!.qrImagePath!);
-
-      debugPrint('🗑️ Farmer profile and files cleared.');
-    } catch (e) {
-      debugPrint('❌ Error clearing farmer profile: $e');
+      debugPrint('Error updating profile: $e');
     }
   }
 
-  /// Aliases for consistency across screens
-  static Future<void> saveActiveProfile(FarmerProfile profile) => saveProfile(profile);
-  static Future<FarmerProfile?> loadActiveProfile() => loadProfile();
-  static Future<void> clearActiveProfile() => clearProfile();
+  /// Checks if a profile exists by ID
+  static Future<bool> profileExists(String farmerId) async {
+    final profiles = await loadProfiles();
+    return profiles.any((p) => p.farmerId == farmerId);
+  }
 
-  /// Pick an image from gallery and return its path
-  static Future<String?> pickImageFromGallery() async {
+  /// Sets the current active profile
+  static Future<void> setActiveProfile(FarmerProfile profile) async {
     try {
-      final picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
-      return pickedFile?.path;
+      final file = await _getLocalFile(_activeFileName);
+      await file.writeAsString(jsonEncode(profile.toJson()));
     } catch (e) {
-      debugPrint('❌ Error picking image from gallery: $e');
+      debugPrint('Error setting active profile: $e');
+    }
+  }
+
+  /// Loads the currently active profile
+  static Future<FarmerProfile?> loadActiveProfile() async {
+    try {
+      final file = await _getLocalFile(_activeFileName);
+      if (!await file.exists()) return null;
+      final content = await file.readAsString();
+      return FarmerProfile.fromJson(jsonDecode(content));
+    } catch (e) {
+      debugPrint('Error loading active profile: $e');
       return null;
     }
   }
 
-  /// Pick an image from camera and return its path
-  static Future<String?> pickImageFromCamera() async {
+  /// Clears the currently active profile
+  static Future<void> clearActiveProfile() async {
     try {
-      final picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(source: ImageSource.camera, imageQuality: 75);
-      return pickedFile?.path;
-    } catch (e) {
-      debugPrint('❌ Error capturing image from camera: $e');
-      return null;
-    }
-  }
-
-  /// Convert file to base64 (Mobile/Desktop only)
-  static Future<String?> getProfileImageBase64(String? filePath) async {
-    if (filePath == null || kIsWeb) {
-      debugPrint("⚠️ Image path is null or unsupported on web.");
-      return null;
-    }
-
-    try {
-      final bytes = await File(filePath).readAsBytes();
-      return base64Encode(bytes);
-    } catch (e) {
-      debugPrint("❌ Error reading file for base64 conversion: $e");
-      return null;
-    }
-  }
-
-  /// Render image safely across platforms
-  static Widget getImageWidget(String path, {BoxFit fit = BoxFit.cover, double? height, double? width}) {
-    if (kIsWeb) {
-      return Image.network(path, fit: fit, height: height, width: width);
-    } else {
-      return Image.file(File(path), fit: fit, height: height, width: width);
-    }
-  }
-
-  /// Save QR image to disk and return file path
-  static Future<String?> saveQRImageToFile(Uint8List imageBytes, String filename) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final filePath = '${dir.path}/$filename';
-      final file = File(filePath);
-      await file.writeAsBytes(imageBytes);
-      debugPrint('✅ QR image saved at: $filePath');
-      return filePath;
-    } catch (e) {
-      debugPrint('❌ Error saving QR image: $e');
-      return null;
-    }
-  }
-
-  /// Load QR image from saved path
-  static Future<Image?> loadQRImage(String? path) async {
-    if (path == null || kIsWeb) return null;
-    try {
-      final file = File(path);
-      if (await file.exists()) {
-        return Image.file(file);
-      }
-    } catch (e) {
-      debugPrint("❌ Error loading QR image: $e");
-    }
-    return null;
-  }
-
-  /// Delete a file if it exists
-  static Future<void> deleteLocalFile(String path) async {
-    try {
-      final file = File(path);
+      final file = await _getLocalFile(_activeFileName);
       if (await file.exists()) {
         await file.delete();
-        debugPrint('🗑️ Deleted file: $path');
       }
     } catch (e) {
-      debugPrint('❌ Error deleting file $path: $e');
+      debugPrint('Error clearing active profile: $e');
     }
   }
 
-  /// Use this to debug the full profile content
-  static Future<void> debugPrintProfile() async {
-    final profile = await loadProfile();
-    if (profile != null) {
-      debugPrint('📋 Farmer Profile Data:\n${jsonEncode(profile.toJson())}');
-    } else {
-      debugPrint('⚠️ No farmer profile found.');
-    }
+  /// Internal helper to get a reference to a local file
+  static Future<File> _getLocalFile(String filename) async {
+    final dir = await getApplicationDocumentsDirectory();
+    return File('${dir.path}/$filename');
+  }
+
+  /// Internal helper to write list of profiles to file
+  static Future<void> _writeProfiles(List<FarmerProfile> profiles) async {
+    final file = await _getLocalFile(_fileName);
+    final json = jsonEncode(profiles.map((p) => p.toJson()).toList());
+    await file.writeAsString(json);
   }
 }
