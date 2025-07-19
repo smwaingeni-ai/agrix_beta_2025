@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/farmer_profile.dart';
+import 'package:agrix_beta_2025/models/farmer_profile.dart';
 
 class FarmerProfileService {
   static const String _storageKey = 'active_farmer_profile';
