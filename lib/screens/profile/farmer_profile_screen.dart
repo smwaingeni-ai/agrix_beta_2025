@@ -1,136 +1,86 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'edit_farmer_profile_screen.dart';
-import 'package:agrix_beta_2025/models/farmer_profile.dart' as model;
-import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart' as service;
+import 'package:agrix_beta_2025/models/farmer_profile.dart';
 
-class FarmerProfileScreen extends StatefulWidget {
-  const FarmerProfileScreen({super.key});
+class FarmerProfileService {
+  static const String _fileName = 'farmer_profiles.json';
+  static const String _activeFileName = 'active_farmer_profile.json';
 
-  @override
-  State<FarmerProfileScreen> createState() => _FarmerProfileScreenState();
-}
-
-class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
-  Future<model.FarmerProfile?>? _profileFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _profileFuture = service.FarmerProfileService.loadActiveProfile();
+  static Future<String?> pickProfileImage({bool camera = false}) async {
+    final picker = ImagePicker();
+    final XFile? file = camera
+        ? await picker.pickImage(source: ImageSource.camera)
+        : await picker.pickImage(source: ImageSource.gallery);
+    return file?.path;
   }
 
-  void _refreshProfile() {
-    setState(() {
-      _profileFuture = service.FarmerProfileService.loadActiveProfile();
-    });
+  static Widget buildProfileImage(String? imagePath, {double size = 100}) {
+    if (imagePath == null || imagePath.isEmpty) {
+      return Icon(Icons.person, size: size);
+    }
+    return Image.file(File(imagePath), width: size, height: size, fit: BoxFit.cover);
   }
 
-  void _launchWhatsApp(BuildContext context, String phone) async {
-    final Uri whatsappUrl = Uri.parse('https://wa.me/$phone');
-    if (await canLaunchUrl(whatsappUrl)) {
-      await launchUrl(whatsappUrl);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not launch WhatsApp')),
-      );
+  static Future<void> saveProfile(FarmerProfile profile) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$_fileName');
+    final profiles = await loadProfiles();
+    final existing = profiles.where((p) => p.farmerId == profile.farmerId).toList();
+    if (existing.isNotEmpty) {
+      profiles.remove(existing.first);
+    }
+    profiles.add(profile);
+    final json = jsonEncode(profiles.map((p) => p.toJson()).toList());
+    await file.writeAsString(json);
+
+    // Set as active
+    await setActiveProfile(profile);
+  }
+
+  static Future<List<FarmerProfile>> loadProfiles() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_fileName');
+      if (!file.existsSync()) return [];
+      final content = await file.readAsString();
+      final decoded = jsonDecode(content) as List;
+      return decoded.map((e) => FarmerProfile.fromJson(e)).toList();
+    } catch (e) {
+      print('Error loading profiles: $e');
+      return [];
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<model.FarmerProfile?>(
-      future: _profileFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final profile = snapshot.data;
-
-        if (profile == null) {
-          return const Scaffold(
-            body: Center(child: Text('No profile found.')),
-          );
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Farmer Profile'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                tooltip: 'Edit Profile',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditFarmerProfileScreen(),
-                    ),
-                  ).then((_) => _refreshProfile());
-                },
-              ),
-              if (profile.contactNumber.isNotEmpty)
-                IconButton(
-                  icon: const Icon(FontAwesomeIcons.whatsapp),
-                  tooltip: 'Message on WhatsApp',
-                  onPressed: () => _launchWhatsApp(context, profile.contactNumber),
-                ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView(
-              children: [
-                Center(
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: (profile.photoPath != null &&
-                            profile.photoPath!.isNotEmpty &&
-                            File(profile.photoPath!).existsSync())
-                        ? FileImage(File(profile.photoPath!))
-                        : null,
-                    child: (profile.photoPath == null || profile.photoPath!.isEmpty)
-                        ? const Icon(Icons.person, size: 50)
-                        : null,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _infoTile("Full Name", profile.fullName),
-                _infoTile("ID", profile.id),
-                _infoTile("Phone", profile.contactNumber),
-                _infoTile("Farm Size", "${profile.farmSizeHectares?.toStringAsFixed(2) ?? 'N/A'} hectares"),
-                _infoTile("Government Affiliated", profile.govtAffiliated ? "Yes" : "No"),
-                _infoTile("Subsidised", profile.subsidised ? "Yes" : "No"),
-                _infoTile("Region", profile.region ?? "N/A"),
-                _infoTile("Province", profile.province ?? "N/A"),
-                _infoTile("District", profile.district ?? "N/A"),
-                _infoTile("Farm Location", profile.farmLocation ?? "N/A"),
-                if (profile.registeredAt != null)
-                  _infoTile("Registered At", profile.registeredAt!.toLocal().toString().split(' ')[0]),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  static Future<void> setActiveProfile(FarmerProfile profile) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$_activeFileName');
+    await file.writeAsString(jsonEncode(profile.toJson()));
   }
 
-  Widget _infoTile(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
+  static Future<FarmerProfile?> loadActiveProfile() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_activeFileName');
+      if (!file.existsSync()) return null;
+      final content = await file.readAsString();
+      return FarmerProfile.fromJson(jsonDecode(content));
+    } catch (e) {
+      print('Error loading active profile: $e');
+      return null;
+    }
+  }
+
+  static Future<void> clearActiveProfile() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$_activeFileName');
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 }
