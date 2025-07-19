@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:agrix_beta_2025/models/farmer_profile.dart';
-import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
+import 'package:agrix_africa_adt2025/models/farmer_profile.dart';
+import 'package:agrix_africa_adt2025/services/profile/farmer_profile_service.dart';
 
 class EditFarmerProfileScreen extends StatefulWidget {
-  const EditFarmerProfileScreen({super.key});
+  const EditFarmerProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<EditFarmerProfileScreen> createState() => _EditFarmerProfileScreenState();
@@ -15,14 +15,14 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   FarmerProfile? _profile;
 
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _idController = TextEditingController();
-  final TextEditingController _contactController = TextEditingController();
-  final TextEditingController _farmSizeController = TextEditingController();
-  final TextEditingController _regionController = TextEditingController();
-  final TextEditingController _provinceController = TextEditingController();
-  final TextEditingController _districtController = TextEditingController();
-  final TextEditingController _farmLocationController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _idNumberController = TextEditingController();
+  final _contactController = TextEditingController();
+  final _farmSizeController = TextEditingController();
+  final _regionController = TextEditingController();
+  final _provinceController = TextEditingController();
+  final _districtController = TextEditingController();
+  final _farmLocationController = TextEditingController();
 
   bool _govtAffiliated = false;
   bool _subsidised = false;
@@ -35,60 +35,78 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    final loadedProfile = await FarmerProfileService.loadActiveProfile();
-    if (loadedProfile != null) {
+    final loaded = await FarmerProfileService.loadActiveProfile();
+    if (loaded != null) {
       setState(() {
-        _profile = loadedProfile;
-        _nameController.text = loadedProfile.fullName;
-        _idController.text = loadedProfile.id;
-        _contactController.text = loadedProfile.contactNumber;
-        _farmSizeController.text = loadedProfile.farmSizeHectares?.toString() ?? '';
-        _regionController.text = loadedProfile.region ?? '';
-        _provinceController.text = loadedProfile.province ?? '';
-        _districtController.text = loadedProfile.district ?? '';
-        _farmLocationController.text = loadedProfile.farmLocation ?? '';
-        _govtAffiliated = loadedProfile.govtAffiliated;
-        _subsidised = loadedProfile.subsidised;
-        _photoPath = loadedProfile.photoPath;
+        _profile = loaded;
+        _nameController.text = loaded.fullName;
+        _idNumberController.text = loaded.idNumber;
+        _contactController.text = loaded.contactNumber;
+        _farmSizeController.text = loaded.farmSizeHectares?.toString() ?? '';
+        _regionController.text = loaded.region ?? '';
+        _provinceController.text = loaded.province ?? '';
+        _districtController.text = loaded.district ?? '';
+        _farmLocationController.text = loaded.farmLocation ?? '';
+        _govtAffiliated = loaded.govtAffiliated;
+        _subsidised = loaded.subsidised;
+        _photoPath = loaded.photoPath;
       });
     }
   }
 
   Future<void> _pickPhoto() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
-      setState(() => _photoPath = picked.path);
+      setState(() {
+        _photoPath = picked.path;
+      });
     }
   }
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final updatedProfile = FarmerProfile(
-      farmerId: _profile?.farmerId ?? '',
-      fullName: _nameController.text,
-      id: _idController.text,
-      contactNumber: _contactController.text,
+    final updated = FarmerProfile(
+      farmerId: _profile?.farmerId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      fullName: _nameController.text.trim(),
+      idNumber: _idNumberController.text.trim(),
+      contactNumber: _contactController.text.trim(),
       farmSizeHectares: double.tryParse(_farmSizeController.text),
+      region: _regionController.text.trim(),
+      province: _provinceController.text.trim(),
+      district: _districtController.text.trim(),
+      farmLocation: _farmLocationController.text.trim(),
       govtAffiliated: _govtAffiliated,
       subsidised: _subsidised,
-      region: _regionController.text,
-      province: _provinceController.text,
-      district: _districtController.text,
-      farmLocation: _farmLocationController.text,
-      registeredAt: _profile?.registeredAt ?? DateTime.now(),
       photoPath: _photoPath,
+      registeredAt: _profile?.registeredAt ?? DateTime.now(),
       qrImagePath: _profile?.qrImagePath,
     );
 
-    await FarmerProfileService.saveProfile(updatedProfile);
+    await FarmerProfileService.saveProfile(updated);
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile saved successfully!')),
+        const SnackBar(content: Text("✅ Profile saved successfully!")),
       );
       Navigator.pop(context);
     }
+  }
+
+  Widget _buildField(String label, TextEditingController controller, {TextInputType? keyboardType}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        validator: (val) => val == null || val.trim().isEmpty ? "Required" : null,
+      ),
+    );
   }
 
   @override
@@ -100,7 +118,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Farmer Profile")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
@@ -108,16 +126,18 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
               GestureDetector(
                 onTap: _pickPhoto,
                 child: CircleAvatar(
-                  radius: 40,
+                  radius: 50,
                   backgroundImage: _photoPath != null && File(_photoPath!).existsSync()
                       ? FileImage(File(_photoPath!))
                       : null,
-                  child: _photoPath == null ? const Icon(Icons.camera_alt, size: 40) : null,
+                  child: _photoPath == null
+                      ? const Icon(Icons.camera_alt, size: 40)
+                      : null,
                 ),
               ),
               const SizedBox(height: 16),
               _buildField("Full Name", _nameController),
-              _buildField("ID Number", _idController),
+              _buildField("ID Number", _idNumberController),
               _buildField("Phone", _contactController, keyboardType: TextInputType.phone),
               _buildField("Farm Size (ha)", _farmSizeController, keyboardType: TextInputType.number),
               _buildField("Region", _regionController),
@@ -134,7 +154,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                 value: _subsidised,
                 onChanged: (val) => setState(() => _subsidised = val),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.save),
                 onPressed: _saveProfile,
@@ -143,21 +163,6 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildField(String label, TextEditingController controller, {TextInputType? keyboardType}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        validator: (value) => value == null || value.isEmpty ? "Required" : null,
       ),
     );
   }
