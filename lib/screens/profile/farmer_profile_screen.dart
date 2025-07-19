@@ -30,10 +30,10 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (profile != null) {
       setState(() {
         _nameController.text = profile.fullName;
-        _idController.text = profile.farmerId ?? '';
-        _contactController.text = profile.contact;
-        _farmSizeController.text = profile.farmSize?.toString() ?? '';
-        _subsidised = profile.subsidised ?? false;
+        _idController.text = profile.farmerId;
+        _contactController.text = profile.contactNumber;
+        _farmSizeController.text = profile.farmSizeHectares?.toString() ?? '';
+        _subsidised = profile.subsidised;
         _imagePath = profile.photoPath;
       });
     }
@@ -52,13 +52,15 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (_formKey.currentState?.validate() != true) return;
 
     final profile = FarmerProfile(
-      farmerId: _idController.text, // ✅ corrected
-      fullName: _nameController.text,
-      idNumber: _idController.text,
-      contact: _contactController.text,
-      farmSize: double.tryParse(_farmSizeController.text), // ✅ parsed safely
+      farmerId: _idController.text.trim(),
+      fullName: _nameController.text.trim(),
+      idNumber: _idController.text.trim(),
+      contactNumber: _contactController.text.trim(),
+      farmSizeHectares: double.tryParse(_farmSizeController.text),
       subsidised: _subsidised,
+      govtAffiliated: false, // required field
       photoPath: _imagePath,
+      registeredAt: DateTime.now().toIso8601String(),
     );
 
     await FarmerProfileService.saveProfile(profile);
@@ -81,7 +83,9 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 onTap: _pickImage,
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: _imagePath != null ? FileImage(File(_imagePath!)) : null,
+                  backgroundImage: _imagePath != null && File(_imagePath!).existsSync()
+                      ? FileImage(File(_imagePath!))
+                      : null,
                   child: _imagePath == null
                       ? const Icon(Icons.camera_alt, size: 40)
                       : null,
@@ -91,17 +95,17 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
-                validator: (value) => value!.isEmpty ? 'Enter name' : null,
+                validator: (value) => value == null || value.isEmpty ? 'Enter name' : null,
               ),
               TextFormField(
                 controller: _idController,
                 decoration: const InputDecoration(labelText: 'ID Number'),
-                validator: (value) => value!.isEmpty ? 'Enter ID' : null,
+                validator: (value) => value == null || value.isEmpty ? 'Enter ID' : null,
               ),
               TextFormField(
                 controller: _contactController,
-                decoration: const InputDecoration(labelText: 'Contact'),
-                validator: (value) => value!.isEmpty ? 'Enter contact' : null,
+                decoration: const InputDecoration(labelText: 'Contact Number'),
+                validator: (value) => value == null || value.isEmpty ? 'Enter contact number' : null,
               ),
               TextFormField(
                 controller: _farmSizeController,
