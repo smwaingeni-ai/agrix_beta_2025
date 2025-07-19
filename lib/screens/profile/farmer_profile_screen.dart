@@ -3,11 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'edit_farmer_profile_screen.dart';
 import 'package:agrix_africa_adt2025/models/farmer_profile.dart' as model;
 import 'package:agrix_africa_adt2025/services/profile/farmer_profile_service.dart' as service;
 
-class FarmerProfileScreen extends StatelessWidget {
+class FarmerProfileScreen extends StatefulWidget {
   const FarmerProfileScreen({super.key});
+
+  @override
+  State<FarmerProfileScreen> createState() => _FarmerProfileScreenState();
+}
+
+class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
+  Future<model.FarmerProfile?>? _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = service.FarmerProfileService.loadActiveProfile();
+  }
+
+  void _refreshProfile() {
+    setState(() {
+      _profileFuture = service.FarmerProfileService.loadActiveProfile();
+    });
+  }
 
   void _launchWhatsApp(BuildContext context, String phone) async {
     final Uri whatsappUrl = Uri.parse('https://wa.me/$phone');
@@ -23,7 +43,7 @@ class FarmerProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<model.FarmerProfile?>(
-      future: service.FarmerProfileService.loadActiveProfile(),
+      future: _profileFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -43,6 +63,15 @@ class FarmerProfileScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Farmer Profile'),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditFarmerProfileScreen()),
+                  ).then((_) => _refreshProfile());
+                },
+              ),
               if (profile.contactNumber.isNotEmpty)
                 IconButton(
                   icon: const Icon(FontAwesomeIcons.whatsapp),
