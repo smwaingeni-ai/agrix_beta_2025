@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'core/landing_page.dart';
-import 'routes.dart';
+import 'package:agrix_beta_2025/core/landing_page.dart';
+import 'package:agrix_beta_2025/routes.dart';
 
 void main() {
   runApp(const AgriXApp());
