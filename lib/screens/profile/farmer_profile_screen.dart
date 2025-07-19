@@ -65,16 +65,20 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
+                tooltip: 'Edit Profile',
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const EditFarmerProfileScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const EditFarmerProfileScreen(),
+                    ),
                   ).then((_) => _refreshProfile());
                 },
               ),
               if (profile.contactNumber.isNotEmpty)
                 IconButton(
                   icon: const Icon(FontAwesomeIcons.whatsapp),
+                  tooltip: 'Message on WhatsApp',
                   onPressed: () => _launchWhatsApp(context, profile.contactNumber),
                 ),
             ],
@@ -83,14 +87,18 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
             padding: const EdgeInsets.all(16.0),
             child: ListView(
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: (profile.photoPath != null && profile.photoPath!.isNotEmpty)
-                      ? FileImage(File(profile.photoPath!))
-                      : null,
-                  child: (profile.photoPath == null || profile.photoPath!.isEmpty)
-                      ? const Icon(Icons.person, size: 50)
-                      : null,
+                Center(
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: (profile.photoPath != null &&
+                            profile.photoPath!.isNotEmpty &&
+                            File(profile.photoPath!).existsSync())
+                        ? FileImage(File(profile.photoPath!))
+                        : null,
+                    child: (profile.photoPath == null || profile.photoPath!.isEmpty)
+                        ? const Icon(Icons.person, size: 50)
+                        : null,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _infoTile("Full Name", profile.fullName),
@@ -117,6 +125,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
           Expanded(child: Text(value)),
