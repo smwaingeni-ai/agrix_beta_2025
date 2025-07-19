@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io'; 
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
@@ -32,7 +32,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
         _nameController.text = profile.fullName;
         _idController.text = profile.id ?? profile.farmerId ?? '';
         _contactController.text = profile.contact;
-        _farmSizeController.text = profile.farmSize ?? '';
+        _farmSizeController.text = profile.farmSize?.toString() ?? ''; // ✅ FIXED
         _subsidised = profile.subsidised ?? false;
         _imagePath = profile.photoPath;
       });
@@ -56,7 +56,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
       fullName: _nameController.text,
       idNumber: _idController.text,
       contact: _contactController.text,
-      farmSize: _farmSizeController.text,
+      farmSize: _farmSizeController.text, // stored as string
       subsidised: _subsidised,
       photoPath: _imagePath,
     );
