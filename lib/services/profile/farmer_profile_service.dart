@@ -59,8 +59,11 @@ class FarmerProfileService {
       final file = await _getLocalFile(_fileName);
       if (!await file.exists()) return [];
       final content = await file.readAsString();
-      final decoded = jsonDecode(content) as List;
-      return decoded.map((e) => FarmerProfile.fromJson(e)).toList();
+      final decoded = jsonDecode(content);
+      if (decoded is List) {
+        return decoded.map((e) => FarmerProfile.fromJson(e)).toList();
+      }
+      return [];
     } catch (e) {
       debugPrint('Error loading profiles: $e');
       return [];
@@ -142,7 +145,7 @@ class FarmerProfileService {
   /// Internal helper to write list of profiles to file
   static Future<void> _writeProfiles(List<FarmerProfile> profiles) async {
     final file = await _getLocalFile(_fileName);
-    final json = jsonEncode(profiles.map((p) => p.toJson()).toList());
+    final json = FarmerProfile.encode(profiles);
     await file.writeAsString(json);
   }
 }
