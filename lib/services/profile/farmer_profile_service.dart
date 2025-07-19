@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../models/farmer_profile.dart';
+import 'package:agrix_beta_2025/models/farmer_profile.dart';
 
 class FarmerProfileService {
   static const String _fileName = 'farmer_profiles.json';
