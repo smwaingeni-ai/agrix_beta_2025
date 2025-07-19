@@ -58,9 +58,9 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
       contactNumber: _contactController.text.trim(),
       farmSizeHectares: double.tryParse(_farmSizeController.text),
       subsidised: _subsidised,
-      govtAffiliated: false, // required field
+      govtAffiliated: false, // This is required, and acceptable for now
       photoPath: _imagePath,
-      registeredAt: DateTime.now().toIso8601String(),
+      registeredAt: DateTime.now().toIso8601String(), // ✅ FIXED
     );
 
     await FarmerProfileService.saveProfile(profile);
