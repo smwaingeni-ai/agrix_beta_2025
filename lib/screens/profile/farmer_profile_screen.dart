@@ -30,7 +30,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (profile != null) {
       setState(() {
         _nameController.text = profile.fullName;
-        _idController.text = profile.idNumber ?? '';
+        _idController.text = profile.id ?? profile.farmerId ?? '';
         _contactController.text = profile.contact;
         _farmSizeController.text = profile.farmSize ?? '';
         _subsidised = profile.subsidised ?? false;
@@ -52,7 +52,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (_formKey.currentState?.validate() != true) return;
 
     final profile = FarmerProfile(
-      farmerId: _idController.text,
+      id: _idController.text,
       fullName: _nameController.text,
       idNumber: _idController.text,
       contact: _contactController.text,
