@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'edit_farmer_profile_screen.dart';
-import 'package:agrix_africa_adt2025/models/farmer_profile.dart' as model;
-import 'package:agrix_africa_adt2025/services/profile/farmer_profile_service.dart' as service;
+import 'package:agrix_beta_2025/models/farmer_profile.dart' as model;
+import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart' as service;
 
 class FarmerProfileScreen extends StatefulWidget {
   const FarmerProfileScreen({super.key});
