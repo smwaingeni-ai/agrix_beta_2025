@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 
@@ -34,11 +35,12 @@ class _LandingPageState extends State<LandingPage> {
     if (_profile == null) return;
 
     final profileText = '''
-👤 Name: ${_profile!.name}
+👤 Name: ${_profile!.fullName}
+🆔 ID: ${_profile!.id ?? _profile!.farmerId}
 📞 Contact: ${_profile!.contact}
+📐 Farm Size: ${_profile!.farmSize ?? 'N/A'}
 🌍 Region: ${_profile!.region ?? 'N/A'}
-📐 Farm Size: ${_profile!.farmSize}
-🏛️ Subsidised: ${_profile!.subsidised ? "Yes" : "No"}
+🏛️ Subsidised: ${_profile!.subsidised == true ? "Yes" : "No"}
 ''';
     Share.share(profileText);
   }
@@ -111,9 +113,10 @@ class _LandingPageState extends State<LandingPage> {
                           const SizedBox(height: 8),
                         ],
                         ListTile(
-                          title: Text(_profile!.name),
+                          title: Text(_profile!.fullName),
                           subtitle: Text(
-                              '${_profile!.region ?? "N/A"} • ${_profile!.farmSize} ha'),
+                            '${_profile!.region ?? "N/A"} • ${_profile!.farmSize ?? "N/A"} ha',
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -145,8 +148,9 @@ class _LandingPageState extends State<LandingPage> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
-                children:
-                    buttons.map((btn) => buildGridButton(btn['label']!, btn['route']!)).toList(),
+                children: buttons
+                    .map((btn) => buildGridButton(btn['label']!, btn['route']!))
+                    .toList(),
               ),
             ),
           ],
