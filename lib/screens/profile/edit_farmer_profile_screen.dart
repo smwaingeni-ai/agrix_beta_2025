@@ -23,6 +23,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
   final TextEditingController _provinceController = TextEditingController();
   final TextEditingController _districtController = TextEditingController();
   final TextEditingController _farmLocationController = TextEditingController();
+
   bool _govtAffiliated = false;
   bool _subsidised = false;
   String? _photoPath;
@@ -56,9 +57,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
   Future<void> _pickPhoto() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked != null) {
-      setState(() {
-        _photoPath = picked.path;
-      });
+      setState(() => _photoPath = picked.path);
     }
   }
 
@@ -83,7 +82,13 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
     );
 
     await FarmerProfileService.saveProfile(updatedProfile);
-    if (context.mounted) Navigator.pop(context);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile saved successfully!')),
+      );
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -93,7 +98,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile")),
+      appBar: AppBar(title: const Text("Edit Farmer Profile")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -104,7 +109,9 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                 onTap: _pickPhoto,
                 child: CircleAvatar(
                   radius: 40,
-                  backgroundImage: _photoPath != null ? FileImage(File(_photoPath!)) : null,
+                  backgroundImage: _photoPath != null && File(_photoPath!).existsSync()
+                      ? FileImage(File(_photoPath!))
+                      : null,
                   child: _photoPath == null ? const Icon(Icons.camera_alt, size: 40) : null,
                 ),
               ),
@@ -128,9 +135,10 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
                 onChanged: (val) => setState(() => _subsidised = val),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              ElevatedButton.icon(
+                icon: const Icon(Icons.save),
                 onPressed: _saveProfile,
-                child: const Text("Save Changes"),
+                label: const Text("Save Changes"),
               ),
             ],
           ),
@@ -145,7 +153,10 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
         validator: (value) => value == null || value.isEmpty ? "Required" : null,
       ),
     );
