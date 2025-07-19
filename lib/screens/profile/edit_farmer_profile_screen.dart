@@ -80,7 +80,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
       govtAffiliated: _govtAffiliated,
       subsidised: _subsidised,
       photoPath: _photoPath,
-      registeredAt: _profile?.registeredAt ?? DateTime.now(),
+      registeredAt: _profile?.registeredAt ?? DateTime.now().toIso8601String(),
       qrImagePath: _profile?.qrImagePath,
     );
 
