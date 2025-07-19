@@ -30,6 +30,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/alogo.png
     - assets/images/
     - assets/icons/
     - assets/data/
