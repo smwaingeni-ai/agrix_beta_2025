@@ -36,11 +36,11 @@ class _LandingPageState extends State<LandingPage> {
 
     final profileText = '''
 👤 Name: ${_profile!.fullName}
-🆔 ID: ${_profile!.id ?? _profile!.farmerId}
+🆔 ID: ${_profile!.id}
 📞 Contact: ${_profile!.contact}
 📐 Farm Size: ${_profile!.farmSize ?? 'N/A'}
 🌍 Region: ${_profile!.region ?? 'N/A'}
-🏛️ Subsidised: ${_profile!.subsidised == true ? "Yes" : "No"}
+🏛️ Subsidised: ${_profile!.subsidised ? "Yes" : "No"}
 ''';
     Share.share(profileText);
   }
