@@ -1,4 +1,4 @@
-import 'dart:io'; 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
@@ -30,9 +30,9 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (profile != null) {
       setState(() {
         _nameController.text = profile.fullName;
-        _idController.text = profile.id ?? profile.farmerId ?? '';
+        _idController.text = profile.farmerId ?? '';
         _contactController.text = profile.contact;
-        _farmSizeController.text = profile.farmSize?.toString() ?? ''; // ✅ FIXED
+        _farmSizeController.text = profile.farmSize?.toString() ?? '';
         _subsidised = profile.subsidised ?? false;
         _imagePath = profile.photoPath;
       });
@@ -52,11 +52,11 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
     if (_formKey.currentState?.validate() != true) return;
 
     final profile = FarmerProfile(
-      id: _idController.text,
+      farmerId: _idController.text, // ✅ corrected
       fullName: _nameController.text,
       idNumber: _idController.text,
       contact: _contactController.text,
-      farmSize: _farmSizeController.text, // stored as string
+      farmSize: double.tryParse(_farmSizeController.text), // ✅ parsed safely
       subsidised: _subsidised,
       photoPath: _imagePath,
     );
@@ -105,7 +105,8 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
               ),
               TextFormField(
                 controller: _farmSizeController,
-                decoration: const InputDecoration(labelText: 'Farm Size'),
+                decoration: const InputDecoration(labelText: 'Farm Size (in hectares)'),
+                keyboardType: TextInputType.number,
               ),
               SwitchListTile(
                 value: _subsidised,
