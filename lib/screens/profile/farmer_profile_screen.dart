@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
-import 'package:agrix_beta_2025/services/farmer_profile_service.dart';
+import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 
 class FarmerProfileScreen extends StatefulWidget {
   const FarmerProfileScreen({Key? key}) : super(key: key);
