@@ -20,8 +20,8 @@ import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'
 // import 'package:agrix_beta_2025/screens/market/market_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
-  // Initial route
-  '/': (context) => const AuthGate(),
+  // ✅ Initial route removed from here to allow main.dart logic to handle it
+  // '/': (context) => const LandingPage(), // ❌ REMOVE this line
 
   // Core and Auth
   '/auth': (context) => const AuthGate(),
