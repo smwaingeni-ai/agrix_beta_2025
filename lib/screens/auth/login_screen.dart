@@ -1,8 +1,16 @@
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
-import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart'; // 👈 Added
+import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
+
+// Dummy users for demo purposes (make sure this list exists in your file or elsewhere)
+final List<UserModel> dummyUsers = [
+  UserModel(id: '1', name: 'John', role: 'Farmer', passcode: '1234'),
+  UserModel(id: '2', name: 'Alice', role: 'Trader', passcode: '5678'),
+  // Add more users as needed
+];
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -81,9 +89,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginWithBiometrics() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('⚠️ Biometrics not supported on Web')),
+      );
+      return;
+    }
+
     final success = await BiometricAuthService.authenticate();
     if (success) {
-      // 👉 Log in first matching Farmer profile (for simplicity)
       final user = dummyUsers.firstWhere(
         (u) => u.role == 'Farmer',
         orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
@@ -146,12 +160,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _validateLogin,
               ),
               const SizedBox(height: 10),
-              if (selectedRole == 'Farmer') // 👈 Biometric only for Farmer
+
+              // ✅ Only show biometric login button if on supported platform
+              if (!kIsWeb && selectedRole == 'Farmer')
                 ElevatedButton.icon(
                   icon: const Icon(Icons.fingerprint),
                   label: const Text('Login with Biometrics'),
                   onPressed: _loginWithBiometrics,
                 ),
+
               const SizedBox(height: 10),
               TextButton.icon(
                 icon: const Icon(Icons.person_add_alt),
