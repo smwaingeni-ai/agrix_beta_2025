@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -83,7 +83,10 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
         farmLocation: '',
       );
 
-      await FarmerProfileService.saveActiveProfile(_profile!);
+      // ✅ Only call secure storage if allowed on platform
+      if (!kIsWeb) {
+        await FarmerProfileService.saveActiveProfile(_profile!);
+      }
 
       setState(() => _submitted = true);
       ScaffoldMessenger.of(context).showSnackBar(
