@@ -111,6 +111,16 @@ class FarmerProfileService {
     }
   }
 
+  /// Saves the current active profile explicitly
+  static Future<void> saveActiveProfile(FarmerProfile profile) async {
+    try {
+      final file = await _getLocalFile(_activeFileName);
+      await file.writeAsString(jsonEncode(profile.toJson()));
+    } catch (e) {
+      debugPrint('Error saving active profile: $e');
+    }
+  }
+
   /// Loads the currently active profile
   static Future<FarmerProfile?> loadActiveProfile() async {
     try {
