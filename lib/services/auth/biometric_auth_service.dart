@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/services.dart';
-
-/// ⛔️ Local_auth is not supported on Web, so import conditionally
 import 'package:local_auth/local_auth.dart';
 
 class BiometricAuthService {
@@ -16,8 +14,8 @@ class BiometricAuthService {
     }
 
     try {
-      final isSupported = await _auth!.isDeviceSupported();
-      final canCheck = await _auth.canCheckBiometrics;
+      final isSupported = await _auth?.isDeviceSupported() ?? false;
+      final canCheck = await _auth?.canCheckBiometrics ?? false;
       final hasHardware = isSupported && canCheck;
       print(hasHardware
           ? '✅ Biometrics available and supported'
@@ -43,14 +41,15 @@ class BiometricAuthService {
         return false;
       }
 
-      final didAuthenticate = await _auth!.authenticate(
-        localizedReason: 'Please authenticate to access AgriX',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-          useErrorDialogs: true,
-        ),
-      );
+      final didAuthenticate = await _auth?.authenticate(
+            localizedReason: 'Please authenticate to access AgriX',
+            options: const AuthenticationOptions(
+              biometricOnly: true,
+              stickyAuth: true,
+              useErrorDialogs: true,
+            ),
+          ) ??
+          false;
 
       print(didAuthenticate
           ? '✅ Biometric authentication successful'
