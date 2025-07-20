@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
-import 'package:agrix_beta_2025/services/biometric_auth_service.dart'; // 👈 Added
+import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart'; // 👈 Added
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
