@@ -26,7 +26,7 @@ import 'package:agrix_beta_2025/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Check session: skip biometrics on web
+  // ✅ Platform-safe session check
   final bool isAuthenticated = kIsWeb
       ? await SessionService.isUserLoggedIn()
       : await SessionService.checkSession();
@@ -51,7 +51,6 @@ class AgriXApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: appRoutes,
-      // ✅ Just in case initialRoute is ignored, ensure fallback:
       home: isAuthenticated ? const LandingPage() : const AuthGate(),
     );
   }
