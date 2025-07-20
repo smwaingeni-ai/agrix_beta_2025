@@ -4,7 +4,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
-import 'package:agrix_beta_2025/services/session_service.dart';
+import 'package:agrix_beta_2025/services/auth/session_service.dart';
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 
 class LandingPage extends StatefulWidget {
