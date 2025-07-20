@@ -83,7 +83,6 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
         farmLocation: '',
       );
 
-      // ✅ Only call secure storage if allowed on platform
       if (!kIsWeb) {
         await FarmerProfileService.saveActiveProfile(_profile!);
       }
@@ -95,7 +94,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => LandingPage(loggedInUser: user)),
+        MaterialPageRoute(builder: (_) => LandingPage(farmer: _profile)),
       );
     } else {
       setState(() => _submitted = true);
