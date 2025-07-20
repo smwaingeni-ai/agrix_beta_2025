@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
+import 'package:agrix_beta_2025/models/user_model.dart';
+
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
+
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 
 class LandingPage extends StatefulWidget {
@@ -68,6 +71,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     final buttons = [
+      {'label': 'Edit Profile', 'route': '/profile/edit'},
       {'label': 'Scan / Upload Image', 'route': '/upload'},
       {'label': 'Get Advice', 'route': '/advice'},
       {'label': 'Logbook', 'route': '/logbook'},
@@ -86,6 +90,8 @@ class _LandingPageState extends State<LandingPage> {
       {'label': 'Sync & Backup', 'route': '/sync'},
       {'label': 'Notifications', 'route': '/notifications'},
       {'label': 'Help & FAQs', 'route': '/help'},
+      {'label': 'Register User', 'route': '/register'},
+      {'label': 'Login Again', 'route': '/login'},
     ];
 
     return Scaffold(
@@ -93,13 +99,6 @@ class _LandingPageState extends State<LandingPage> {
         title: const Text('AgriX Home'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            tooltip: 'Edit Profile',
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile').then((_) => _loadProfile());
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -154,7 +153,7 @@ class _LandingPageState extends State<LandingPage> {
                   )
                 : ElevatedButton.icon(
                     icon: const Icon(Icons.person_add),
-                    label: const Text('Create Profile'),
+                    label: const Text('Create Farmer Profile'),
                     onPressed: () {
                       Navigator.pushNamed(context, '/profile').then((_) => _loadProfile());
                     },
