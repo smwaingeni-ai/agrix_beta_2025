@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
+import 'package:agrix_beta_2025/services/biometric_auth_service.dart'; // 👈 Added
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -79,6 +80,29 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _loginWithBiometrics() async {
+    final success = await BiometricAuthService.authenticate();
+    if (success) {
+      // 👉 Log in first matching Farmer profile (for simplicity)
+      final user = dummyUsers.firstWhere(
+        (u) => u.role == 'Farmer',
+        orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
+      );
+
+      if (user.id.isNotEmpty) {
+        _navigateToRoleScreen(user);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('⚠️ No Farmer profile found')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❌ Biometric auth failed')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,6 +145,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 label: const Text('Login'),
                 onPressed: _validateLogin,
               ),
+              const SizedBox(height: 10),
+              if (selectedRole == 'Farmer') // 👈 Biometric only for Farmer
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.fingerprint),
+                  label: const Text('Login with Biometrics'),
+                  onPressed: _loginWithBiometrics,
+                ),
               const SizedBox(height: 10),
               TextButton.icon(
                 icon: const Icon(Icons.person_add_alt),
