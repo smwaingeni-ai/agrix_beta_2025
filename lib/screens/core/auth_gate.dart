@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
@@ -22,7 +23,17 @@ class _AuthGateState extends State<AuthGate> {
 
   Future<void> _checkSession() async {
     try {
-      final sessionExists = await SessionService.checkSession();
+      bool sessionExists;
+
+      // ✅ Avoid biometric checks on Web
+      if (kIsWeb) {
+        sessionExists = await SessionService.isUserLoggedIn();
+        debugPrint('ℹ️ Web: Session check skipped biometric auth');
+      } else {
+        sessionExists = await SessionService.checkSession();
+        debugPrint('ℹ️ Mobile/Desktop: Full session + biometric check done');
+      }
+
       setState(() {
         _isLoggedIn = sessionExists;
         _isLoading = false;
