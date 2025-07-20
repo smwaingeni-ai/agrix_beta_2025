@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
-import 'package:agrix_beta_2025/models/user_model.dart';
-
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  final FarmerProfile? farmer;
+
+  const LandingPage({Key? key, this.farmer}) : super(key: key);
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -27,8 +27,12 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _loadProfile() async {
-    final profile = await FarmerProfileService.loadActiveProfile();
-    setState(() => _profile = profile);
+    if (widget.farmer != null) {
+      _profile = widget.farmer!;
+    } else {
+      _profile = await FarmerProfileService.loadActiveProfile();
+    }
+    setState(() {});
   }
 
   Future<void> _deleteProfile() async {
@@ -155,7 +159,8 @@ class _LandingPageState extends State<LandingPage> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('Create Farmer Profile'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/profile').then((_) => _loadProfile());
+                      Navigator.pushNamed(context, '/profile')
+                          .then((_) => _loadProfile());
                     },
                   ),
             const SizedBox(height: 16),
@@ -165,7 +170,8 @@ class _LandingPageState extends State<LandingPage> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: buttons
-                    .map((btn) => buildGridButton(btn['label']!, btn['route']!))
+                    .map((btn) =>
+                        buildGridButton(btn['label']!, btn['route']!))
                     .toList(),
               ),
             ),
