@@ -4,81 +4,88 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:agrix_beta_2025/models/user_model.dart';
-import 'package:agrix_beta_2025/services/biometric_auth_service.dart';
+import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
 class SessionService {
   static const _userKey = 'agrix_active_user';
-  static final _secureStorage = FlutterSecureStorage();
+  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-  /// Save user session to both secure storage and session.json
+  /// 🔐 Save user session securely and persist to session.json
   static Future<void> saveUserSession(UserModel user) async {
     try {
-      // Save to secure storage
       await _secureStorage.write(key: _userKey, value: user.toRawJson());
 
-      // Also write to session.json (file-based session)
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/session.json');
       await file.writeAsString(jsonEncode(user.toJson()));
 
-      print('✅ User session saved');
+      print('✅ User session saved to secure storage and session.json');
     } catch (e) {
-      print('❌ Error saving user session: $e');
+      print('❌ Failed to save user session: $e');
     }
   }
 
-  /// Load active user from secure storage
+  /// 📥 Load active user from secure storage
   static Future<UserModel?> getActiveUser() async {
     try {
       final jsonStr = await _secureStorage.read(key: _userKey);
-      return jsonStr != null ? UserModel.fromRawJson(jsonStr) : null;
+      if (jsonStr == null || jsonStr.trim().isEmpty) return null;
+      return UserModel.fromRawJson(jsonStr);
     } catch (e) {
-      print('❌ Error loading user session: $e');
+      print('❌ Failed to load user from secure storage: $e');
       return null;
     }
   }
 
-  /// Clear both secure session and session.json
+  /// 🧹 Clear session from both secure storage and file
   static Future<void> clearSession() async {
     try {
       await _secureStorage.delete(key: _userKey);
 
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/session.json');
-      if (await file.exists()) await file.delete();
+      if (await file.exists()) {
+        await file.delete();
+        print('🗑️ session.json deleted');
+      }
 
-      print('🗑️ Session cleared');
+      print('🗑️ User session cleared');
     } catch (e) {
       print('❌ Error clearing session: $e');
     }
   }
 
-  /// Check if session.json exists and biometrics are valid
+  /// 🔎 Check if session is valid and passes biometric auth
   static Future<bool> checkSession() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/session.json');
 
       if (!await file.exists()) {
-        print('❌ No session file found');
+        print('❌ session.json does not exist');
         return false;
       }
 
       final contents = await file.readAsString();
-      if (contents.isEmpty) return false;
+      if (contents.trim().isEmpty) {
+        print('⚠️ session.json is empty');
+        return false;
+      }
 
-      // Optional biometric check
-      final isBioValid = await BiometricAuthService.authenticate();
+      final bool isBioValid = await BiometricAuthService.authenticate();
+      print(isBioValid
+          ? '✅ Session and biometrics validated'
+          : '❌ Biometric auth failed');
       return isBioValid;
     } catch (e) {
-      print('❌ Error checking session: $e');
+      print('❌ Error validating session: $e');
       return false;
     }
   }
 
-  /// Optional quick check for user in memory
+  /// 🔄 Quick check for secure user presence
   static Future<bool> isUserLoggedIn() async {
     final user = await getActiveUser();
-    return user != null && user.id.isNotEmpty;
+    return user != null && user.id.trim().isNotEmpty;
   }
 }
