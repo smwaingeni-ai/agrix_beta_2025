@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:agrix_beta_2025/models/user_model.dart'; // Ensure this path is correct
 
 /// 🧑‍🌾 Farmer Profile Model
 class FarmerProfile {
@@ -55,7 +56,32 @@ class FarmerProfile {
     this.farmLocation,
   });
 
-  /// Decode from JSON
+  /// ✅ Factory to convert from a UserModel
+  factory FarmerProfile.fromUser(UserModel user) {
+    return FarmerProfile(
+      farmerId: user.id,
+      fullName: user.name,
+      contactNumber: user.phone ?? '',
+      idNumber: user.passcode ?? '',
+      region: '',
+      province: '',
+      district: '',
+      ward: '',
+      village: '',
+      cell: '',
+      farmSizeHectares: 1.0,
+      farmType: '',
+      subsidised: false,
+      govtAffiliated: false,
+      language: 'English',
+      createdAt: DateTime.now().toIso8601String(),
+      qrImagePath: '',
+      photoPath: null,
+      farmLocation: '',
+    );
+  }
+
+  /// JSON Decode
   factory FarmerProfile.fromJson(Map<String, dynamic> json) => FarmerProfile(
         farmerId: json['farmerId'] ?? '',
         fullName: json['fullName'] ?? '',
@@ -79,7 +105,7 @@ class FarmerProfile {
         farmLocation: json['farmLocation'],
       );
 
-  /// Encode to JSON
+  /// JSON Encode
   Map<String, dynamic> toJson() => {
         'farmerId': farmerId,
         'fullName': fullName,
@@ -188,29 +214,21 @@ class FarmerProfile {
       contactNumber.hashCode ^
       idNumber.hashCode;
 
-  /// ✅ Utility: is profile valid
   bool get isValid =>
       farmerId.isNotEmpty &&
       fullName.isNotEmpty &&
       contactNumber.isNotEmpty &&
       idNumber.isNotEmpty;
 
-  /// ✅ Utility: fallback display name
   String get displayName => fullName.isNotEmpty ? fullName : 'Unnamed Farmer';
-
-  /// ✅ Utility: check if photo exists
   bool get hasPhoto => photoPath != null && photoPath!.isNotEmpty;
-
-  /// ✅ Utility: check if QR exists
   bool get hasQR => qrImagePath != null && qrImagePath!.isNotEmpty;
 
-  /// ✅ Utility: combine location into a single readable string
   String get fullAddress {
     final parts = [village, ward, district, province, region];
     return parts.where((p) => p != null && p!.isNotEmpty).join(', ');
   }
 
-  /// ✅ Aliases for compatibility
   String get name => fullName;
   String get contact => contactNumber;
   double? get farmSize => farmSizeHectares;
