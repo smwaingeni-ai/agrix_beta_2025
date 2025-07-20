@@ -54,7 +54,7 @@ class UserModel {
         if (phone != null) 'phone': phone,
       };
 
-  /// Creates from a FarmerProfile
+  /// Creates a user model from a FarmerProfile
   factory UserModel.fromFarmer(model.FarmerProfile profile) => UserModel(
         id: profile.idNumber,
         name: profile.fullName,
@@ -81,10 +81,10 @@ class UserModel {
         phone: phone ?? this.phone,
       );
 
-  /// Simple validation check
+  /// Checks whether the model is valid
   bool isValid() => id.isNotEmpty && name.isNotEmpty;
 
-  /// Role helpers
+  /// Role check helpers
   bool isFarmer() => role.toLowerCase().contains('farmer');
   bool isOfficer() => role.toLowerCase().contains('officer');
   bool isInvestor() => role.toLowerCase().contains('investor');
@@ -111,6 +111,6 @@ class UserModel {
       name.hashCode ^
       role.hashCode ^
       passcode.hashCode ^
-      email.hashCode ^
-      phone.hashCode;
+      (email?.hashCode ?? 0) ^
+      (phone?.hashCode ?? 0);
 }
