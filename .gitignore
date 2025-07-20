@@ -1,0 +1,54 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# Build outputs
+build/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/ServiceDefinitions.json
+*.lock
+
+# IntelliJ related
+*.iml
+.idea/
+*.ipr
+*.iws
+
+# VS Code related
+.vscode/
+.history/
+
+# macOS system files
+.DS_Store
+
+# Android related
+android/.gradle/
+android/app/debug
+android/app/profile
+android/app/release
+*.jks
+key.properties
+
+# Web
+web/generated_plugin_registrant.dart
+
+# Firebase or secrets (if used)
+*.env
+*.keystore
+*.json
+
+# Local auth and database
+*.sqlite
+*.db
+
+# Custom secure files
+assets/secure_keys/
+
+# Ignore user and session data
+lib/data/users.json
+lib/data/session.json
