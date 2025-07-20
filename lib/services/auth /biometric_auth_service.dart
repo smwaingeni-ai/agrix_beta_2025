@@ -4,20 +4,25 @@ import 'package:flutter/services.dart';
 class BiometricAuthService {
   static final LocalAuthentication _auth = LocalAuthentication();
 
-  /// 🔹 Check if biometrics are available and supported
+  /// 🔍 Check if biometrics are available and device is supported
   static Future<bool> canCheckBiometrics() async {
     try {
-      final isDeviceSupported = await _auth.isDeviceSupported();
+      final isSupported = await _auth.isDeviceSupported();
       final canCheck = await _auth.canCheckBiometrics;
-      return isDeviceSupported && canCheck;
+      final hasHardware = isSupported && canCheck;
+      print(hasHardware
+          ? '✅ Biometrics available and supported'
+          : '⚠️ Biometrics not supported or unavailable');
+      return hasHardware;
     } on PlatformException catch (e) {
       print('❌ Error checking biometrics: ${e.message}');
       return false;
     }
   }
 
-  /// 🔐 Authenticate using biometrics (with robust fallback for edge cases)
-  static Future<bool> authenticate() async {
+  /// 🔐 Trigger biometric authentication
+  /// [biometricOnly] = true means no device PIN fallback allowed
+  static Future<bool> authenticate({bool biometricOnly = true}) async {
     try {
       final isAvailable = await canCheckBiometrics();
       if (!isAvailable) {
@@ -27,16 +32,19 @@ class BiometricAuthService {
 
       final didAuthenticate = await _auth.authenticate(
         localizedReason: 'Please authenticate to access AgriX',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
+        options: AuthenticationOptions(
+          biometricOnly: biometricOnly,
           stickyAuth: true,
           useErrorDialogs: true,
         ),
       );
 
+      print(didAuthenticate
+          ? '✅ Biometric authentication successful'
+          : '⚠️ Biometric authentication failed or cancelled');
       return didAuthenticate;
     } on PlatformException catch (e) {
-      print('❌ Biometric authentication failed: ${e.message}');
+      print('❌ Biometric auth PlatformException: ${e.message}');
       return false;
     } catch (e) {
       print('❌ Unexpected biometric error: $e');
