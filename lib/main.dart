@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:agrix_beta_2025/screens/core/landing_page.dart';
+
+// Core
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
+import 'package:agrix_beta_2025/screens/core/landing_page.dart';
+
+// Auth Screens
+import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
+import 'package:agrix_beta_2025/screens/auth/register_user_screen.dart';
+
+// Farmer Profile Screens
+import 'package:agrix_beta_2025/screens/profile/farmer_profile_screen.dart';
+import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart';
+
+// Services
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
+import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
+import 'package:agrix_beta_2025/services/auth/pin_auth_service.dart';
+import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
+
+// Models (not used here but included for test visibility)
+import 'package:agrix_beta_2025/models/farmer_profile.dart';
+import 'package:agrix_beta_2025/models/user_model.dart';
+
+// Routes
 import 'package:agrix_beta_2025/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 🔐 Check if a valid session + biometric access is available
   final bool isAuthenticated = await SessionService.checkSession();
 
   runApp(AgriXApp(isAuthenticated: isAuthenticated));
