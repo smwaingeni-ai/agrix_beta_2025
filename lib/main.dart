@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
 
-// ✅ Corrected Core Paths
+// ✅ Core Screens
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 
@@ -18,7 +19,7 @@ import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 import 'package:agrix_beta_2025/services/auth/pin_auth_service.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 
-// Models (optional for visibility)
+// Models
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 
@@ -27,7 +28,11 @@ import 'package:agrix_beta_2025/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final bool isAuthenticated = await SessionService.checkSession();
+
+  // ✅ Avoid biometric call on Web
+  final bool isAuthenticated = kIsWeb
+      ? await SessionService.isUserLoggedIn()
+      : await SessionService.checkSession();
 
   runApp(AgriXApp(isAuthenticated: isAuthenticated));
 }
