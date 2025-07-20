@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
-import 'package:agrix_beta_2025/services/session_service.dart';
+import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -21,11 +21,19 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _checkSession() async {
-    final sessionExists = await SessionService.checkSession();
-    setState(() {
-      _isLoggedIn = sessionExists;
-      _isLoading = false;
-    });
+    try {
+      final sessionExists = await SessionService.checkSession();
+      setState(() {
+        _isLoggedIn = sessionExists;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('⚠️ Session check failed: $e');
+      setState(() {
+        _isLoggedIn = false;
+        _isLoading = false;
+      });
+    }
   }
 
   @override
