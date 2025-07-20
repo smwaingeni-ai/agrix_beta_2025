@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // ✅ Core Screens
@@ -13,23 +13,20 @@ import 'package:agrix_beta_2025/screens/auth/register_user_screen.dart';
 import 'package:agrix_beta_2025/screens/profile/farmer_profile_screen.dart';
 import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart';
 
-// Services
+// ✅ Services
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
-import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
-import 'package:agrix_beta_2025/services/auth/pin_auth_service.dart';
-import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 
-// Models
+// ✅ Models
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 
-// Routes
+// ✅ Routes
 import 'package:agrix_beta_2025/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Avoid biometric call on Web
+  // ✅ Check session: skip biometrics on web
   final bool isAuthenticated = kIsWeb
       ? await SessionService.isUserLoggedIn()
       : await SessionService.checkSession();
@@ -52,8 +49,10 @@ class AgriXApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.grey[100],
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: isAuthenticated ? const LandingPage() : const AuthGate(),
+      initialRoute: '/',
       routes: appRoutes,
+      // ✅ Just in case initialRoute is ignored, ensure fallback:
+      home: isAuthenticated ? const LandingPage() : const AuthGate(),
     );
   }
 }
