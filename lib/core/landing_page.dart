@@ -4,6 +4,8 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
+import 'package:agrix_beta_2025/services/session_service.dart';
+import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -36,13 +38,23 @@ class _LandingPageState extends State<LandingPage> {
 
     final profileText = '''
 👤 Name: ${_profile!.fullName}
-🆔 ID: ${_profile!.id}
-📞 Contact: ${_profile!.contact}
-📐 Farm Size: ${_profile!.farmSize ?? 'N/A'}
+🆔 ID: ${_profile!.idNumber}
+📞 Contact: ${_profile!.contactNumber}
+📐 Farm Size: ${_profile!.farmSizeHectares ?? 'N/A'}
 🌍 Region: ${_profile!.region ?? 'N/A'}
 🏛️ Subsidised: ${_profile!.subsidised ? "Yes" : "No"}
 ''';
     Share.share(profileText);
+  }
+
+  Future<void> _logout() async {
+    await SessionService.clearSession();
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const AuthGate()),
+      );
+    }
   }
 
   Widget buildGridButton(String label, String route) {
@@ -88,6 +100,11 @@ class _LandingPageState extends State<LandingPage> {
               Navigator.pushNamed(context, '/profile').then((_) => _loadProfile());
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: _logout,
+          ),
         ],
       ),
       body: Padding(
@@ -115,7 +132,7 @@ class _LandingPageState extends State<LandingPage> {
                         ListTile(
                           title: Text(_profile!.fullName),
                           subtitle: Text(
-                            '${_profile!.region ?? "N/A"} • ${_profile!.farmSize ?? "N/A"} ha',
+                            '${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha',
                           ),
                         ),
                         Row(
