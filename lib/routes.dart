@@ -20,6 +20,7 @@ import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'
 // import 'package:agrix_beta_2025/screens/market/market_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
+  // Initial route
   '/': (context) => const AuthGate(),
 
   // Core and Auth
@@ -32,7 +33,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/profile': (context) => const FarmerProfileScreen(),
   '/profile/edit': (context) => const EditFarmerProfileScreen(),
 
-  // 🔜 Ready to be activated when screens are ready:
+  // 🔜 Activate when ready:
   // '/loan': (context) => const LoanScreen(),
   // '/contract/new': (context) => const ContractOfferForm(),
   // '/diagnostics/crops': (context) => const CropsScreen(),
