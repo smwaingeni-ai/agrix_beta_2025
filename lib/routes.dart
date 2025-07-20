@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-// Core Screens
-import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
-import 'package:agrix_beta_2025/screens/core/landing_page.dart';
+// ✅ Core Screens (corrected path)
+import 'package:agrix_beta_2025/core/auth_gate.dart';
+import 'package:agrix_beta_2025/core/landing_page.dart';
 
 // Auth Screens
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
