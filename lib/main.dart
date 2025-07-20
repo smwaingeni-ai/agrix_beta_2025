@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
-import 'package:agrix_beta_2025/services/session_service.dart';
+import 'package:agrix_beta_2025/services/auth/session_service.dart';
 import 'package:agrix_beta_2025/routes.dart';
 
 void main() async {
