@@ -1,14 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+/// ChatService handles AI-based or mock responses for AgriGPT.
 class ChatService {
-  static const String _mockUrl = 'https://api.openai.com/v1/chat/completions'; // Or your actual backend endpoint
-  static const String _apiKey = 'YOUR_OPENAI_OR_CUSTOM_API_KEY'; // Replace with your API key
+  // Toggle this to false to disable API call and use local mock only
+  static const bool useApi = false;
 
-  /// Gets a response from AgriGPT or any AI backend.
+  // Replace with your own backend or OpenAI endpoint if available
+  static const String _mockUrl = 'https://api.openai.com/v1/chat/completions';
+  static const String _apiKey = 'YOUR_OPENAI_OR_CUSTOM_API_KEY';
+
+  /// Gets a response from AgriGPT or falls back to offline logic
   static Future<String> getBotResponse(String userMessage) async {
+    if (!useApi || _apiKey == 'YOUR_OPENAI_OR_CUSTOM_API_KEY') {
+      return _mockBotReply(userMessage);
+    }
+
     try {
-      // Example using OpenAI Chat API (can be replaced with your own backend)
       final response = await http.post(
         Uri.parse(_mockUrl),
         headers: {
@@ -18,10 +26,13 @@ class ChatService {
         body: jsonEncode({
           "model": "gpt-3.5-turbo",
           "messages": [
-            {"role": "system", "content": "You are AgriGPT, a helpful agriculture assistant."},
+            {
+              "role": "system",
+              "content": "You are AgriGPT, a helpful agriculture assistant."
+            },
             {"role": "user", "content": userMessage},
           ],
-          "temperature": 0.7
+          "temperature": 0.7,
         }),
       );
 
@@ -33,12 +44,11 @@ class ChatService {
         return '⚠️ Server error (${response.statusCode}): Unable to fetch response.';
       }
     } catch (e) {
-      // Fallback mock if request fails
       return _mockBotReply(userMessage);
     }
   }
 
-  /// Local mock response (used for offline fallback or testing)
+  /// Local fallback response (offline or mock use)
   static String _mockBotReply(String question) {
     final lower = question.toLowerCase();
     if (lower.contains('soil')) {
@@ -47,6 +57,10 @@ class ChatService {
       return '🐛 For pest control, try neem oil or introduce natural predators like ladybugs.';
     } else if (lower.contains('weather')) {
       return '🌦️ Always check local forecasts and avoid planting before expected storms.';
+    } else if (lower.contains('crop')) {
+      return '🌾 Consider rotating crops to maintain soil nutrients and reduce disease risk.';
+    } else if (lower.contains('livestock')) {
+      return '🐄 Ensure livestock have access to clean water, vaccines, and shelter.';
     } else {
       return '🌽 AgriGPT: Sorry, I didn’t fully understand that. Can you rephrase or ask about crops, soil, livestock, or weather?';
     }
