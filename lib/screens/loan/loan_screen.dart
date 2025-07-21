@@ -1,7 +1,7 @@
 // /lib/screens/loans/loan_screen.dart
 
 import 'package:flutter/material.dart';
-import 'loan_application.dart';
+import 'loan_application_screen.dart';
 import 'loan_list_screen.dart'; // ✅ Import the list screen
 
 class LoanScreen extends StatelessWidget {
