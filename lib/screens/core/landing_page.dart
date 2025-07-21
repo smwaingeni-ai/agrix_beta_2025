@@ -74,7 +74,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final buttons = [
+    final List<Map<String, dynamic>> buttons = [
       {'label': 'Edit Profile', 'route': 'editFarmerProfile', 'icon': Icons.edit},
       {'label': 'Loan Dashboard', 'route': 'loan', 'icon': Icons.account_balance},
       {'label': 'Apply for Loan', 'route': 'loanApplication', 'icon': Icons.assignment},
@@ -159,7 +159,10 @@ class _LandingPageState extends State<LandingPage> {
                 mainAxisSpacing: 10,
                 children: buttons
                     .map((btn) => buildGridButton(
-                        btn['label']!, btn['route']!, btn['icon']! as IconData))
+                          btn['label'] as String,
+                          btn['route'] as String,
+                          btn['icon'] as IconData,
+                        ))
                     .toList(),
               ),
             ),
