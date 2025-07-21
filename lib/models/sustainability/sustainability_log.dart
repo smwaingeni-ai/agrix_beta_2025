@@ -18,10 +18,10 @@ class SustainabilityLog {
     required this.recordedBy,
   });
 
-  /// 🔹 Empty instance with auto-generated ID for forms/init
+  /// 🔹 Empty instance for new entries with auto-generated UUID
   factory SustainabilityLog.empty() {
     return SustainabilityLog(
-      id: const Uuid().v4(), // ✅ auto-generate unique ID
+      id: const Uuid().v4(), // ✅ Automatically generates a unique ID
       activity: '',
       impact: '',
       region: '',
@@ -33,7 +33,7 @@ class SustainabilityLog {
   /// 🔹 Deserialize from JSON with fallback values
   factory SustainabilityLog.fromJson(Map<String, dynamic> json) {
     return SustainabilityLog(
-      id: json['id'] ?? const Uuid().v4(), // fallback UUID if missing
+      id: json['id'] ?? const Uuid().v4(),
       activity: json['activity'] ?? '',
       impact: json['impact'] ?? '',
       region: json['region'] ?? '',
