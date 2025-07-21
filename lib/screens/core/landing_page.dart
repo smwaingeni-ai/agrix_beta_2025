@@ -64,9 +64,9 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  Widget buildGridButton(String label, String route) {
+  Widget buildGridButton(String label, String route, IconData icon) {
     return ElevatedButton.icon(
-      icon: const Icon(Icons.arrow_forward_ios),
+      icon: Icon(icon, size: 18),
       label: Text(label, textAlign: TextAlign.center),
       onPressed: () => Navigator.pushNamed(context, route),
     );
@@ -75,11 +75,20 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      {'label': 'Edit Profile', 'route': 'editFarmerProfile'},
-      {'label': 'Loan Dashboard', 'route': 'loan'},
-      {'label': 'Apply for Loan', 'route': 'loanApplication'},
-      {'label': 'My Loan Applications', 'route': 'loanList'},
-      {'label': 'Logout', 'route': 'login'},
+      {'label': 'Edit Profile', 'route': 'editFarmerProfile', 'icon': Icons.edit},
+      {'label': 'Loan Dashboard', 'route': 'loan', 'icon': Icons.account_balance},
+      {'label': 'Apply for Loan', 'route': 'loanApplication', 'icon': Icons.assignment},
+      {'label': 'My Loans', 'route': 'loanList', 'icon': Icons.receipt_long},
+      {'label': 'Contracts', 'route': 'contracts', 'icon': Icons.handshake},
+      {'label': 'Investments', 'route': 'investments', 'icon': Icons.trending_up},
+      {'label': 'Logbook', 'route': 'logbook', 'icon': Icons.book},
+      {'label': 'Programs', 'route': 'programTracking', 'icon': Icons.track_changes},
+      {'label': 'Sustainability', 'route': 'sustainabilityLog', 'icon': Icons.eco},
+      {'label': 'Diagnostics', 'route': 'diagnostics', 'icon': Icons.science},
+      {'label': 'AgriGPT', 'route': 'agrigpt', 'icon': Icons.smart_toy},
+      {'label': 'Help', 'route': 'help', 'icon': Icons.help_outline},
+      {'label': 'Notifications', 'route': 'notifications', 'icon': Icons.notifications},
+      {'label': 'Sync', 'route': 'sync', 'icon': Icons.sync},
     ];
 
     return Scaffold(
@@ -154,8 +163,8 @@ class _LandingPageState extends State<LandingPage> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 children: buttons
-                    .map((btn) =>
-                        buildGridButton(btn['label']!, btn['route']!))
+                    .map((btn) => buildGridButton(
+                        btn['label']!, btn['route']!, btn['icon']! as IconData))
                     .toList(),
               ),
             ),
