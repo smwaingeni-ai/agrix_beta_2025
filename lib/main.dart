@@ -5,13 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 
-// Auth Screens
+// ✅ Auth Screens
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
 import 'package:agrix_beta_2025/screens/auth/register_user_screen.dart';
 
-// Farmer Profile Screens
+// ✅ Farmer Profile Screens
 import 'package:agrix_beta_2025/screens/profile/farmer_profile_screen.dart';
 import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart';
+
+// ✅ Loan Screens (New)
+import 'package:agrix_beta_2025/screens/loan/loan_screen.dart';
+import 'package:agrix_beta_2025/screens/loan/loan_application_screen.dart';
+import 'package:agrix_beta_2025/screens/loan/loan_list_screen.dart';
 
 // ✅ Services
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
@@ -19,6 +24,7 @@ import 'package:agrix_beta_2025/services/auth/session_service.dart';
 // ✅ Models
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
+import 'package:agrix_beta_2025/models/loan/loan_application.dart';
 
 // ✅ Routes
 import 'package:agrix_beta_2025/routes.dart';
@@ -50,7 +56,7 @@ class AgriXApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       initialRoute: '/',
-      routes: appRoutes,
+      routes: appRoutes, // ✅ Loan routes included here
       home: isAuthenticated ? const LandingPage() : const AuthGate(),
     );
   }
