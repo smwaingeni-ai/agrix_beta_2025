@@ -65,14 +65,16 @@ class HelpScreen extends StatelessWidget {
               tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               title: Text(
                 faq['question']!,
-                style: Theme.of(context).textTheme.subtitle1?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
                   child: Text(
                     faq['answer']!,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ],
