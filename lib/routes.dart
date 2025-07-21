@@ -19,13 +19,27 @@ import 'package:agrix_beta_2025/screens/loan/loan_screen.dart';
 import 'package:agrix_beta_2025/screens/loan/loan_application_screen.dart';
 import 'package:agrix_beta_2025/screens/loan/loan_list_screen.dart';
 
+// Training Screens
+import 'package:agrix_beta_2025/screens/training/training_log_screen.dart';
+
+// Notifications
+import 'package:agrix_beta_2025/screens/notifications/notifications_screen.dart';
+
+// Chat and Help
+import 'package:agrix_beta_2025/screens/chat_help/chat_screen.dart';
+import 'package:agrix_beta_2025/screens/chat_help/help_screen.dart';
+
+// Sustainability Log
+import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
+
 final Map<String, WidgetBuilder> appRoutes = {
+  // Initial gate
   '/': (context) => const AuthGate(),
 
-  // Core Navigation
+  // Core
   'landing': (context) => const LandingPage(),
 
-  // Auth Navigation
+  // Auth
   'login': (context) => const LoginScreen(),
   'register': (context) => const RegisterUserScreen(),
 
@@ -37,4 +51,17 @@ final Map<String, WidgetBuilder> appRoutes = {
   'loan': (context) => const LoanScreen(),
   'loanApplication': (context) => const LoanApplicationScreen(),
   'loanList': (context) => const LoanListScreen(),
+
+  // Training Logs
+  'trainingLog': (context) => const TrainingLogScreen(),
+
+  // Notifications
+  'notifications': (context) => const NotificationsScreen(),
+
+  // Chat & Help
+  'chat': (context) => const ChatScreen(),
+  'help': (context) => const HelpScreen(),
+
+  // Sustainability
+  'sustainabilityLog': (context) => const SustainabilityLogScreen(),
 };
