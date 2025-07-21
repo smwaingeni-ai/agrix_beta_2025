@@ -2,7 +2,7 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:agrix_africa_adt2025/models/loan/loan_application.dart';
+import 'package:agrix_beta_2025/models/loan/loan_application.dart';
 
 /// 💼 Handles all Loan Application logic: save, load, delete, update
 class LoanApplicationService {
