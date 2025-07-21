@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 // Core Screens
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
+import 'package:agrix_beta_2025/screens/core/sync_screen.dart';
+import 'package:agrix_beta_2025/screens/core/notifications_screen.dart';
 
 // Auth Screens
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
@@ -19,18 +21,25 @@ import 'package:agrix_beta_2025/screens/loan/loan_screen.dart';
 import 'package:agrix_beta_2025/screens/loan/loan_application_screen.dart';
 import 'package:agrix_beta_2025/screens/loan/loan_list_screen.dart';
 
-// Training Screens
+// Contracts
+import 'package:agrix_beta_2025/screens/contracts/contract_list_screen.dart';
+
+// Investments
+import 'package:agrix_beta_2025/screens/investments/investor_list_screen.dart';
+
+// Logs
+import 'package:agrix_beta_2025/screens/logs/logbook_screen.dart';
+import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
+import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
 import 'package:agrix_beta_2025/screens/training/training_log_screen.dart';
 
-// Notifications
-import 'package:agrix_beta_2025/screens/notifications/notifications_screen.dart';
+// Diagnostics & AI
+import 'package:agrix_beta_2025/screens/diagnostics/diagnostics_landing_screen.dart';
+import 'package:agrix_beta_2025/screens/ai_advice/agrigpt_screen.dart';
 
 // Chat and Help
 import 'package:agrix_beta_2025/screens/chat_help/chat_screen.dart';
 import 'package:agrix_beta_2025/screens/chat_help/help_screen.dart';
-
-// Sustainability Log
-import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   // Initial gate
@@ -38,6 +47,8 @@ final Map<String, WidgetBuilder> appRoutes = {
 
   // Core
   'landing': (context) => const LandingPage(),
+  'sync': (context) => const SyncScreen(),
+  'notifications': (context) => const NotificationsScreen(),
 
   // Auth
   'login': (context) => const LoginScreen(),
@@ -52,16 +63,23 @@ final Map<String, WidgetBuilder> appRoutes = {
   'loanApplication': (context) => const LoanApplicationScreen(),
   'loanList': (context) => const LoanListScreen(),
 
-  // Training Logs
+  // Contracts
+  'contracts': (context) => const ContractListScreen(),
+
+  // Investments
+  'investments': (context) => const InvestorListScreen(),
+
+  // Logs
+  'logbook': (context) => const LogbookScreen(),
+  'programTracking': (context) => const ProgramTrackingScreen(),
+  'sustainabilityLog': (context) => const SustainabilityLogScreen(),
   'trainingLog': (context) => const TrainingLogScreen(),
 
-  // Notifications
-  'notifications': (context) => const NotificationsScreen(),
+  // Diagnostics & AI
+  'diagnostics': (context) => const DiagnosticsLandingScreen(),
+  'agrigpt': (context) => const AgriGPTScreen(),
 
   // Chat & Help
   'chat': (context) => const ChatScreen(),
   'help': (context) => const HelpScreen(),
-
-  // Sustainability
-  'sustainabilityLog': (context) => const SustainabilityLogScreen(),
 };
