@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:agrix/models/sustainability/sustainability_log.dart';
-import 'package:agrix/services/sustainability/sustainability_log_service.dart';
+import 'package:agrix_beta_2025/models/sustainability/sustainability_log.dart';
+import 'package:agrix_beta_2025/services/sustainability/sustainability_log_service.dart';
 
 class SustainabilityLogScreen extends StatefulWidget {
   const SustainabilityLogScreen({Key? key}) : super(key: key);
