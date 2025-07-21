@@ -20,7 +20,7 @@ class SustainabilityLog {
   /// 🔹 Empty instance for initialization/forms
   factory SustainabilityLog.empty() {
     return SustainabilityLog(
-      id: '',
+      id: '', // Can later be set using UUID or timestamp
       activity: '',
       impact: '',
       region: '',
