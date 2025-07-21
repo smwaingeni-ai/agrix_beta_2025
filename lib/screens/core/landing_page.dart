@@ -79,16 +79,11 @@ class _LandingPageState extends State<LandingPage> {
       {'label': 'Loan Dashboard', 'route': 'loan', 'icon': Icons.account_balance},
       {'label': 'Apply for Loan', 'route': 'loanApplication', 'icon': Icons.assignment},
       {'label': 'My Loans', 'route': 'loanList', 'icon': Icons.receipt_long},
-      {'label': 'Contracts', 'route': 'contracts', 'icon': Icons.handshake},
-      {'label': 'Investments', 'route': 'investments', 'icon': Icons.trending_up},
-      {'label': 'Logbook', 'route': 'logbook', 'icon': Icons.book},
-      {'label': 'Programs', 'route': 'programTracking', 'icon': Icons.track_changes},
+      {'label': 'Training Log', 'route': 'trainingLog', 'icon': Icons.school},
       {'label': 'Sustainability', 'route': 'sustainabilityLog', 'icon': Icons.eco},
-      {'label': 'Diagnostics', 'route': 'diagnostics', 'icon': Icons.science},
-      {'label': 'AgriGPT', 'route': 'agrigpt', 'icon': Icons.smart_toy},
-      {'label': 'Help', 'route': 'help', 'icon': Icons.help_outline},
       {'label': 'Notifications', 'route': 'notifications', 'icon': Icons.notifications},
-      {'label': 'Sync', 'route': 'sync', 'icon': Icons.sync},
+      {'label': 'Help', 'route': 'help', 'icon': Icons.help_outline},
+      {'label': 'Chat', 'route': 'chat', 'icon': Icons.chat},
     ];
 
     return Scaffold(
