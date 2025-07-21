@@ -75,27 +75,11 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      {'label': 'Edit Profile', 'route': '/profile/edit'},
-      {'label': 'Scan / Upload Image', 'route': '/upload'},
-      {'label': 'Get Advice', 'route': '/advice'},
-      {'label': 'Logbook', 'route': '/logbook'},
-      {'label': 'Market', 'route': '/market'},
-      {'label': 'Loan', 'route': '/loan'},
-      {'label': 'AgriGPT', 'route': '/agrigpt'},
-      {'label': 'AgriGPT Chat', 'route': '/chat'},
-      {'label': 'Crops', 'route': '/crops'},
-      {'label': 'Field Assessments', 'route': '/fieldAssessment'},
-      {'label': 'Farming Tips', 'route': '/tips'},
-      {'label': 'Contract Offers', 'route': '/contracts/list'},
-      {'label': 'Submit Offer', 'route': '/contracts/new'},
-      {'label': 'Investor Portal', 'route': '/investor/register'},
-      {'label': 'AREX Tasks', 'route': '/officer/tasks'},
-      {'label': 'AREX Assessments', 'route': '/officer/assessments'},
-      {'label': 'Sync & Backup', 'route': '/sync'},
-      {'label': 'Notifications', 'route': '/notifications'},
-      {'label': 'Help & FAQs', 'route': '/help'},
-      {'label': 'Register User', 'route': '/register'},
-      {'label': 'Login Again', 'route': '/login'},
+      {'label': 'Edit Profile', 'route': 'editFarmerProfile'},
+      {'label': 'Loan Dashboard', 'route': 'loan'},
+      {'label': 'Apply for Loan', 'route': 'loanApplication'},
+      {'label': 'My Loan Applications', 'route': 'loanList'},
+      {'label': 'Logout', 'route': 'login'},
     ];
 
     return Scaffold(
@@ -159,7 +143,7 @@ class _LandingPageState extends State<LandingPage> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('Create Farmer Profile'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/profile')
+                      Navigator.pushNamed(context, 'farmerProfile')
                           .then((_) => _loadProfile());
                     },
                   ),
