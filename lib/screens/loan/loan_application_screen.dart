@@ -1,8 +1,8 @@
 // /lib/screens/loans/loan_application.dart
 
 import 'package:flutter/material.dart';
-import 'package:agrix_africa_adt2025/models/farmer_profile.dart' as model;
-import 'package:agrix_africa_adt2025/services/profile/farmer_profile_service.dart' as service;
+import 'package:agrix_beta_2025/models/farmer_profile.dart' as model;
+import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart' as service;
 
 class LoanApplicationScreen extends StatefulWidget {
   const LoanApplicationScreen({super.key});
