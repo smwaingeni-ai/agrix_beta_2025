@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class SustainabilityLog {
   final String id;
@@ -17,10 +18,10 @@ class SustainabilityLog {
     required this.recordedBy,
   });
 
-  /// 🔹 Empty instance for initialization/forms
+  /// 🔹 Empty instance with auto-generated ID for forms/init
   factory SustainabilityLog.empty() {
     return SustainabilityLog(
-      id: '', // Can later be set using UUID or timestamp
+      id: const Uuid().v4(), // ✅ auto-generate unique ID
       activity: '',
       impact: '',
       region: '',
@@ -29,10 +30,10 @@ class SustainabilityLog {
     );
   }
 
-  /// 🔹 Create from JSON with fallback defaults
+  /// 🔹 Deserialize from JSON with fallback values
   factory SustainabilityLog.fromJson(Map<String, dynamic> json) {
     return SustainabilityLog(
-      id: json['id'] ?? '',
+      id: json['id'] ?? const Uuid().v4(), // fallback UUID if missing
       activity: json['activity'] ?? '',
       impact: json['impact'] ?? '',
       region: json['region'] ?? '',
@@ -41,7 +42,7 @@ class SustainabilityLog {
     );
   }
 
-  /// 🔹 Convert to JSON for storage/export
+  /// 🔹 Serialize to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -53,8 +54,27 @@ class SustainabilityLog {
     };
   }
 
-  /// 🔹 Display date in user-friendly format (e.g., in lists)
+  /// 🔹 Formatted date for display
   String get formattedDate => DateFormat('yyyy-MM-dd').format(date);
+
+  /// 🔹 Copy with updated fields (immutability)
+  SustainabilityLog copyWith({
+    String? id,
+    String? activity,
+    String? impact,
+    String? region,
+    DateTime? date,
+    String? recordedBy,
+  }) {
+    return SustainabilityLog(
+      id: id ?? this.id,
+      activity: activity ?? this.activity,
+      impact: impact ?? this.impact,
+      region: region ?? this.region,
+      date: date ?? this.date,
+      recordedBy: recordedBy ?? this.recordedBy,
+    );
+  }
 
   @override
   String toString() {
