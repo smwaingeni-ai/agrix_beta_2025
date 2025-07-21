@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'loan_application.dart';
+import 'loan_list_screen.dart'; // ✅ Import the list screen
 
 class LoanScreen extends StatelessWidget {
   const LoanScreen({super.key});
@@ -51,9 +52,9 @@ class LoanScreen extends StatelessWidget {
               icon: const Icon(Icons.list_alt),
               label: const Text('View Loan Applications'),
               onPressed: () {
-                // TODO: Navigate to LoanListScreen once implemented
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('🔧 Coming soon: Loan Application List')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoanListScreen()),
                 );
               },
               style: OutlinedButton.styleFrom(
