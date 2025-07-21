@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/loan/loan_application.dart';
-import 'package:aagrix_beta_2025/services/loan/loan_application_service.dart';
+import 'package:agrix_beta_2025/services/loan/loan_application_service.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:intl/intl.dart';
 
