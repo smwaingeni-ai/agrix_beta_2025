@@ -1,7 +1,7 @@
 // lib/services/sustainability/sustainability_log_service.dart
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:agrix/models/sustainability/sustainability_log.dart';
+import 'package:agrix_beta_2025/models/sustainability/sustainability_log.dart';
 
 class SustainabilityLogService {
   static const String _key = 'sustainability_logs';
