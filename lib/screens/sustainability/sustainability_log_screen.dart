@@ -32,12 +32,13 @@ class _SustainabilityLogScreenState extends State<SustainabilityLogScreen> {
 
   Future<void> _saveLog() async {
     if (_formKey.currentState!.validate()) {
-      final log = SustainabilityLog(
+      final log = SustainabilityLog.empty().copyWith(
         activity: _activityController.text,
         impact: _impactController.text,
         region: _regionController.text,
         date: _selectedDate,
       );
+
       await SustainabilityLogService.saveLog(log);
       _activityController.clear();
       _impactController.clear();
@@ -110,7 +111,10 @@ class _SustainabilityLogScreenState extends State<SustainabilityLogScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Logged Activities:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Logged Activities:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: _logs.length,
@@ -128,7 +132,7 @@ class _SustainabilityLogScreenState extends State<SustainabilityLogScreen> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
