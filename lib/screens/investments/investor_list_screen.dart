@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:agrix_africa_adt2025/models/investments/investor_profile.dart';
-import 'package:agrix_africa_adt2025/services/profile/investor_service.dart';
+import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
+import 'package:agrix_beta_2025/services/profile/investor_service.dart';
+import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 
 class InvestorListScreen extends StatefulWidget {
   const InvestorListScreen({super.key});
@@ -11,9 +12,11 @@ class InvestorListScreen extends StatefulWidget {
 }
 
 class _InvestorListScreenState extends State<InvestorListScreen> {
-  List<InvestorProfile> _investors = [];
+  List<InvestorProfile> _allInvestors = [];
+  List<InvestorProfile> _filteredInvestors = [];
   bool _loading = true;
   bool _error = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -29,17 +32,30 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
     try {
       final data = await InvestorService().loadInvestors();
       setState(() {
-        _investors = data;
+        _allInvestors = data;
+        _applySearch();
         _loading = false;
       });
     } catch (e) {
       debugPrint('❌ Error loading investors: $e');
       setState(() {
-        _investors = [];
+        _allInvestors = [];
+        _filteredInvestors = [];
         _loading = false;
         _error = true;
       });
     }
+  }
+
+  void _applySearch() {
+    final query = _searchQuery.toLowerCase();
+    setState(() {
+      _filteredInvestors = _allInvestors.where((inv) {
+        return inv.name.toLowerCase().contains(query) ||
+            inv.location.toLowerCase().contains(query) ||
+            inv.status.name.toLowerCase().contains(query);
+      }).toList();
+    });
   }
 
   Future<void> _launchContact(String method, String contact) async {
@@ -54,9 +70,11 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Could not launch $method: $contact')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Could not launch $method: $contact')),
+        );
+      }
     }
   }
 
@@ -86,9 +104,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
             if (investor.interests.isNotEmpty)
               Text('💼 Interests: ${investor.interests.join(', ')}'),
             if (investor.preferredHorizons.isNotEmpty)
-              Text(
-                '⏳ Horizons: ${investor.preferredHorizons.map((e) => e.name).join(', ')}',
-              ),
+              Text('⏳ Horizons: ${investor.preferredHorizons.map((e) => e.name).join(', ')}'),
             Text('📊 Status: ${investor.status.name}'),
           ],
         ),
@@ -106,7 +122,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildBody() {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -114,31 +130,31 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
     if (_error) {
       return Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('⚠️ Failed to load investors.'),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
+              onPressed: _loadInvestors,
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
-              onPressed: _loadInvestors,
             ),
           ],
         ),
       );
     }
 
-    if (_investors.isEmpty) {
-      return const Center(child: Text('🚫 No investors found.'));
+    if (_filteredInvestors.isEmpty) {
+      return const Center(child: Text('🚫 No matching investors found.'));
     }
 
     return RefreshIndicator(
       onRefresh: _loadInvestors,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _investors.length,
+        itemCount: _filteredInvestors.length,
         itemBuilder: (context, index) =>
-            _buildInvestorCard(_investors[index]),
+            _buildInvestorCard(_filteredInvestors[index]),
       ),
     );
   }
@@ -153,14 +169,45 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadInvestors,
-            tooltip: 'Refresh List',
-          )
+          ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: TextField(
+              onChanged: (value) {
+                _searchQuery = value;
+                _applySearch();
+              },
+              decoration: InputDecoration(
+                hintText: '🔍 Search by name, location, or status...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return _buildContent();
+      body: _buildBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const InvestorRegistrationScreen(),
+            ),
+          );
+          if (result == true) {
+            _loadInvestors();
+          }
         },
+        tooltip: 'Add New Investor',
+        child: const Icon(Icons.person_add),
       ),
     );
   }
