@@ -73,11 +73,12 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Please fill in your details to apply for this contract.',
+                '📋 Please fill in your details to apply for this contract offer.',
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
               ),
               const SizedBox(height: 16),
 
+              // Farmer Name
               TextFormField(
                 controller: _farmerNameController,
                 decoration: const InputDecoration(
@@ -89,6 +90,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 12),
 
+              // Farm Location
               TextFormField(
                 controller: _farmLocationController,
                 decoration: const InputDecoration(
@@ -100,6 +102,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 12),
 
+              // Contact Info
               TextFormField(
                 controller: _contactInfoController,
                 decoration: const InputDecoration(
@@ -111,6 +114,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 12),
 
+              // Additional Notes
               TextFormField(
                 controller: _notesController,
                 decoration: const InputDecoration(
@@ -121,6 +125,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 24),
 
+              // Submit Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
