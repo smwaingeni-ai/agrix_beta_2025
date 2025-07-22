@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
-import 'package:agrix_beta_2025/services/profile/investments/investor_service.dart';
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
+import 'package:agrix_beta_2025/services/profile/investments/investor_service.dart';
 
 class InvestorRegistrationScreen extends StatefulWidget {
+  const InvestorRegistrationScreen({super.key});
+
   @override
-  _InvestorRegistrationScreenState createState() => _InvestorRegistrationScreenState();
+  State<InvestorRegistrationScreen> createState() => _InvestorRegistrationScreenState();
 }
 
 class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen> {
@@ -25,6 +28,7 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
 
   final List<String> _horizons = ['Short Term', 'Mid Term', 'Long Term'];
   final List<String> _interests = ['Crops', 'Livestock', 'Soil', 'Technology'];
+  final List<String> _statuses = ['Open', 'Indifferent', 'Not Open'];
 
   @override
   void dispose() {
@@ -36,31 +40,41 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final investor = InvestorProfile(
-        id: Uuid().v4(),
-        name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
-        contactNumber: _phoneController.text.trim(),
-        location: _locationController.text.trim(),
-        contact: _contactController.text.trim(),
-        preferredHorizons: _selectedHorizons
-            .map((label) => InvestmentHorizonExtension.fromLabel(label))
-            .whereType<InvestmentHorizon>()
-            .toList(),
-        interests: _selectedInterests,
-        status: InvestorStatusExtension.fromString(_selectedStatus),
-        registeredAt: DateTime.now(),
-      );
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      InvestorService().saveInvestor(investor);
+    final investor = InvestorProfile(
+      id: const Uuid().v4(),
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      contactNumber: _phoneController.text.trim(),
+      location: _locationController.text.trim(),
+      contact: _contactController.text.trim(),
+      preferredHorizons: _selectedHorizons
+          .map((label) => InvestmentHorizonExtension.fromLabel(label))
+          .whereType<InvestmentHorizon>()
+          .toList(),
+      interests: _selectedInterests,
+      status: InvestorStatusExtension.fromString(_selectedStatus),
+      registeredAt: DateTime.now(),
+    );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Investor Registered Successfully!')),
-      );
+    try {
+      await InvestorService().saveInvestor(investor);
 
-      Navigator.pop(context);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Investor Registered Successfully!')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print('❌ Error saving investor: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('❌ Failed to register investor')),
+        );
+      }
     }
   }
 
@@ -68,31 +82,39 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
     required String title,
     required List<String> options,
     required List<String> selectedValues,
-    required void Function(String, bool) onSelected,
-    bool isChoiceChip = true,
+    required bool isMulti,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 16),
-        Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
         Wrap(
           spacing: 8.0,
           children: options.map((option) {
-            return isChoiceChip
-                ? ChoiceChip(
+            final isSelected = selectedValues.contains(option);
+            return isMulti
+                ? FilterChip(
                     label: Text(option),
-                    selected: selectedValues.contains(option),
-                    onSelected: (selected) => setState(() {
-                      onSelected(option, selected);
-                    }),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        selected
+                            ? selectedValues.add(option)
+                            : selectedValues.remove(option);
+                      });
+                    },
                   )
-                : FilterChip(
+                : ChoiceChip(
                     label: Text(option),
-                    selected: selectedValues.contains(option),
-                    onSelected: (selected) => setState(() {
-                      onSelected(option, selected);
-                    }),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedValues.clear();
+                        if (selected) selectedValues.add(option);
+                      });
+                    },
                   );
           }).toList(),
         ),
@@ -100,94 +122,91 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
     );
   }
 
+  Widget _buildTextInput({
+    required TextEditingController controller,
+    required String label,
+    String? helper,
+    TextInputType inputType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label, helperText: helper),
+      keyboardType: inputType,
+      validator: validator ??
+          (value) => value == null || value.isEmpty ? 'Required' : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Investor Registration')),
+      appBar: AppBar(title: const Text('Investor Registration')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              _buildTextInput(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Full Name'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Please enter your name' : null,
+                label: 'Full Name',
               ),
-              TextFormField(
+              _buildTextInput(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter your email';
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return 'Invalid email';
-                  return null;
+                label: 'Email',
+                inputType: TextInputType.emailAddress,
+                validator: (val) {
+                  if (val == null || val.isEmpty) return 'Enter your email';
+                  final emailReg = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                  return !emailReg.hasMatch(val) ? 'Invalid email' : null;
                 },
               ),
-              TextFormField(
+              _buildTextInput(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
-                keyboardType: TextInputType.phone,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter your phone number' : null,
+                label: 'Phone Number',
+                inputType: TextInputType.phone,
               ),
-              TextFormField(
+              _buildTextInput(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: 'Country'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter your country' : null,
+                label: 'Country',
               ),
-              TextFormField(
+              _buildTextInput(
                 controller: _contactController,
-                decoration: InputDecoration(
-                  labelText: 'Preferred Contact Method',
-                  helperText: 'e.g. WhatsApp, Email, Call',
-                ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter a contact method' : null,
+                label: 'Preferred Contact Method',
+                helper: 'e.g. WhatsApp, Email, Call',
               ),
               _buildChipSelector(
-                title: "Investment Horizon",
+                title: "Investment Horizons",
                 options: _horizons,
                 selectedValues: _selectedHorizons,
-                onSelected: (option, selected) {
-                  selected
-                      ? _selectedHorizons.add(option)
-                      : _selectedHorizons.remove(option);
-                },
+                isMulti: true,
               ),
               _buildChipSelector(
                 title: "Investment Interests",
                 options: _interests,
                 selectedValues: _selectedInterests,
-                isChoiceChip: false,
-                onSelected: (option, selected) {
-                  selected
-                      ? _selectedInterests.add(option)
-                      : _selectedInterests.remove(option);
-                },
+                isMulti: true,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Investment Status'),
+                decoration: const InputDecoration(labelText: 'Investment Status'),
                 value: _selectedStatus,
-                onChanged: (value) => setState(() => _selectedStatus = value!),
-                items: ['Open', 'Indifferent', 'Not Open']
+                onChanged: (val) => setState(() => _selectedStatus = val!),
+                items: _statuses
                     .map((status) => DropdownMenuItem(
                           value: status,
                           child: Text(status),
                         ))
                     .toList(),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               ElevatedButton.icon(
-                icon: Icon(FontAwesomeIcons.userPlus),
-                label: Text('Register'),
+                icon: const Icon(FontAwesomeIcons.userPlus),
+                label: const Text('Register'),
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  textStyle: TextStyle(fontSize: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16),
                 ),
                 onPressed: _submitForm,
               ),
