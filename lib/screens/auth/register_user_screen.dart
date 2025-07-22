@@ -9,6 +9,8 @@ import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
+import 'package:agrix_beta_2025/screens/profile/farmer_profile_form.dart';
+import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({super.key});
@@ -34,9 +36,6 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
   String cell = '';
   String farmType = '';
 
-  bool _submitted = false;
-  FarmerProfile? _profile;
-
   final List<String> roles = ['Farmer', 'Investor', 'Officer', 'Official', 'Admin'];
 
   Future<void> _registerUser() async {
@@ -44,58 +43,30 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     _formKey.currentState!.save();
 
     final userId = DateTime.now().millisecondsSinceEpoch.toString();
-    final user = UserModel(
-      id: userId,
-      role: role,
-      name: name,
-      passcode: passcode,
-    );
+    final user = UserModel(id: userId, role: role, name: name, passcode: passcode);
 
     await _saveUserToFile(user);
 
-    if (role == 'Farmer') {
-      _profile = FarmerProfile(
-        farmerId: userId,
-        fullName: name,
-        contactNumber: phone,
-        idNumber: idNumber,
-        region: region,
-        province: province,
-        district: district,
-        ward: ward,
-        village: village,
-        cell: cell,
-        farmSizeHectares: 1.0,
-        farmType: farmType,
-        subsidised: true,
-        govtAffiliated: false,
-        language: 'English',
-        createdAt: DateTime.now().toIso8601String(),
-        qrImagePath: '',
-        photoPath: null,
-        farmLocation: '',
-      );
-
-      if (!kIsWeb) {
-        await FarmerProfileService.saveActiveProfile(_profile!);
-      }
-
-      setState(() => _submitted = true);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Farmer registered successfully')),
-      );
-
+    // Redirect based on role
+    if (role == 'Investor') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => LandingPage(farmer: _profile)),
+        MaterialPageRoute(
+          builder: (_) => InvestorRegistrationScreen(userId: userId, name: name),
+        ),
+      );
+    } else if (role == 'Farmer') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FarmerProfileForm(userId: userId, name: name),
+        ),
       );
     } else {
-      setState(() => _submitted = true);
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('✅ User registered successfully')),
       );
+      Navigator.pop(context); // Go back to login or dashboard
     }
   }
 
@@ -119,12 +90,19 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     }
   }
 
-  Widget _buildQRCode() {
-    final encoded = jsonEncode(_profile?.toJson() ?? {});
-    return QrImageView(
-      data: encoded,
-      version: QrVersions.auto,
-      size: 220,
+  Widget _buildTextField({
+    required String label,
+    bool obscure = false,
+    bool validator = false,
+    TextInputType keyboardType = TextInputType.text,
+    required FormFieldSetter<String> onSaved,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(labelText: label),
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      validator: validator ? (val) => val == null || val.isEmpty ? 'Required' : null : null,
+      onSaved: onSaved,
     );
   }
 
@@ -141,63 +119,34 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     ];
   }
 
-  Widget _buildTextField({
-    required String label,
-    bool obscure = false,
-    bool validator = false,
-    TextInputType keyboardType = TextInputType.text,
-    required FormFieldSetter<String> onSaved,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(labelText: label),
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      validator: validator
-          ? (val) => val == null || val.isEmpty ? 'Required' : null
-          : null,
-      onSaved: onSaved,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Register New User')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: _submitted && role == 'Farmer'
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('🎉 Registration Complete!', style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 12),
-                  const Text('📲 Scan this QR to identify the farmer:', style: TextStyle(fontSize: 14)),
-                  const SizedBox(height: 16),
-                  _buildQRCode(),
-                ],
-              )
-            : Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(labelText: 'Role'),
-                      value: role,
-                      items: roles.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
-                      onChanged: (val) => setState(() => role = val!),
-                    ),
-                    _buildTextField(label: 'Username / Full Name', onSaved: (val) => name = val!, validator: true),
-                    if (role == 'Farmer') ..._buildFarmerFields(),
-                    _buildTextField(label: 'Passcode', obscure: true, onSaved: (val) => passcode = val!, validator: true),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.check_circle),
-                      label: const Text('Register'),
-                      onPressed: _registerUser,
-                    ),
-                  ],
-                ),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Role'),
+                value: role,
+                items: roles.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                onChanged: (val) => setState(() => role = val!),
               ),
+              _buildTextField(label: 'Username / Full Name', onSaved: (val) => name = val!, validator: true),
+              if (role == 'Farmer') ..._buildFarmerFields(),
+              _buildTextField(label: 'Passcode', obscure: true, onSaved: (val) => passcode = val!, validator: true),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.check_circle),
+                label: const Text('Register'),
+                onPressed: _registerUser,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
