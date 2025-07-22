@@ -26,7 +26,7 @@ class _ContractApplicationsListScreenState
 
   Widget _buildApplicationCard(ContractApplication app) {
     return Card(
-      elevation: 2,
+      elevation: 3,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
@@ -36,13 +36,14 @@ class _ContractApplicationsListScreenState
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
+          padding: const EdgeInsets.only(top: 6.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('📍 Location: ${app.farmLocation.isNotEmpty ? app.farmLocation : 'N/A'}'),
-              Text('📞 Contact: ${app.contactInfo.isNotEmpty ? app.contactInfo : 'N/A'}'),
-              if (app.notes.isNotEmpty) Text('📝 Notes: ${app.notes}'),
+              Text('📍 Location: ${app.location.isNotEmpty ? app.location : 'N/A'}'),
+              Text('📞 Contact: ${app.phoneNumber.isNotEmpty ? app.phoneNumber : 'N/A'}'),
+              if (app.motivation.isNotEmpty)
+                Text('📝 Motivation: ${app.motivation}'),
               Text('📅 Applied: ${app.appliedAt.toLocal().toString().split(' ').first}'),
               Text('🔖 Status: ${app.status}'),
             ],
@@ -54,11 +55,9 @@ class _ContractApplicationsListScreenState
 
   @override
   Widget build(BuildContext context) {
-    final offer = widget.offer;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('📑 Applicants for "${offer.title}"'),
+        title: Text('📑 Applicants for "${widget.offer.title}"'),
       ),
       body: FutureBuilder<List<ContractApplication>>(
         future: _futureApplications,
