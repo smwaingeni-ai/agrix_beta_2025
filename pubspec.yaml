@@ -14,23 +14,25 @@ dependencies:
   flutter_svg: ^2.0.9
   font_awesome_flutter: ^10.7.0
 
-  # 🔷 Core Functionality
+  # 🔷 State & Storage
   shared_preferences: ^2.0.15
   flutter_secure_storage: ^9.0.0
   local_auth: ^2.1.6
-  uuid: ^4.0.0  # ✅ Added for ID generation
 
-  # 🔷 Media & Sharing
-  image_picker: ^1.0.4
-  path_provider: ^2.1.1
-  share_plus: ^7.0.0
+  # 🔷 Utilities & Core
+  uuid: ^4.0.0
   url_launcher: ^6.1.7
-
-  # 🔷 QR Code Utilities
+  path_provider: ^2.1.1
+  image_picker: ^1.0.4
+  share_plus: ^7.0.0
   qr_flutter: ^4.0.0
 
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
+
+  # 🔷 Firebase (optional – if cloud sync enabled)
+  firebase_core: ^2.31.0
+  cloud_firestore: ^4.15.0
 
 dev_dependencies:
   flutter_test:
@@ -46,4 +48,4 @@ flutter:
     - assets/alogo.png
     - assets/images/
     - assets/icons/
-    - assets/data/
+    - assets/data/investors.json
