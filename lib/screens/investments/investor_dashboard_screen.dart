@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/investments/investor_profile.dart';
-import '../../models/investments/investment_offer.dart';
-import '../../models/investments/investment_agreement.dart';
-import '../../services/investments/investor_profile_service.dart';
-import '../../services/investments/investment_offer_service.dart';
+import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
+import 'agrix_beta_2025/models/investments/investment_offer.dart';
+import 'agrix_beta_2025/models/investments/investment_agreement.dart';
+import 'agrix_beta_2025/services/investments/investor_profile_service.dart';
+import 'agrix_beta_2025/services/investments/investment_offer_service.dart';
 
 class InvestorDashboardScreen extends StatefulWidget {
   final String investorId;
