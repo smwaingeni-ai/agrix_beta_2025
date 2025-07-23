@@ -51,3 +51,4 @@ flutter:
     - assets/data/investors.json
     - assets/data/system_stats.json
     - assets/data/officials.json
+    - assets/data/traders.json
