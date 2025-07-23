@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../models/logs/log_entry.dart'; // You will create this model
+import 'package:share_plus/share_plus.dart';
+import 'package:csv/csv.dart';
 
 class LogbookScreen extends StatefulWidget {
   const LogbookScreen({super.key});
@@ -12,9 +13,8 @@ class LogbookScreen extends StatefulWidget {
 }
 
 class _LogbookScreenState extends State<LogbookScreen> {
-  List<LogEntry> _entries = [];
+  List<Map<String, dynamic>> _entries = [];
   bool _loading = true;
-  String _selectedFilter = 'All';
 
   @override
   void initState() {
@@ -22,126 +22,144 @@ class _LogbookScreenState extends State<LogbookScreen> {
     _loadLogbook();
   }
 
-  Future<void> _loadLogbook() async {
-    setState(() => _loading = true);
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/logbook.json');
+  Future<File> _getLogbookFile() async {
+    final dir = await getApplicationDocumentsDirectory();
+    return File('${dir.path}/logbook.json');
+  }
 
+  Future<void> _loadLogbook() async {
+    try {
+      final file = await _getLogbookFile();
       if (await file.exists()) {
         final content = await file.readAsString();
-        final List<dynamic> rawLogs = json.decode(content);
-
-        final logs = rawLogs
-            .map((e) => LogEntry.fromJson(e))
-            .where((e) => e.timestamp != null)
-            .toList();
-
-        logs.sort((a, b) => b.timestamp!.compareTo(a.timestamp!)); // Newest first
-
+        final List logs = json.decode(content);
         setState(() {
-          _entries = logs;
+          _entries = List<Map<String, dynamic>>.from(logs.reversed);
         });
-      } else {
-        debugPrint('📭 No logbook file found.');
-        setState(() => _entries = []);
       }
     } catch (e) {
       debugPrint('❌ Error loading logbook: $e');
-      setState(() => _entries = []);
     } finally {
       setState(() => _loading = false);
     }
   }
 
-  List<LogEntry> get _filteredEntries {
-    if (_selectedFilter == 'All') return _entries;
-    return _entries.where((e) => e.category == _selectedFilter).toList();
+  Future<void> _deleteEntry(int index) async {
+    final file = await _getLogbookFile();
+    final original = List<Map<String, dynamic>>.from(_entries.reversed);
+    original.removeAt(_entries.length - 1 - index); // reverse index
+    await file.writeAsString(json.encode(original));
+    _loadLogbook();
   }
 
-  Widget _buildEntry(LogEntry entry) {
+  Future<void> _exportToCSV() async {
+    final rows = [
+      ['Timestamp', 'Result', 'Cost', 'Note'],
+      ..._entries.map((e) => [
+            e['timestamp'] ?? '',
+            e['result'] ?? '',
+            e['cost'] ?? '',
+            e['note'] ?? '',
+          ])
+    ];
+    final csv = const ListToCsvConverter().convert(rows);
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/logbook_export.csv');
+    await file.writeAsString(csv);
+    Share.shareXFiles([XFile(file.path)], text: 'AgriX Logbook CSV Export');
+  }
+
+  Future<void> _shareSummary() async {
+    final summary = _entries.map((e) {
+      return '📅 ${e['timestamp']}\n📝 ${e['result']}\n💰 ${e['cost'] ?? 'N/A'}\n${e['note'] != null ? "🗒 ${e['note']}" : ""}';
+    }).join('\n\n');
+    Share.share(summary, subject: 'AgriX Logbook Summary');
+  }
+
+  Widget _buildEntry(Map<String, dynamic> entry, int index) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
-        leading: Icon(
-          Icons.assignment_turned_in,
-          color: _iconColor(entry.category),
-        ),
-        title: Text(entry.result ?? '📝 No result'),
+        leading: const Icon(Icons.assignment_turned_in, color: Colors.green),
+        title: Text(entry['result'] ?? '📝 No result description'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🕒 ${entry.timestampFormatted}'),
-            if (entry.note != null) Text('🧾 ${entry.note}'),
-            if (entry.category != null) Text('📂 ${entry.category}'),
+            Text('🕒 ${entry['timestamp']}'),
+            if (entry['note'] != null) Text('Note: ${entry['note']}'),
           ],
         ),
-        trailing: Text(entry.cost ?? 'N/A',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        trailing: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(entry['cost'] ?? 'N/A',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+              onPressed: () => _confirmDelete(index),
+              tooltip: 'Delete Entry',
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Color _iconColor(String? category) {
-    switch (category) {
-      case 'Crop':
-        return Colors.green;
-      case 'Soil':
-        return Colors.brown;
-      case 'Livestock':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  Widget _buildFilterChips() {
-    final filters = ['All', 'Crop', 'Soil', 'Livestock', 'Other'];
-    return Wrap(
-      spacing: 8,
-      children: filters
-          .map((filter) => ChoiceChip(
-                label: Text(filter),
-                selected: _selectedFilter == filter,
-                onSelected: (_) {
-                  setState(() => _selectedFilter = filter);
-                },
-              ))
-          .toList(),
+  void _confirmDelete(int index) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete Entry'),
+        content: const Text('Are you sure you want to delete this log entry?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteEntry(index);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('📓 AgriX Logbook')),
+      appBar: AppBar(
+        title: const Text('AgriX Logbook'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.file_download),
+            tooltip: 'Export to CSV',
+            onPressed: _exportToCSV,
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Share Summary',
+            onPressed: _shareSummary,
+          ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _entries.isEmpty
               ? const Center(
                   child: Text(
-                    '📭 No log entries found.\nScan and save results to view them here.',
+                    '📭 No log entries found.\nPerform a scan and save results to view them here.',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),
                 )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: _buildFilterChips(),
-                    ),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: _loadLogbook,
-                        child: ListView.builder(
-                          itemCount: _filteredEntries.length,
-                          itemBuilder: (context, index) =>
-                              _buildEntry(_filteredEntries[index]),
-                        ),
-                      ),
-                    ),
-                  ],
+              : RefreshIndicator(
+                  onRefresh: _loadLogbook,
+                  child: ListView.builder(
+                    itemCount: _entries.length,
+                    itemBuilder: (context, index) =>
+                        _buildEntry(_entries[index], index),
+                  ),
                 ),
     );
   }
