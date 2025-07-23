@@ -49,3 +49,4 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/data/investors.json
+    - assets/data/system_stats.json
