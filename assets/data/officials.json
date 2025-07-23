@@ -1,0 +1,10 @@
+[
+  {
+    "id": "official001",
+    "name": "John Mwale",
+    "position": "Regional Director",
+    "region": "Lusaka",
+    "contact": "+260971234567",
+    "isAdmin": true
+  }
+]
