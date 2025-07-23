@@ -1,0 +1,22 @@
+[
+  {
+    "traderId": "T001",
+    "fullName": "Kuda Moyo",
+    "contact": "+260974000123",
+    "region": "Lusaka",
+    "categories": ["Crops", "Livestock"],
+    "numberOfListings": 5,
+    "successfulTrades": 3,
+    "rating": 4.6
+  },
+  {
+    "traderId": "T002",
+    "fullName": "Fatima Banda",
+    "contact": "+260973123456",
+    "region": "Eastern",
+    "categories": ["Crops"],
+    "numberOfListings": 8,
+    "successfulTrades": 6,
+    "rating": 4.9
+  }
+]
