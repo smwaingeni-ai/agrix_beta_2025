@@ -1,0 +1,21 @@
+Region,SoilType,Fertility,Treatment,SuitableCrops,ImageName
+Lusaka,Sandy Loam,High,Add organic compost and rotate crops,Maize; Groundnuts; Soybean,healthy_loam.jpg
+Central,Sandy,Low,Apply cow dung + lime,Cassava; Millet; Sorghum,sandy.jpg
+Eastern,Cracked Clay,Moderate,Use mulching to retain moisture,Sorghum; Cotton; Cowpea,cracked.jpg
+Western,Waterlogged,Poor,Raise planting beds and improve drainage,Rice; Sugarcane,waterlogged.jpg
+Southern,Acidic,Low,Apply lime and rotate with legumes,Sweet Potatoes; Beans,acidic.jpg
+Muchinga,Clay Loam,High,Use crop cover and organic matter,Maize; Sunflower,clay_loam.jpg
+Northern,Leached Sandy,Low,Apply lime and phosphorus-fertilizer,Millet; Groundnuts,leached.jpg
+North-Western,Silty Clay,Moderate,Add biochar and compost,Cassava; Vegetables,silty_clay.jpg
+Luapula,Peaty,Low,Drain and apply balanced fertilizer,Rice; Taro,peaty.jpg
+Copperbelt,Loamy,High,Use organic compost regularly,Maize; Tomato; Cabbage,loamy.jpg
+Western,Silty Sand,Low,Add manure and mulch,Sorghum; Cowpea,silty_sand.jpg
+Eastern,Laterite,Low,Use green manures + liming,Groundnuts; Sweet Potato,laterite.jpg
+Central,Saline,Very Low,Apply gypsum and improve drainage,Barley; Salt-tolerant grass,saline.jpg
+Lusaka,Sandy Clay,Moderate,Use compost and avoid over-irrigation,Sunflower; Beans,sandy_clay.jpg
+Southern,Loamy Sand,Low,Add cow dung and rotate with legumes,Maize; Cowpea,loamy_sand.jpg
+Luapula,Volcanic Ash,High,Add phosphorus,Maize; Irish Potato,volcanic_ash.jpg
+Northern,Black Cotton Soil,Moderate,Avoid over-irrigation and plough well,Cotton; Soybean,black_cotton.jpg
+Muchinga,Alluvial,High,Ensure proper drainage,Rice; Banana,alluvial.jpg
+North-Western,Chalky,Low,Apply sulfur and organic matter,Wheat; Oats; Lentils,chalky.jpg
+Copperbelt,Gravelly,Moderate,Improve soil depth with organic mix,Beans; Tomato,gravelly.jpg
