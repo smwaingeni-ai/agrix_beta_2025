@@ -2,7 +2,7 @@ Symptom,Disease,Treatment,Species,Severity,LikelihoodScore,SampleImage
 Cough and nasal discharge,CBPP,Inject oxytetracycline,Cattle,Severe,0.85,cbpp.jpg
 Swollen joints and lameness,Footrot,Clean wound and apply antiseptic,Goats,Moderate,0.75,footrot_goat.png
 Diarrhea and bloat,Enterotoxemia,Give activated charcoal and rehydration,Goats,Severe,0.80,enterotoxemia.jpg
-Feather loss and low eggs,Fowl Pox,Administer vaccine and isolate infected,Poultry,Mild,0.65,fowlpox.jpg
+Feather loss and low eggs,Fowl Pox,Administer vaccine and isolate infected,Poultry,Mild,0.65,fowlpox.png
 Eye discharge and fever,New Castle Disease,Apply eye drops and vaccinate survivors,Poultry,Severe,0.90,newcastle.jpg
 Bloody urine and high fever,Babesiosis,Diminazene aceturate (injectable),Cattle,Severe,0.88,babesiosis.jpg
 Persistent coughing and weight loss,Lungworm Infection,Albendazole or Ivermectin,Cattle,Moderate,0.70,lungworm.jpg
