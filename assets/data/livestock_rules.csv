@@ -15,12 +15,12 @@ Crusting and thickened skin,Mange,Wash with acaricide solution,Goats,Moderate,0.
 Sudden death and convulsions,Anthrax,"Notify vet immediately, quarantine area",Cattle,Severe,0.99,anthrax.jpg
 Limping with hoof lesions,Footrot,"Trim hooves, antiseptic + antibiotics",Sheep,Moderate,0.76,footrot_sheep.jpg
 Puffy eyelids and nasal discharge,Pink Eye,Apply antibiotic eye ointment,Cattle,Mild,0.64,pinkeye.jpg
-Swollen lymph nodes and fever,Lumpy Skin Disease,Administer supportive care and isolate,Cattle,Severe,0.83,lumpy_skin.jpg
-Cloudy eyes and head tilt,Listeriosis,Inject penicillin and provide fluids,Goats,Severe,0.81,listeriosis.jpg
+Swollen lymph nodes and fever,Lumpy Skin Disease,Administer supportive care and isolate,Cattle,Severe,0.83,lumpy_skin.png
+Cloudy eyes and head tilt,Listeriosis,Inject penicillin and provide fluids,Goats,Severe,0.81,listeriosis.png
 Discharge from cloaca and low egg count,Egg Peritonitis,Antibiotics and warm soaks,Poultry,Moderate,0.69,egg_peritonitis.jpg
 Severe diarrhea with blood,Coccidiosis,Coccidiostat treatment and isolate,Poultry,Severe,0.87,coccidiosis.jpg
 Weight loss and rough coat,Internal Parasites,Deworm with ivermectin,Goats,Moderate,0.67,internal_parasites.jpg
 Shaking and high fever,Rift Valley Fever,"No treatment – supportive care only",Cattle,Severe,0.93,rvf.jpg
-Abnormal gait and stiff limbs,Tetanus,Administer antitoxin and sedate,Cattle,Severe,0.92,tetanus.jpg
+Abnormal gait and stiff limbs,Tetanus,Administer antitoxin and sedate,Cattle,Severe,0.92,tetanus.png
 Scabs on combs and wattles,Fowl Pox,"Apply antiseptic and vaccinate",Poultry,Mild,0.63,fowlpox_scabs.jpg
 Discolored wattles and green droppings,E. coli Infection,Administer antibiotics and electrolytes,Poultry,Moderate,0.71,e_coli.jpg
