@@ -1,8 +1,8 @@
-Region,SoilType,Fertility,Treatment,SuitableCrops,ImageName
+region,soil_type,severity,treatment,suitable_crops,image_name
 Lusaka,Sandy Loam,High,Add organic compost and rotate crops,Maize; Groundnuts; Soybean,healthy_loam.jpg
 Central,Sandy,Low,Apply cow dung + lime,Cassava; Millet; Sorghum,sandy.jpg
 Eastern,Cracked Clay,Moderate,Use mulching to retain moisture,Sorghum; Cotton; Cowpea,cracked.jpg
-Western,Waterlogged,Poor,Raise planting beds and improve drainage,Rice; Sugarcane,waterlogged.jpg
+Western,Waterlogged,Very Low,Raise planting beds and improve drainage,Rice; Sugarcane,waterlogged.jpg
 Southern,Acidic,Low,Apply lime and rotate with legumes,Sweet Potatoes; Beans,acidic.jpg
 Muchinga,Clay Loam,High,Use crop cover and organic matter,Maize; Sunflower,clay_loam.jpg
 Northern,Leached Sandy,Low,Apply lime and phosphorus-fertilizer,Millet; Groundnuts,leached.jpg
