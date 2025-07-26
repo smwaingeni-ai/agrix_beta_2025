@@ -15,12 +15,12 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
   final ProgramService _programService = ProgramService();
   List<ProgramLog> _logs = [];
 
-  final TextEditingController _programNameController = TextEditingController();
-  final TextEditingController _farmerController = TextEditingController();
-  final TextEditingController _resourceController = TextEditingController();
-  final TextEditingController _impactController = TextEditingController();
-  final TextEditingController _regionController = TextEditingController();
-  final TextEditingController _officerController = TextEditingController();
+  final _programNameController = TextEditingController();
+  final _farmerController = TextEditingController();
+  final _resourceController = TextEditingController();
+  final _impactController = TextEditingController();
+  final _regionController = TextEditingController();
+  final _officerController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
   @override
@@ -39,6 +39,7 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
   Future<void> _submitLog() async {
     if (_formKey.currentState!.validate()) {
       final newLog = ProgramLog(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         programName: _programNameController.text.trim(),
         farmer: _farmerController.text.trim(),
         resource: _resourceController.text.trim(),
@@ -53,7 +54,7 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
       _loadLogs();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Program log recorded successfully')),
+        const SnackBar(content: Text('✅ Program log recorded successfully')),
       );
     }
   }
@@ -69,16 +70,14 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
     }
   }
 
@@ -93,11 +92,26 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
     super.dispose();
   }
 
+  Widget _buildTextField(TextEditingController controller, String labelText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: const OutlineInputBorder(),
+        ),
+        validator: (value) =>
+            value == null || value.isEmpty ? 'Please enter $labelText' : null,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Program Tracking'),
+        title: const Text('📌 Program Tracking'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -114,7 +128,7 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
               child: Column(
                 children: [
                   _buildTextField(_programNameController, 'Program Name'),
-                  _buildTextField(_farmerController, 'Farmer/Community'),
+                  _buildTextField(_farmerController, 'Farmer / Community'),
                   _buildTextField(_resourceController, 'Resource Provided'),
                   _buildTextField(_impactController, 'Observed Impact'),
                   _buildTextField(_regionController, 'Region'),
@@ -122,7 +136,7 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Text('Date: ${DateFormat.yMMMd().format(_selectedDate)}'),
+                      Text('📅 Date: ${DateFormat.yMMMd().format(_selectedDate)}'),
                       const Spacer(),
                       ElevatedButton(
                         onPressed: () => _pickDate(context),
@@ -130,7 +144,7 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: _submitLog,
                     icon: const Icon(Icons.save),
@@ -160,7 +174,8 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
                         child: ListTile(
                           title: Text(log.programName),
                           subtitle: Text(
-                              'Farmer: ${log.farmer}, Region: ${log.region}\nImpact: ${log.impact}'),
+                            '👤 Farmer: ${log.farmer}\n📍 Region: ${log.region}\n📈 Impact: ${log.impact}',
+                          ),
                           trailing: Text(DateFormat.yMd().format(log.date)),
                           isThreeLine: true,
                         ),
@@ -169,22 +184,6 @@ class _ProgramTrackingScreenState extends State<ProgramTrackingScreen> {
                   ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      TextEditingController controller, String labelText) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          border: const OutlineInputBorder(),
-        ),
-        validator: (value) =>
-            value == null || value.isEmpty ? 'Please enter $labelText' : null,
       ),
     );
   }
