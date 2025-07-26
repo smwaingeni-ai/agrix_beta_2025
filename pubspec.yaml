@@ -22,16 +22,20 @@ dependencies:
   # 🔷 Utilities & Core
   uuid: ^4.0.0
   url_launcher: ^6.1.7
-  path_provider: ^2.1.2     # ✅ updated to match your request
+  path_provider: ^2.1.2
   image_picker: ^1.0.4
-  share_plus: ^7.0.2        # ✅ updated to latest stable
-  csv: ^5.0.2               # ✅ new dependency for export
+  share_plus: ^7.0.2
+  csv: ^5.0.2
   qr_flutter: ^4.0.0
+
+  # 🔷 TFLite for AI Inference
+  tflite_flutter: ^0.10.2
+  tflite_flutter_helper: ^0.5.0
 
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
 
-  # 🔷 Firebase (optional – if cloud sync enabled)
+  # 🔷 Firebase (optional – cloud sync support)
   firebase_core: ^2.31.0
   cloud_firestore: ^4.15.0
 
@@ -47,9 +51,26 @@ flutter:
 
   assets:
     - assets/alogo.png
-    - assets/images/
-    - assets/icons/
+
+    # 📷 Crop AI
+    - assets/tflite/crop_disease_model.tflite
+    - assets/data/crop_labels.txt
+    - assets/crops/
+
+    # 🐄 Livestock rules and images
+    - assets/data/livestock_rules.csv
+    - assets/images/livestock/
+
+    # 🪴 Soil map and images
+    - assets/data/soil_map_africa.csv
+    - assets/images/soil/
+
+    # 📊 JSON data
     - assets/data/investors.json
     - assets/data/system_stats.json
     - assets/data/officials.json
     - assets/data/traders.json
+
+    # 🖼 Icons and misc
+    - assets/images/
+    - assets/icons/
