@@ -8,9 +8,7 @@ class MarketDetailScreen extends StatelessWidget {
   const MarketDetailScreen({Key? key, required this.marketItem}) : super(key: key);
 
   Widget _buildImageGallery(List<String>? paths) {
-    if (paths == null || paths.isEmpty) {
-      return const Text('No images provided.');
-    }
+    if (paths == null || paths.isEmpty) return const Text('No images provided.');
 
     return SizedBox(
       height: 150,
@@ -36,7 +34,6 @@ class MarketDetailScreen extends StatelessWidget {
 
   Widget _buildChips(String title, List<String>? items) {
     if (items == null || items.isEmpty) return const SizedBox.shrink();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -53,7 +50,6 @@ class MarketDetailScreen extends StatelessWidget {
 
   Widget _buildDetailRow(String label, String? value) {
     if (value == null || value.isEmpty) return const SizedBox.shrink();
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -69,24 +65,19 @@ class MarketDetailScreen extends StatelessWidget {
   Widget _buildFlagsSection() {
     return Row(
       children: [
-        if (marketItem.isAvailable == true) const Chip(label: Text("Available")),
-        if (marketItem.isLoanAccepted == true) const Chip(label: Text("Loan Accepted")),
-        if (marketItem.isInvestmentOpen == true) const Chip(label: Text("Investment Open")),
+        if (marketItem.isAvailable) const Chip(label: Text("Available")),
+        if (marketItem.isLoanAccepted) const Chip(label: Text("Loan Accepted")),
+        if (marketItem.isInvestmentOpen) const Chip(label: Text("Investment Open")),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final postedAt = marketItem.postedAt;
-    final postedDate = (postedAt != null)
-        ? "Posted At: ${postedAt.toLocal().toString().split('.')[0]}"
-        : "Posted At: Unknown";
+    final postedDate = "Posted At: ${marketItem.postedAt.toLocal().toString().split('.')[0]}";
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Market Item Details'),
-      ),
+      appBar: AppBar(title: const Text('Market Item Details')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -103,7 +94,7 @@ class MarketDetailScreen extends StatelessWidget {
             _buildDetailRow("Type", marketItem.type),
             _buildDetailRow("Listing Type", marketItem.listingType),
             _buildDetailRow("Location", marketItem.location),
-            _buildDetailRow("Price", marketItem.price?.toStringAsFixed(2)),
+            _buildDetailRow("Price", marketItem.price.toStringAsFixed(2)),
             _buildDetailRow("Owner", marketItem.ownerName),
             _buildDetailRow("Contact", marketItem.ownerContact),
             _buildDetailRow("Investment Status", marketItem.investmentStatus),
