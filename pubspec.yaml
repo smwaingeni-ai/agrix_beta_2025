@@ -16,7 +16,7 @@ dependencies:
 
   # 🔷 State & Storage
   shared_preferences: ^2.0.15
-  flutter_secure_storage: ^8.1.0
+  flutter_secure_storage: ^8.1.0     # ✅ Kept stable version to avoid ffi/win32 conflict
   local_auth: ^2.1.6
 
   # 🔷 Utilities & Core
@@ -24,13 +24,13 @@ dependencies:
   url_launcher: ^6.1.7
   path_provider: ^2.1.2
   image_picker: ^1.0.4
-  share_plus: ^6.3.1         # ✅ Downgraded to resolve ffi conflict
+  share_plus: ^6.3.1                 # ✅ Compatible with ffi 1.x (not 2.x)
   csv: ^5.0.2
   qr_flutter: ^4.0.0
 
-  # 🔷 TFLite for AI Inference (✔ compatible pairing)
-  tflite_flutter: ^0.9.0
-  tflite_flutter_helper: ^0.2.1
+  # 🔷 TFLite for AI Inference
+  tflite_flutter: ^0.9.0             # ✅ Compatible with Dart FFI 1.x
+  tflite_flutter_helper: ^0.2.1      # ✅ Must match tflite_flutter 0.9.0
 
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
@@ -38,6 +38,9 @@ dependencies:
   # 🔷 Firebase (optional – cloud sync support)
   firebase_core: ^2.31.0
   cloud_firestore: ^4.15.0
+
+  # 🔷 Required for FFI compatibility (explicitly added)
+  ffi: ^1.1.2                         # ✅ Matches tflite_flutter 0.9.x and share_plus 6.x
 
 dev_dependencies:
   flutter_test:
