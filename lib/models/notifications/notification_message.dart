@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+/// 📩 Model representing a notification message from the system, officers, partners, etc.
 class NotificationMessage {
   final String id;
   final String title;
@@ -15,7 +16,7 @@ class NotificationMessage {
     required this.source,
   });
 
-  /// 🔹 Factory for empty placeholder (e.g., during init)
+  /// 🔹 Factory for empty placeholder (e.g., during initialization)
   factory NotificationMessage.empty() {
     return NotificationMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -46,7 +47,7 @@ class NotificationMessage {
         'source': source,
       };
 
-  /// 🔹 Optional: Pretty-print for logging/debugging
+  /// 🔹 Pretty-print for logging or debugging
   @override
   String toString() {
     return 'NotificationMessage(title: $title, source: $source, date: $date)';
