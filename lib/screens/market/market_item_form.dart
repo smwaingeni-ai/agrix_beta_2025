@@ -17,17 +17,17 @@ class _MarketItemFormState extends State<MarketItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _uuid = const Uuid();
 
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
-  final TextEditingController _listingTypeController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _ownerNameController = TextEditingController();
-  final TextEditingController _ownerContactController = TextEditingController();
-  final TextEditingController _investmentStatusController = TextEditingController();
-  final TextEditingController _investmentTermController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _typeController = TextEditingController();
+  final _listingTypeController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _ownerNameController = TextEditingController();
+  final _ownerContactController = TextEditingController();
+  final _investmentStatusController = TextEditingController();
+  final _investmentTermController = TextEditingController();
 
   List<String> _contactMethods = [];
   List<String> _paymentOptions = [];
@@ -59,43 +59,28 @@ class _MarketItemFormState extends State<MarketItemForm> {
         id: _uuid.v4(),
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
+        price: double.tryParse(_priceController.text.trim()) ?? 0.0,
         category: _categoryController.text.trim(),
-        type: _typeController.text.trim(),
+        contact: _ownerContactController.text.trim(),
+        imagePath: _imagePaths.isNotEmpty ? _imagePaths.first : '',
+        imagePaths: _imagePaths,
         listingType: _listingTypeController.text.trim(),
         location: _locationController.text.trim(),
-        price: double.tryParse(_priceController.text.trim()) ?? 0.0,
-        imagePaths: _imagePaths,
+        ownerName: _ownerNameController.text.trim(),
+        ownerContact: _ownerContactController.text.trim(),
+        investmentStatus: _investmentStatusController.text.trim(),
+        investmentTerm: _investmentTermController.text.trim(),
         contactMethods: _contactMethods,
         paymentOptions: _paymentOptions,
         isAvailable: _isAvailable,
         isLoanAccepted: _isLoanAccepted,
         isInvestmentOpen: _isInvestmentOpen,
-        investmentStatus: _investmentStatusController.text.trim(),
-        investmentTerm: _investmentTermController.text.trim(),
-        ownerName: _ownerNameController.text.trim(),
-        ownerContact: _ownerContactController.text.trim(),
         postedAt: DateTime.now(),
       );
 
       widget.onSubmit(marketItem);
       Navigator.pop(context);
     }
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _categoryController.dispose();
-    _typeController.dispose();
-    _listingTypeController.dispose();
-    _locationController.dispose();
-    _priceController.dispose();
-    _ownerNameController.dispose();
-    _ownerContactController.dispose();
-    _investmentStatusController.dispose();
-    _investmentTermController.dispose();
-    super.dispose();
   }
 
   Widget _buildChips(List<String> options, List<String> selected, Function(List<String>) onChanged) {
@@ -122,6 +107,22 @@ class _MarketItemFormState extends State<MarketItemForm> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _categoryController.dispose();
+    _typeController.dispose();
+    _listingTypeController.dispose();
+    _locationController.dispose();
+    _priceController.dispose();
+    _ownerNameController.dispose();
+    _ownerContactController.dispose();
+    _investmentStatusController.dispose();
+    _investmentTermController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     const contactOptions = ['Phone', 'SMS', 'WhatsApp', 'Email'];
     const paymentOptions = ['Cash', 'Bank Transfer', 'QR Code', 'Debit Card', 'Loan'];
@@ -135,15 +136,15 @@ class _MarketItemFormState extends State<MarketItemForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(controller: _titleController, decoration: const InputDecoration(labelText: 'Title'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Description'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _categoryController, decoration: const InputDecoration(labelText: 'Category'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _typeController, decoration: const InputDecoration(labelText: 'Type'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _listingTypeController, decoration: const InputDecoration(labelText: 'Listing Type'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _locationController, decoration: const InputDecoration(labelText: 'Location'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price'), keyboardType: TextInputType.number, validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _ownerNameController, decoration: const InputDecoration(labelText: 'Owner Name'), validator: (value) => value!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _ownerContactController, decoration: const InputDecoration(labelText: 'Owner Contact'), validator: (value) => value!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _titleController, decoration: const InputDecoration(labelText: 'Title'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Description'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _categoryController, decoration: const InputDecoration(labelText: 'Category'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _typeController, decoration: const InputDecoration(labelText: 'Type'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _listingTypeController, decoration: const InputDecoration(labelText: 'Listing Type'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _locationController, decoration: const InputDecoration(labelText: 'Location'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price'), keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _ownerNameController, decoration: const InputDecoration(labelText: 'Owner Name'), validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _ownerContactController, decoration: const InputDecoration(labelText: 'Owner Contact'), validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _investmentStatusController, decoration: const InputDecoration(labelText: 'Investment Status')),
               TextFormField(controller: _investmentTermController, decoration: const InputDecoration(labelText: 'Investment Term')),
               const SizedBox(height: 16),
