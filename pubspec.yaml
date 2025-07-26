@@ -40,7 +40,7 @@ dependencies:
   cloud_firestore: ^4.15.0
 
   # 🔷 Required for FFI compatibility (explicitly added)
-  ffi: ^1.1.2                         # ✅ Matches tflite_flutter 0.9.x and share_plus 6.x
+  ffi: ^2.1.4                         # ✅ Matches tflite_flutter 0.9.x and share_plus 6.x
 
 dev_dependencies:
   flutter_test:
