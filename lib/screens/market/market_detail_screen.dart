@@ -7,8 +7,8 @@ class MarketDetailScreen extends StatelessWidget {
 
   const MarketDetailScreen({Key? key, required this.marketItem}) : super(key: key);
 
-  Widget _buildImageGallery(List<String> paths) {
-    if (paths.isEmpty) {
+  Widget _buildImageGallery(List<String>? paths) {
+    if (paths == null || paths.isEmpty) {
       return const Text('No images provided.');
     }
 
@@ -21,15 +21,21 @@ class MarketDetailScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.file(File(paths[index]), width: 150, height: 150, fit: BoxFit.cover),
+            child: Image.file(
+              File(paths[index]),
+              width: 150,
+              height: 150,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+            ),
           );
         },
       ),
     );
   }
 
-  Widget _buildChips(String title, List<String> items) {
-    if (items.isEmpty) return const SizedBox.shrink();
+  Widget _buildChips(String title, List<String>? items) {
+    if (items == null || items.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,15 +69,20 @@ class MarketDetailScreen extends StatelessWidget {
   Widget _buildFlagsSection() {
     return Row(
       children: [
-        if (marketItem.isAvailable) const Chip(label: Text("Available")),
-        if (marketItem.isLoanAccepted) const Chip(label: Text("Loan Accepted")),
-        if (marketItem.isInvestmentOpen) const Chip(label: Text("Investment Open")),
+        if (marketItem.isAvailable == true) const Chip(label: Text("Available")),
+        if (marketItem.isLoanAccepted == true) const Chip(label: Text("Loan Accepted")),
+        if (marketItem.isInvestmentOpen == true) const Chip(label: Text("Investment Open")),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final postedAt = marketItem.postedAt;
+    final postedDate = (postedAt != null)
+        ? "Posted At: ${postedAt.toLocal().toString().split('.')[0]}"
+        : "Posted At: Unknown";
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Market Item Details'),
@@ -80,7 +91,10 @@ class MarketDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            Text(marketItem.title, style: Theme.of(context).textTheme.headline6),
+            Text(
+              marketItem.title,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             const SizedBox(height: 8),
             _buildImageGallery(marketItem.imagePaths),
             const SizedBox(height: 16),
@@ -89,7 +103,7 @@ class MarketDetailScreen extends StatelessWidget {
             _buildDetailRow("Type", marketItem.type),
             _buildDetailRow("Listing Type", marketItem.listingType),
             _buildDetailRow("Location", marketItem.location),
-            _buildDetailRow("Price", "${marketItem.price.toStringAsFixed(2)}"),
+            _buildDetailRow("Price", marketItem.price?.toStringAsFixed(2)),
             _buildDetailRow("Owner", marketItem.ownerName),
             _buildDetailRow("Contact", marketItem.ownerContact),
             _buildDetailRow("Investment Status", marketItem.investmentStatus),
@@ -99,10 +113,7 @@ class MarketDetailScreen extends StatelessWidget {
             _buildChips("Payment Options", marketItem.paymentOptions),
             _buildFlagsSection(),
             const SizedBox(height: 16),
-            Text(
-              "Posted At: ${marketItem.postedAt.toLocal().toString().split('.')[0]}",
-              style: const TextStyle(color: Colors.grey),
-            ),
+            Text(postedDate, style: const TextStyle(color: Colors.grey)),
           ],
         ),
       ),
