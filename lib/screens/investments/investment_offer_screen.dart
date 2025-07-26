@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
-import 'package:agrix_beta_20255/services/market/market_service.dart';
+import 'package:agrix_beta_2025/services/market/market_service.dart';
 
-class InvestmentOfferForm extends StatefulWidget {
-  const InvestmentOfferForm({super.key});
+class InvestmentOfferScreen extends StatefulWidget {
+  const InvestmentOfferScreen({super.key});
 
   @override
-  State<InvestmentOfferForm> createState() => _InvestmentOfferFormState();
+  State<InvestmentOfferScreen> createState() => _InvestmentOfferScreenState();
 }
 
-class _InvestmentOfferFormState extends State<InvestmentOfferForm> {
+class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
   final _formKey = GlobalKey<FormState>();
 
   String _investorId = '';
@@ -40,7 +40,6 @@ class _InvestmentOfferFormState extends State<InvestmentOfferForm> {
 
       try {
         await MarketService.addOffer(offer);
-
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
