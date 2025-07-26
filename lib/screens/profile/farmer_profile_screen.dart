@@ -4,7 +4,10 @@ import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 
 class FarmerProfileScreen extends StatefulWidget {
-  const FarmerProfileScreen({Key? key}) : super(key: key);
+  final String? userId;
+  final String? name;
+
+  const FarmerProfileScreen({Key? key, this.userId, this.name}) : super(key: key);
 
   @override
   State<FarmerProfileScreen> createState() => _FarmerProfileScreenState();
@@ -22,7 +25,17 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadActiveProfile();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    if (widget.userId != null) {
+      _idController.text = widget.userId!;
+    }
+    if (widget.name != null) {
+      _nameController.text = widget.name!;
+    }
+    await _loadActiveProfile();
   }
 
   Future<void> _loadActiveProfile() async {
@@ -58,15 +71,18 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
       contactNumber: _contactController.text.trim(),
       farmSizeHectares: double.tryParse(_farmSizeController.text),
       subsidised: _subsidised,
-      govtAffiliated: false, // This is required, and acceptable for now
+      govtAffiliated: false,
       photoPath: _imagePath,
-      registeredAt: DateTime.now().toIso8601String(), // ✅ FIXED
+      registeredAt: DateTime.now().toIso8601String(),
     );
 
     await FarmerProfileService.saveProfile(profile);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile saved successfully!')),
-    );
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✅ Profile saved successfully!')),
+      );
+    }
   }
 
   @override
