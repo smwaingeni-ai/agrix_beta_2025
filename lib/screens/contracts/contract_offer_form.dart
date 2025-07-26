@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:import 'agrix_beta_2025/models/contracts/contract_offer.dart';
-import 'package:import 'agrix_beta_2025/services/contracts/contract_service.dart';
+import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
+import 'package:agrix_beta_2025/services/contracts/contract_service.dart';
 
 class ContractOfferForm extends StatefulWidget {
   const ContractOfferForm({super.key});
@@ -12,6 +12,7 @@ class ContractOfferForm extends StatefulWidget {
 
 class _ContractOfferFormState extends State<ContractOfferForm> {
   final _formKey = GlobalKey<FormState>();
+
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
@@ -105,9 +106,8 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
           border: const OutlineInputBorder(),
         ),
         validator: required
-            ? (value) => (value == null || value.trim().isEmpty)
-                ? '$label is required'
-                : null
+            ? (value) =>
+                (value == null || value.trim().isEmpty) ? '$label is required' : null
             : null,
       ),
     );
@@ -135,10 +135,7 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
                 maxLines: 3,
                 required: true,
               ),
-              _buildTextField(
-                controller: _locationController,
-                label: 'Location',
-              ),
+              _buildTextField(controller: _locationController, label: 'Location'),
               _buildTextField(
                 controller: _durationController,
                 label: 'Duration',
