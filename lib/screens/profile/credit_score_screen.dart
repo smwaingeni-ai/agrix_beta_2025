@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:agrix_africa_adt2025/models/farmer_profile.dart';
 
 class CreditScoreScreen extends StatelessWidget {
-  final FarmerProfile farmer;
-
-  // 🔧 Removed `const` to allow runtime data (farmer) to be passed
-  CreditScoreScreen({super.key, required this.farmer});
+  const CreditScoreScreen({super.key}); // 🔧 Now no longer requires named constructor argument
 
   int calculateScore(FarmerProfile farmer) {
     int score = 600;
@@ -31,6 +28,8 @@ class CreditScoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final farmer = ModalRoute.of(context)!.settings.arguments as FarmerProfile;
+
     final score = calculateScore(farmer);
     final category = getScoreCategory(score);
     final color = getScoreColor(score);
