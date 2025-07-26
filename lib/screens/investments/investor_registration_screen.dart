@@ -4,10 +4,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
+import 'package:agrix_beta_2025/models/investments/investor_status.dart';
 import 'package:agrix_beta_2025/services/profile/investments/investor_service.dart';
 
 class InvestorRegistrationScreen extends StatefulWidget {
-  const InvestorRegistrationScreen({super.key});
+  final String? userId;
+  final String? name;
+
+  const InvestorRegistrationScreen({super.key, this.userId, this.name});
 
   @override
   State<InvestorRegistrationScreen> createState() => _InvestorRegistrationScreenState();
@@ -29,6 +33,13 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
   final List<String> _horizons = ['Short Term', 'Mid Term', 'Long Term'];
   final List<String> _interests = ['Crops', 'Livestock', 'Soil', 'Technology'];
   final List<String> _statuses = ['Open', 'Indifferent', 'Not Open'];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.name != null) _nameController.text = widget.name!;
+    if (widget.userId != null) _phoneController.text = widget.userId!;
+  }
 
   @override
   void dispose() {
@@ -133,8 +144,7 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
       controller: controller,
       decoration: InputDecoration(labelText: label, helperText: helper),
       keyboardType: inputType,
-      validator: validator ??
-          (value) => value == null || value.isEmpty ? 'Required' : null,
+      validator: validator ?? (value) => value == null || value.isEmpty ? 'Required' : null,
     );
   }
 
@@ -148,10 +158,7 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
           key: _formKey,
           child: ListView(
             children: [
-              _buildTextInput(
-                controller: _nameController,
-                label: 'Full Name',
-              ),
+              _buildTextInput(controller: _nameController, label: 'Full Name'),
               _buildTextInput(
                 controller: _emailController,
                 label: 'Email',
@@ -162,15 +169,8 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
                   return !emailReg.hasMatch(val) ? 'Invalid email' : null;
                 },
               ),
-              _buildTextInput(
-                controller: _phoneController,
-                label: 'Phone Number',
-                inputType: TextInputType.phone,
-              ),
-              _buildTextInput(
-                controller: _locationController,
-                label: 'Country',
-              ),
+              _buildTextInput(controller: _phoneController, label: 'Phone Number'),
+              _buildTextInput(controller: _locationController, label: 'Country'),
               _buildTextInput(
                 controller: _contactController,
                 label: 'Preferred Contact Method',
@@ -193,12 +193,9 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
                 decoration: const InputDecoration(labelText: 'Investment Status'),
                 value: _selectedStatus,
                 onChanged: (val) => setState(() => _selectedStatus = val!),
-                items: _statuses
-                    .map((status) => DropdownMenuItem(
-                          value: status,
-                          child: Text(status),
-                        ))
-                    .toList(),
+                items: _statuses.map((status) {
+                  return DropdownMenuItem(value: status, child: Text(status));
+                }).toList(),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
