@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../core/transaction_screen.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({Key? key}) : super(key: key);
@@ -17,31 +20,71 @@ class _UploadScreenState extends State<UploadScreen> {
   String? _result;
   String? _timestamp;
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile == null) return;
+  Interpreter? _interpreter;
+  List<String> _labels = [];
+  final ImagePicker _picker = ImagePicker();
+  final IMAGE_SIZE = 224;
 
-    final now = DateTime.now().toLocal();
-    final formattedTimestamp = now.toIso8601String();
+  @override
+  void initState() {
+    super.initState();
+    _loadModelAndLabels();
+  }
+
+  Future<void> _loadModelAndLabels() async {
+    try {
+      _interpreter = await Interpreter.fromAsset('tflite/crop_disease_model.tflite');
+      final rawLabels = await File('assets/data/crop_labels.txt').readAsLines();
+      _labels = rawLabels.map((l) => l.trim()).toList();
+      debugPrint('✅ Model and labels loaded');
+    } catch (e) {
+      debugPrint('❌ Error loading model: $e');
+    }
+  }
+
+  Future<void> _classifyImage(File image) async {
+    final imageProcessor = ImageProcessorBuilder()
+        .add(ResizeOp(IMAGE_SIZE, IMAGE_SIZE, ResizeMethod.BILINEAR))
+        .build();
+
+    final inputImage = FileImage(image);
+    final rawImage = await inputImage.obtainKey(const ImageConfiguration());
+    final input = TensorImage.fromFile(image);
+    final processedImage = imageProcessor.process(input);
+
+    final inputTensor = processedImage.buffer;
+    final outputTensor = TensorBuffer.createFixedSize(<int>[1, _labels.length], TfLiteType.float32);
+    _interpreter?.run(inputTensor, outputTensor.buffer);
+
+    final confidences = outputTensor.getDoubleList();
+    final topIndex = confidences.indexWhere((score) => score == confidences.reduce(max));
+    final topLabel = _labels[topIndex];
+    final topScore = confidences[topIndex];
 
     setState(() {
-      _image = File(pickedFile.path);
-      _result = '✅ Diagnosis complete. Sample processed successfully.';
-      _timestamp = formattedTimestamp;
+      _result = '🔍 Prediction: $topLabel\n📊 Confidence: ${(topScore * 100).toStringAsFixed(2)}%';
+      _timestamp = DateTime.now().toLocal().toIso8601String();
     });
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await _picker.pickImage(source: source);
+    if (picked == null) return;
+
+    final file = File(picked.path);
+    setState(() => _image = file);
+    await _classifyImage(file);
   }
 
   Future<void> _shareResult() async {
     if (_result == null || _timestamp == null) return;
-
-    final message = '📋 Result: $_result\n🕒 Timestamp: $_timestamp';
+    final message = '📋 $_result\n🕒 Timestamp: $_timestamp';
     await Share.share(message);
   }
 
   Future<void> _shareViaWhatsApp() async {
     if (_result == null || _timestamp == null) return;
-
-    final message = '📋 Result: $_result\n🕒 Timestamp: $_timestamp';
+    final message = '📋 $_result\n🕒 Timestamp: $_timestamp';
     final url = Uri.parse("whatsapp://send?text=${Uri.encodeComponent(message)}");
 
     if (await canLaunchUrl(url)) {
@@ -69,6 +112,12 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _interpreter?.close();
+    super.dispose();
   }
 
   @override
