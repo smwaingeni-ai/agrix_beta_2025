@@ -6,7 +6,7 @@ import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
-import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
+import 'auth_gate.dart';
 
 class LandingPage extends StatefulWidget {
   final FarmerProfile? farmer;
@@ -27,11 +27,7 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _loadProfile() async {
-    if (widget.farmer != null) {
-      _profile = widget.farmer!;
-    } else {
-      _profile = await FarmerProfileService.loadActiveProfile();
-    }
+    _profile = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
     setState(() {});
   }
 
@@ -42,7 +38,6 @@ class _LandingPageState extends State<LandingPage> {
 
   void _shareProfile() {
     if (_profile == null) return;
-
     final profileText = '''
 👤 Name: ${_profile!.fullName}
 🆔 ID: ${_profile!.idNumber}
@@ -75,15 +70,25 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> buttons = [
-      {'label': 'Edit Profile', 'route': 'editFarmerProfile', 'icon': Icons.edit},
-      {'label': 'Loan Dashboard', 'route': 'loan', 'icon': Icons.account_balance},
-      {'label': 'Apply for Loan', 'route': 'loanApplication', 'icon': Icons.assignment},
-      {'label': 'My Loans', 'route': 'loanList', 'icon': Icons.receipt_long},
-      {'label': 'Training Log', 'route': 'trainingLog', 'icon': Icons.school},
-      {'label': 'Sustainability', 'route': 'sustainabilityLog', 'icon': Icons.eco},
-      {'label': 'Notifications', 'route': 'notifications', 'icon': Icons.notifications},
-      {'label': 'Help', 'route': 'help', 'icon': Icons.help_outline},
-      {'label': 'Chat', 'route': 'chat', 'icon': Icons.chat},
+      {'label': 'Edit Profile', 'route': '/editProfile', 'icon': Icons.edit},
+      {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
+      {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
+      {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
+      {'label': 'Crop Diagnosis', 'route': '/cropsScreen', 'icon': Icons.eco},
+      {'label': 'Soil Advisor', 'route': '/soilScreen', 'icon': Icons.terrain},
+      {'label': 'Livestock Diagnosis', 'route': '/livestockScreen', 'icon': Icons.pets},
+      {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+      {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
+      {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
+      {'label': 'Market', 'route': '/market', 'icon': Icons.store},
+      {'label': 'Contracts', 'route': '/contractList', 'icon': Icons.assignment_turned_in},
+      {'label': 'Investors', 'route': '/investorList', 'icon': Icons.people},
+      {'label': 'Officer Tasks', 'route': '/officerTasks', 'icon': Icons.task},
+      {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
+      {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
+      {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
+      {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
+      {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
     ];
 
     return Scaffold(
@@ -129,15 +134,8 @@ class _LandingPageState extends State<LandingPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.share),
-                              onPressed: _shareProfile,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              color: Colors.red,
-                              onPressed: _deleteProfile,
-                            ),
+                            IconButton(icon: const Icon(Icons.share), onPressed: _shareProfile),
+                            IconButton(icon: const Icon(Icons.delete), color: Colors.red, onPressed: _deleteProfile),
                           ],
                         )
                       ],
@@ -147,7 +145,7 @@ class _LandingPageState extends State<LandingPage> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('Create Farmer Profile'),
                     onPressed: () {
-                      Navigator.pushNamed(context, 'farmerProfile')
+                      Navigator.pushNamed(context, '/profile')
                           .then((_) => _loadProfile());
                     },
                   ),
