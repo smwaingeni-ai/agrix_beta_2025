@@ -28,9 +28,9 @@ dependencies:
   csv: ^5.0.2
   qr_flutter: ^4.0.0
 
-  # 🔷 TFLite for AI Inference
-  tflite_flutter: ^0.10.2
-  tflite_flutter_helper: ^0.3.1  # ✅ FIXED version for compatibility
+  # 🔷 TFLite for AI Inference (✔ compatible pairing)
+  tflite_flutter: ^0.9.0
+  tflite_flutter_helper: ^0.3.1
 
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
