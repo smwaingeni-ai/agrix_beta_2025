@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/notifications/notification_message.dart';
 import 'package:agrix_beta_2025/services/notifications/notification_service.dart';
 
+/// ✅ NotificationsScreen: Displays system messages and alerts
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
 
