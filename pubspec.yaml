@@ -30,7 +30,7 @@ dependencies:
 
   # 🔷 TFLite for AI Inference
   tflite_flutter: ^0.10.2
-  tflite_flutter_helper: ^0.5.0
+  tflite_flutter_helper: ^0.3.1  # ✅ FIXED version for compatibility
 
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
