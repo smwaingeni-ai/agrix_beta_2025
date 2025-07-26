@@ -60,10 +60,17 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget buildGridButton(String label, String route, IconData icon) {
-    return ElevatedButton.icon(
-      icon: Icon(icon, size: 18),
-      label: Text(label, textAlign: TextAlign.center),
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(12)),
       onPressed: () => Navigator.pushNamed(context, route),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 28),
+          const SizedBox(height: 8),
+          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13)),
+        ],
+      ),
     );
   }
 
@@ -155,6 +162,7 @@ class _LandingPageState extends State<LandingPage> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
+                childAspectRatio: 1.1,
                 children: buttons
                     .map((btn) => buildGridButton(
                           btn['label'] as String,
