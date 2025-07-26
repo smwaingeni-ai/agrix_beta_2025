@@ -54,9 +54,8 @@ import 'package:agrix_beta_2025/screens/assessments/field_assessment_screen.dart
 import 'package:agrix_beta_2025/screens/dashboards/official_dashboard.dart';
 import 'package:agrix_beta_2025/screens/dashboards/trader_dashboard.dart';
 
-// Official / Programs / Sustainability
+// Programs
 import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
-import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
 
 // Profile
 import 'package:agrix_beta_2025/screens/profile/farmer_profile_screen.dart';
@@ -65,44 +64,44 @@ import 'package:agrix_beta_2025/screens/profile/credit_score_screen.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
-  // Core
+  // 🔹 Core
   '/': (context) => const LandingPage(),
   '/notifications': (context) => const NotificationsScreen(),
   '/sync': (context) => const SyncScreen(),
 
-  // Auth
+  // 🔹 Auth
   '/login': (context) => const LoginScreen(),
   '/register': (context) => const RegisterUserScreen(),
 
-  // Chat & Help
+  // 🔹 Chat & Help
   '/chat': (context) => const ChatScreen(),
   '/help': (context) => const HelpScreen(),
 
-  // Diagnostics
+  // 🔹 Diagnostics
   '/diagnostic-upload': (context) => const UploadScreen(),
   '/livestockScreen': (context) => const LivestockScreen(),
   '/soilScreen': (context) => const SoilScreen(),
   '/cropsScreen': (context) => const CropsScreen(),
 
-  // Contracts
+  // 🔹 Contracts
   '/contractOffer': (context) => const ContractOfferForm(),
   '/contractList': (context) => const ContractListScreen(),
 
-  // Investments
-  '/investmentOffer': (context) => InvestmentOfferScreen(), // Not const, requires logic internally
+  // 🔹 Investments
+  '/investmentOffer': (context) => InvestmentOfferScreen(),
   '/investorRegister': (context) => const InvestorRegistrationScreen(),
   '/investorList': (context) => const InvestorListScreen(),
 
-  // Loans
-  '/loanApplication': (context) => LoanApplication(), // Not const
+  // 🔹 Loans
+  '/loanApplication': (context) => LoanApplication(),
   '/loan': (context) => const LoanScreen(),
 
-  // Logs
+  // 🔹 Logs
   '/logbook': (context) => const LogbookScreen(),
   '/trainingLog': (context) => const TrainingLogScreen(),
   '/sustainabilityLog': (context) => const SustainabilityLogScreen(),
 
-  // Market
+  // 🔹 Market
   '/market': (context) => const MarketScreen(),
   '/marketDetail': (context) {
     final args = ModalRoute.of(context)?.settings.arguments as MarketItem;
@@ -110,22 +109,22 @@ final Map<String, WidgetBuilder> appRoutes = {
   },
   '/marketForm': (context) => MarketItemForm(
         onSubmit: (MarketItem item) {
-          // Default handler; you can override via Navigator
+          // Optional override
         },
       ),
   '/marketInvite': (context) => const MarketInviteScreen(),
 
-  // Officers & Assessments
+  // 🔹 Officers & Tasks
   '/officerTasks': (context) => const OfficerTasksScreen(),
   '/officerAssessments': (context) => const OfficerAssessmentsScreen(),
   '/task_entry': (context) => const TaskEntryScreen(),
   '/field_assessment': (context) => const FieldAssessmentScreen(),
 
-  // Dashboards
+  // 🔹 Dashboards
   '/official/dashboard': (context) => const OfficialDashboard(),
   '/trader/dashboard': (context) => const TraderDashboard(),
 
-  // Profile
+  // 🔹 Profile
   '/profile': (context) => const FarmerProfileScreen(),
   '/editProfile': (context) => const EditFarmerProfileScreen(),
   '/creditScore': (context) {
@@ -133,10 +132,6 @@ final Map<String, WidgetBuilder> appRoutes = {
     return CreditScoreScreen(farmer: args);
   },
 
-  // Programs & Sustainability
+  // 🔹 Programs
   '/program_tracking': (context) => const ProgramTrackingScreen(),
-  '/sustainability_log': (context) => const SustainabilityLogScreen(),
-
-  // Training (redundant)
-  '/training': (context) => const TrainingLogScreen(),
 };
