@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'agrix_beta_2025/models/contracts/contract_offer.dart';
-import 'agrix_beta_2025/services/contracts/contract_service.dart';
-import 'agrix_beta_2025/screens/contracts/contract_applications_list.dart';
+import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
+import 'package:agrix_beta_2025/services/contracts/contract_service.dart';
+import 'package:agrix_beta_2025/screens/contracts/contract_applications_list.dart';
 
 class ContractListScreen extends StatefulWidget {
   const ContractListScreen({super.key});
@@ -16,12 +16,16 @@ class _ContractListScreenState extends State<ContractListScreen> {
   @override
   void initState() {
     super.initState();
+    _loadContracts();
+  }
+
+  void _loadContracts() {
     _contractFuture = ContractService.loadOffers();
   }
 
   void _refreshContracts() {
     setState(() {
-      _contractFuture = ContractService.loadOffers();
+      _loadContracts();
     });
   }
 
@@ -41,12 +45,12 @@ class _ContractListScreenState extends State<ContractListScreen> {
   Widget _buildContractCard(ContractOffer contract) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      elevation: 3,
+      elevation: 2,
       child: ListTile(
-        leading: const Icon(Icons.handshake_outlined, color: Colors.green),
-        title: Text(contract.title),
+        leading: const Icon(Icons.handshake_outlined, color: Colors.teal),
+        title: Text(contract.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(
-          '${contract.cropOrLivestockType} • ${contract.location} • \$${contract.amount.toStringAsFixed(2)}',
+          '${contract.cropOrLivestockType} • ${contract.location} • ZMW ${contract.amount.toStringAsFixed(2)}',
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
