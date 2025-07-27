@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
+import 'package:agrix_beta_2025/screens/contracts/contract_apply_screen.dart';
 
 class ContractDetailScreen extends StatelessWidget {
   final ContractOffer contract;
@@ -74,9 +76,11 @@ class ContractDetailScreen extends StatelessWidget {
                   icon: const Icon(Icons.app_registration),
                   label: const Text("Apply"),
                   onPressed: () {
-                    // Placeholder for future application logic
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("🚧 Application feature coming soon.")),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ContractApplyScreen(offer: contract),
+                      ),
                     );
                   },
                 ),
@@ -103,18 +107,20 @@ class ContractDetailScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
+        leading: const Icon(Icons.info_outline, color: Colors.green),
         title: Text(
           label,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(value.isNotEmpty ? value : "N/A"),
-        leading: const Icon(Icons.info_outline, color: Colors.green),
       ),
     );
   }
 
   Widget _buildContactTile(BuildContext context, String contact) {
-    final isValid = contact.isNotEmpty && (contact.contains('@') || contact.length >= 7);
+    final isValid = contact.isNotEmpty &&
+        (RegExp(r'\d{7,}').hasMatch(contact) || contact.contains('@'));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -122,25 +128,29 @@ class ContractDetailScreen extends StatelessWidget {
           isValid ? contact : "N/A",
           style: const TextStyle(fontSize: 16, color: Colors.black87),
         ),
+        const SizedBox(height: 6),
         if (isValid)
           ButtonBar(
             alignment: MainAxisAlignment.start,
             children: [
-              TextButton.icon(
-                icon: const Icon(Icons.call),
-                label: const Text("Call"),
-                onPressed: () => _launchContact("Call", contact),
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.sms),
-                label: const Text("Message"),
-                onPressed: () => _launchContact("Message", contact),
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.email),
-                label: const Text("Email"),
-                onPressed: () => _launchContact("Email", contact),
-              ),
+              if (contact.contains(RegExp(r'^\+?\d{7,}$')))
+                TextButton.icon(
+                  icon: const Icon(Icons.call),
+                  label: const Text("Call"),
+                  onPressed: () => _launchContact("Call", contact),
+                ),
+              if (contact.contains(RegExp(r'^\+?\d{7,}$')))
+                TextButton.icon(
+                  icon: const Icon(Icons.sms),
+                  label: const Text("Message"),
+                  onPressed: () => _launchContact("Message", contact),
+                ),
+              if (contact.contains('@'))
+                TextButton.icon(
+                  icon: const Icon(Icons.email),
+                  label: const Text("Email"),
+                  onPressed: () => _launchContact("Email", contact),
+                ),
             ],
           ),
       ],
@@ -148,18 +158,12 @@ class ContractDetailScreen extends StatelessWidget {
   }
 
   void _launchContact(String method, String contact) async {
-    String url = '';
-    switch (method) {
-      case 'Call':
-        url = 'tel:$contact';
-        break;
-      case 'Message':
-        url = 'sms:$contact';
-        break;
-      case 'Email':
-        url = 'mailto:$contact';
-        break;
-    }
+    String url = switch (method) {
+      'Call' => 'tel:$contact',
+      'Message' => 'sms:$contact',
+      'Email' => 'mailto:$contact',
+      _ => '',
+    };
 
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
