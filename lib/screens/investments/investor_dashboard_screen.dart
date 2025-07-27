@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
-import 'agrix_beta_2025/models/investments/investment_offer.dart';
-import 'agrix_beta_2025/models/investments/investment_agreement.dart';
-import 'agrix_beta_2025/services/investments/investor_profile_service.dart';
-import 'agrix_beta_2025/services/investments/investment_offer_service.dart';
+import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
+import 'package:agrix_beta_2025/models/investments/investment_agreement.dart';
+import 'package:agrix_beta_2025/services/investments/investor_profile_service.dart';
+import 'package:agrix_beta_2025/services/investments/investment_offer_service.dart';
 
 class InvestorDashboardScreen extends StatefulWidget {
   final String investorId;
@@ -43,32 +43,36 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading dashboard: $e');
+      debugPrint('❌ Error loading dashboard: $e');
       setState(() => _isLoading = false);
     }
   }
 
+  final _currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Investor Dashboard'),
-      ),
+      appBar: AppBar(title: const Text('📊 Investor Dashboard')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _profile == null
-              ? const Center(child: Text('Profile not found'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProfileCard(),
-                      const SizedBox(height: 20),
-                      _buildOffersSection(),
-                      const SizedBox(height: 20),
-                      _buildAgreementsSection(),
-                    ],
+              ? const Center(child: Text('❌ Investor profile not found'))
+              : RefreshIndicator(
+                  onRefresh: _loadInvestorData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildProfileCard(),
+                        const SizedBox(height: 24),
+                        _buildOffersSection(),
+                        const SizedBox(height: 24),
+                        _buildAgreementsSection(),
+                      ],
+                    ),
                   ),
                 ),
     );
@@ -76,23 +80,23 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
 
   Widget _buildProfileCard() {
     return Card(
-      elevation: 4,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Your Profile', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('👤 Your Profile',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Divider(),
             Text('Name: ${_profile!.fullName}'),
             Text('Email: ${_profile!.email}'),
             Text('Phone: ${_profile!.phone}'),
-            Text('Status: ${_profile!.status}'),
+            Text('Status: ${_profile!.status.label}'),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              runSpacing: 4,
               children: _profile!.interestAreas.map((area) => Chip(label: Text(area))).toList(),
             ),
           ],
@@ -105,20 +109,22 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Investment Offers', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('💼 Investment Offers',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const Divider(),
         if (_myOffers.isEmpty)
           const Text('No offers created yet.')
         else
-          Column(
-            children: _myOffers.map((offer) {
-              return ListTile(
-                title: Text(offer.title),
-                subtitle: Text('Amount: ${offer.amount} ${offer.currency}'),
-                trailing: Text(DateFormat.yMMMd().format(offer.createdAt)),
-              );
-            }).toList(),
-          ),
+          ..._myOffers.map((offer) => Card(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: ListTile(
+                  title: Text(offer.title),
+                  subtitle: Text(
+                    '${_currency.format(offer.amount)} • ${offer.term} • ${offer.contact}',
+                  ),
+                  trailing: Text(DateFormat.yMMMd().format(offer.createdAt)),
+                ),
+              )),
       ],
     );
   }
@@ -127,20 +133,27 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Investment Agreements', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('📃 Investment Agreements',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const Divider(),
         if (_myAgreements.isEmpty)
           const Text('No agreements signed yet.')
         else
-          Column(
-            children: _myAgreements.map((agreement) {
-              return ListTile(
-                title: Text('With ${agreement.farmerName}'),
-                subtitle: Text('Amount: ${agreement.amount} ${agreement.currency}'),
-                trailing: Text(agreement.status),
-              );
-            }).toList(),
-          ),
+          ..._myAgreements.map((agreement) => Card(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: ListTile(
+                  title: Text('With ${agreement.farmerName}'),
+                  subtitle: Text(
+                    '${_currency.format(agreement.amount)} • ${agreement.currency} • ${DateFormat.yMMMd().format(agreement.startDate)}',
+                  ),
+                  trailing: Chip(
+                    label: Text(agreement.status),
+                    backgroundColor: agreement.status == 'Completed'
+                        ? Colors.green.shade100
+                        : Colors.orange.shade100,
+                  ),
+                ),
+              )),
       ],
     );
   }
