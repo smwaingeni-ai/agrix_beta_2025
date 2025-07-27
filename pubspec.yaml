@@ -29,13 +29,6 @@ dependencies:
   qr_flutter: ^4.0.0
   intl: ^0.18.1
 
-  # 🔷 TFLite – AI Inference (Mobile Only)
-  tflite_flutter: ^0.9.0
-  tflite_flutter_helper: ^0.2.1
-
-  # 🔷 FFI Support
-  ffi: ^1.1.2
-
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
 
@@ -57,7 +50,6 @@ flutter:
     - assets/alogo.png
 
     # 📷 Crop AI
-    - assets/tflite/crop_disease_model.tflite
     - assets/data/crop_labels.txt
     - assets/data/crop_rules.csv
     - assets/images/crops/
