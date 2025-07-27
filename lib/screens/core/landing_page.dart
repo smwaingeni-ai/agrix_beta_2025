@@ -62,7 +62,13 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget buildGridButton(String label, String route, IconData icon) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(12)),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.all(12),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.green[900],
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
       onPressed: () => Navigator.pushNamed(context, route),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -78,25 +84,25 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> buttons = [
-      {'label': 'Edit Profile', 'route': '/editProfile', 'icon': Icons.edit},
+      {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
       {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
       {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
       {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-      {'label': 'Crop Diagnosis', 'route': '/cropsScreen', 'icon': Icons.eco},
-      {'label': 'Soil Advisor', 'route': '/soilScreen', 'icon': Icons.terrain},
-      {'label': 'Livestock Diagnosis', 'route': '/livestockScreen', 'icon': Icons.pets},
+      {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
+      {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
+      {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
       {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
       {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
       {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
       {'label': 'Market', 'route': '/market', 'icon': Icons.store},
-      {'label': 'Contracts', 'route': '/contractList', 'icon': Icons.assignment_turned_in},
-      {'label': 'Investors', 'route': '/investorList', 'icon': Icons.people},
-      {'label': 'Officer Tasks', 'route': '/officerTasks', 'icon': Icons.task},
+      {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+      {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
+      {'label': 'Officer Tasks', 'route': '/officer/tasks', 'icon': Icons.task},
       {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
       {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
       {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
-      {'label': 'Trader Dashboard', 'route': '/traderDashboard', 'icon': Icons.dashboard},
-      {'label': 'Official Dashboard', 'route': '/officialDashboard', 'icon': Icons.admin_panel_settings},
+      {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
+      {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
     ];
 
     return Scaffold(
@@ -119,6 +125,7 @@ class _LandingPageState extends State<LandingPage> {
             const SizedBox(height: 12),
             _profile != null
                 ? Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     child: Column(
                       children: [
@@ -126,11 +133,13 @@ class _LandingPageState extends State<LandingPage> {
                             _profile!.photoPath != null &&
                             File(_profile!.photoPath!).existsSync()) ...[
                           const SizedBox(height: 8),
-                          Image.file(
-                            File(_profile!.photoPath!),
-                            height: 100,
-                            width: 100,
-                            fit: BoxFit.cover,
+                          ClipOval(
+                            child: Image.file(
+                              File(_profile!.photoPath!),
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                           const SizedBox(height: 8),
                         ],
@@ -146,7 +155,7 @@ class _LandingPageState extends State<LandingPage> {
                             IconButton(icon: const Icon(Icons.share), onPressed: _shareProfile),
                             IconButton(icon: const Icon(Icons.delete), color: Colors.red, onPressed: _deleteProfile),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   )
