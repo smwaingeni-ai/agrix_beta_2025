@@ -1,8 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:agrix_beta_2025/models/market/market_item.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+
+import 'package:agrix_beta_2025/models/market/market_item.dart';
 
 class MarketItemForm extends StatefulWidget {
   final Function(MarketItem) onSubmit;
@@ -10,7 +11,7 @@ class MarketItemForm extends StatefulWidget {
   const MarketItemForm({Key? key, required this.onSubmit}) : super(key: key);
 
   @override
-  _MarketItemFormState createState() => _MarketItemFormState();
+  State<MarketItemForm> createState() => _MarketItemFormState();
 }
 
 class _MarketItemFormState extends State<MarketItemForm> {
@@ -48,7 +49,7 @@ class _MarketItemFormState extends State<MarketItemForm> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking images: $e')),
+        SnackBar(content: Text('❌ Error picking images: $e')),
       );
     }
   }
@@ -83,26 +84,34 @@ class _MarketItemFormState extends State<MarketItemForm> {
     }
   }
 
-  Widget _buildChips(List<String> options, List<String> selected, Function(List<String>) onChanged) {
-    return Wrap(
-      spacing: 8.0,
-      children: options.map((option) {
-        final isSelected = selected.contains(option);
-        return FilterChip(
-          label: Text(option),
-          selected: isSelected,
-          onSelected: (selectedVal) {
-            setState(() {
-              if (selectedVal) {
-                selected.add(option);
-              } else {
-                selected.remove(option);
-              }
-              onChanged(List.from(selected));
-            });
-          },
-        );
-      }).toList(),
+  Widget _buildChipsSection(String title, List<String> options, List<String> selected, Function(List<String>) onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 8,
+          children: options.map((option) {
+            final isSelected = selected.contains(option);
+            return FilterChip(
+              label: Text(option),
+              selected: isSelected,
+              onSelected: (val) {
+                setState(() {
+                  if (val) {
+                    selected.add(option);
+                  } else {
+                    selected.remove(option);
+                  }
+                  onChanged(List.from(selected));
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
@@ -128,13 +137,12 @@ class _MarketItemFormState extends State<MarketItemForm> {
     const paymentOptions = ['Cash', 'Bank Transfer', 'QR Code', 'Debit Card', 'Loan'];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Market Item')),
+      appBar: AppBar(title: const Text('🛒 Create Market Listing')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(controller: _titleController, decoration: const InputDecoration(labelText: 'Title'), validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _descriptionController, decoration: const InputDecoration(labelText: 'Description'), validator: (v) => v!.isEmpty ? 'Required' : null),
@@ -142,17 +150,15 @@ class _MarketItemFormState extends State<MarketItemForm> {
               TextFormField(controller: _typeController, decoration: const InputDecoration(labelText: 'Type'), validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _listingTypeController, decoration: const InputDecoration(labelText: 'Listing Type'), validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _locationController, decoration: const InputDecoration(labelText: 'Location'), validator: (v) => v!.isEmpty ? 'Required' : null),
-              TextFormField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price'), keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+              TextFormField(controller: _priceController, decoration: const InputDecoration(labelText: 'Price (ZMW)'), keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _ownerNameController, decoration: const InputDecoration(labelText: 'Owner Name'), validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _ownerContactController, decoration: const InputDecoration(labelText: 'Owner Contact'), validator: (v) => v!.isEmpty ? 'Required' : null),
               TextFormField(controller: _investmentStatusController, decoration: const InputDecoration(labelText: 'Investment Status')),
               TextFormField(controller: _investmentTermController, decoration: const InputDecoration(labelText: 'Investment Term')),
-              const SizedBox(height: 16),
-              const Text("Select Contact Methods:"),
-              _buildChips(contactOptions, _contactMethods, (v) => _contactMethods = v),
-              const SizedBox(height: 12),
-              const Text("Select Payment Options:"),
-              _buildChips(paymentOptions, _paymentOptions, (v) => _paymentOptions = v),
+
+              _buildChipsSection("📞 Contact Methods", contactOptions, _contactMethods, (v) => _contactMethods = v),
+              _buildChipsSection("💳 Payment Options", paymentOptions, _paymentOptions, (v) => _paymentOptions = v),
+
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -169,24 +175,27 @@ class _MarketItemFormState extends State<MarketItemForm> {
                   Switch(value: _isInvestmentOpen, onChanged: (val) => setState(() => _isInvestmentOpen = val)),
                 ],
               ),
-              const SizedBox(height: 12),
+
+              const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: _pickImages,
                 icon: const Icon(Icons.image),
                 label: const Text("Pick Images"),
               ),
-              if (_imagePaths.isNotEmpty) ...[
-                const SizedBox(height: 8),
+              const SizedBox(height: 8),
+              if (_imagePaths.isNotEmpty)
                 Wrap(
                   spacing: 8,
-                  children: _imagePaths.map((path) => Image.file(File(path), width: 60, height: 60)).toList(),
+                  children: _imagePaths.map((p) => Image.file(File(p), width: 60, height: 60, fit: BoxFit.cover)).toList(),
                 ),
-              ],
+
               const SizedBox(height: 24),
-              Center(
-                child: ElevatedButton(
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.send),
+                  label: const Text('Submit Listing'),
                   onPressed: _submitForm,
-                  child: const Text('Submit Listing'),
                 ),
               ),
             ],
