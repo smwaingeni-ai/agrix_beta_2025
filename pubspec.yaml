@@ -60,6 +60,7 @@ flutter:
     - assets/data/crop_labels.txt
     - assets/crops/
     - assets/data/crop_rules.csv
+    - assets/images/crops/
 
     # 🐄 Livestock rules and images
     - assets/data/livestock_rules.csv
