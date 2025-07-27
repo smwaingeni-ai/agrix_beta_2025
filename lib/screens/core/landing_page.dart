@@ -28,12 +28,12 @@ class _LandingPageState extends State<LandingPage> {
 
   Future<void> _loadProfile() async {
     _profile = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Future<void> _deleteProfile() async {
     await FarmerProfileService.clearActiveProfile();
-    setState(() => _profile = null);
+    if (mounted) setState(() => _profile = null);
   }
 
   void _shareProfile() {
@@ -42,7 +42,7 @@ class _LandingPageState extends State<LandingPage> {
 👤 Name: ${_profile!.fullName}
 🆔 ID: ${_profile!.idNumber}
 📞 Contact: ${_profile!.contactNumber}
-📐 Farm Size: ${_profile!.farmSizeHectares ?? 'N/A'}
+📐 Farm Size: ${_profile!.farmSizeHectares ?? 'N/A'} ha
 🌍 Region: ${_profile!.region ?? 'N/A'}
 🏛️ Subsidised: ${_profile!.subsidised ? "Yes" : "No"}
 ''';
@@ -160,9 +160,9 @@ class _LandingPageState extends State<LandingPage> {
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1.1,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.05,
                 children: buttons
                     .map((btn) => buildGridButton(
                           btn['label'] as String,
