@@ -12,12 +12,20 @@ class FieldAssessmentScreen extends StatefulWidget {
 }
 
 class _FieldAssessmentScreenState extends State<FieldAssessmentScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _uuid = const Uuid();
+
   final TextEditingController _cropController = TextEditingController();
   final TextEditingController _observationsController = TextEditingController();
   final TextEditingController _recommendationsController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
-  final _uuid = const Uuid();
+  @override
+  void dispose() {
+    _cropController.dispose();
+    _observationsController.dispose();
+    _recommendationsController.dispose();
+    super.dispose();
+  }
 
   Future<void> _submitAssessment() async {
     if (!_formKey.currentState!.validate()) return;
@@ -31,20 +39,17 @@ class _FieldAssessmentScreenState extends State<FieldAssessmentScreen> {
     };
 
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/field_assessments.json';
-      final file = File(filePath);
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/field_assessments.json');
 
-      List<dynamic> existingData = [];
+      List<dynamic> existing = [];
       if (await file.exists()) {
-        final contents = await file.readAsString();
-        if (contents.isNotEmpty) {
-          existingData = json.decode(contents);
-        }
+        final content = await file.readAsString();
+        if (content.isNotEmpty) existing = json.decode(content);
       }
 
-      existingData.add(newAssessment);
-      await file.writeAsString(json.encode(existingData), flush: true);
+      existing.add(newAssessment);
+      await file.writeAsString(json.encode(existing), flush: true);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,69 +57,61 @@ class _FieldAssessmentScreenState extends State<FieldAssessmentScreen> {
       );
       Navigator.pop(context);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Failed to save assessment: $e')),
+        SnackBar(content: Text('❌ Failed to save: $e')),
       );
     }
   }
 
-  @override
-  void dispose() {
-    _cropController.dispose();
-    _observationsController.dispose();
-    _recommendationsController.dispose();
-    super.dispose();
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Field Assessment')),
+      appBar: AppBar(title: const Text('🧾 Field Assessment')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _cropController,
-                decoration: const InputDecoration(
-                  labelText: 'Crop Type',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Please enter crop type' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(controller: _cropController, label: '🌱 Crop Type'),
+              _buildTextField(
                 controller: _observationsController,
-                decoration: const InputDecoration(
-                  labelText: 'Observations',
-                  border: OutlineInputBorder(),
-                ),
+                label: '👀 Observations',
                 maxLines: 4,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Please enter observations' : null,
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              _buildTextField(
                 controller: _recommendationsController,
-                decoration: const InputDecoration(
-                  labelText: 'Recommendations',
-                  border: OutlineInputBorder(),
-                ),
+                label: '✅ Recommendations',
                 maxLines: 4,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Please enter recommendations' : null,
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.save),
                 label: const Text('Submit Assessment'),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
                 onPressed: _submitAssessment,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                ),
               ),
             ],
           ),
