@@ -5,47 +5,60 @@ class OfficialDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> actions = [
+      {
+        'label': 'View Registered Farmers',
+        'icon': Icons.people_alt,
+        'route': '/farmer_directory',
+      },
+      {
+        'label': 'Subsidy Disbursement Tracker',
+        'icon': Icons.attach_money,
+        'route': '/subsidy_tracker',
+      },
+      {
+        'label': 'View Land Contracts',
+        'icon': Icons.article,
+        'route': '/contracts/list',
+      },
+      {
+        'label': 'View Program Impact Reports',
+        'icon': Icons.analytics,
+        'route': '/program_tracking',
+      },
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('🏛️ Government Official Dashboard'),
         centerTitle: true,
+        backgroundColor: Colors.green.shade700,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: ListView(
+        child: Column(
           children: [
-            ElevatedButton.icon(
-              icon: const Icon(Icons.people_alt),
-              label: const Text('View Registered Farmers'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/farmer_directory');
-              },
+            Expanded(
+              child: ListView.separated(
+                itemCount: actions.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final item = actions[index];
+                  return ElevatedButton.icon(
+                    icon: Icon(item['icon']),
+                    label: Text(item['label']),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, item['route']);
+                    },
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.attach_money),
-              label: const Text('Subsidy Disbursement Tracker'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/subsidy_tracker');
-              },
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.article),
-              label: const Text('View Land Contracts'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/contracts/list');
-              },
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.analytics),
-              label: const Text('View Program Impact Reports'),
-              onPressed: () {
-                Navigator.pushNamed(context, '/program_tracking');
-              },
-            ),
-            const SizedBox(height: 30),
             const Divider(thickness: 1),
             const SizedBox(height: 10),
             const Text(
