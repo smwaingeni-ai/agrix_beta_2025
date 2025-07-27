@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:agrix_beta_2025/models/tasks/task_model.dart';
-import 'package:aagrix_beta_2025/services/tasks/task_service.dart';
+import 'package:agrix_beta_2025/services/tasks/task_service.dart';
 
 class TaskEntryScreen extends StatefulWidget {
   const TaskEntryScreen({super.key});
@@ -29,7 +29,7 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
 
     setState(() => _isSaving = true);
 
-    final newTask = Task(
+    final newTask = OfficerTask(
       id: const Uuid().v4(),
       title: _taskTitle.text.trim(),
       description: _description.text.trim(),
@@ -47,10 +47,10 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context, true); // Return true to refresh previous screen
+        Navigator.pop(context, true); // Notify caller to refresh
       }
     } catch (e) {
-      debugPrint("Error saving task: $e");
+      debugPrint("❌ Error saving task: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
