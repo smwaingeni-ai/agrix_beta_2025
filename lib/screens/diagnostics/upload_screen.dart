@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
 import 'package:agrix_beta_2025/services/diagnostics/crop_diagnosis_service.dart';
-import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart'; // ✅ added
+import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({Key? key}) : super(key: key);
@@ -18,15 +19,12 @@ class _UploadScreenState extends State<UploadScreen> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> _diagnoseFromText(String input) async {
     final rules = await CropDiagnosisService.loadCropRules();
+    final inputLower = input.toLowerCase();
+
     final match = rules.entries.firstWhere(
-      (entry) => input.toLowerCase().contains(entry.key),
+      (entry) => inputLower.contains(entry.key),
       orElse: () => MapEntry('', {}),
     );
 
@@ -52,7 +50,7 @@ class _UploadScreenState extends State<UploadScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❌ No diagnosis found for symptom.')),
+        const SnackBar(content: Text('❌ No diagnosis found for this image.')),
       );
     }
   }
@@ -66,39 +64,36 @@ class _UploadScreenState extends State<UploadScreen> {
 
     setState(() => _image = file);
 
-    await _diagnoseFromText(fileName); // E.g., 'wilt.jpg'
+    await _diagnoseFromText(fileName);
   }
 
   Future<void> _shareResult() async {
-    // Optional: Keep for possible future use
-    await Share.share('📋 Diagnosis result shared.');
+    await Share.share('📋 Diagnosis result shared via AgriX.');
   }
 
   Future<void> _shareViaWhatsApp() async {
-    final message = '📋 See attached diagnosis result.';
+    const message = '📋 Check out this diagnosis result from AgriX.';
     final url = Uri.parse("whatsapp://send?text=${Uri.encodeComponent(message)}");
 
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❌ WhatsApp not available.')),
+        const SnackBar(content: Text('❌ WhatsApp not available on this device.')),
       );
     }
   }
 
   void _saveResultLocally() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('✅ Result saved locally.')),
+      const SnackBar(content: Text('✅ Diagnosis result saved locally.')),
     );
   }
 
   void _goToTransactions() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const TransactionScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const TransactionScreen()),
     );
   }
 
