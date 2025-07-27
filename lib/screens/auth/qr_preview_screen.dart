@@ -13,30 +13,41 @@ class QRPreviewScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('🎉 Registration Complete')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Scan this QR to verify or login offline',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              QrImageView(
-                data: qrData,
-                version: QrVersions.auto,
-                size: 200,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false),
-                icon: const Icon(Icons.home),
-                label: const Text('Go to Dashboard'),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Scan this QR to verify your profile or login offline',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 30),
+            QrImageView(
+              data: qrData,
+              version: QrVersions.auto,
+              size: 220,
+              backgroundColor: Colors.white,
+            ),
+            const SizedBox(height: 30),
+            Text(
+              userName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              'User ID: $userId',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.home),
+              label: const Text('Go to Dashboard'),
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+              },
+            ),
+          ],
         ),
       ),
     );
