@@ -1,6 +1,9 @@
+// lib/services/diagnostics/soil_service.dart
+
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
+/// 🧪 SoilEntry represents a soil record from the CSV file
 class SoilEntry {
   final String region;
   final String soilType;
@@ -25,7 +28,7 @@ class SoilEntry {
       fertility: fields[2],
       treatment: fields[3],
       suitableCrops: fields[4],
-      imageName: fields[5],
+      imageName: 'assets/images/soil/${fields[5]}',
     );
   }
 
@@ -39,33 +42,33 @@ class SoilEntry {
       };
 }
 
+/// 🌍 SoilService handles CSV-based soil classification support
 class SoilService {
   static const String _csvPath = 'assets/data/soil_map_africa.csv';
   final List<SoilEntry> _entries = [];
 
-  /// Load and parse CSV entries
+  /// 🔄 Load and parse soil entries from CSV
   Future<void> loadSoilData() async {
     try {
       final raw = await rootBundle.loadString(_csvPath);
       final lines = const LineSplitter().convert(raw);
 
       for (int i = 1; i < lines.length; i++) {
-        final line = lines[i];
-        final fields = line.split(',').map((e) => e.trim()).toList();
+        final fields = _safeSplit(lines[i]);
         if (fields.length >= 6) {
           _entries.add(SoilEntry.fromCsv(fields));
         }
       }
-      print('✅ SoilService: Loaded ${_entries.length} soil entries.');
+
+      print('✅ SoilService: Loaded ${_entries.length} entries');
     } catch (e) {
-      print('❌ Error loading soil CSV: $e');
+      print('❌ SoilService: Failed to load soil data - $e');
     }
   }
 
-  /// Search for matching soils based on user input
+  /// 🔍 Search entries by region, soil type, or fertility keywords
   List<SoilEntry> search(String query) {
     final lower = query.toLowerCase().trim();
-
     return _entries.where((entry) {
       return entry.region.toLowerCase().contains(lower) ||
           entry.soilType.toLowerCase().contains(lower) ||
@@ -73,6 +76,14 @@ class SoilService {
     }).toList();
   }
 
-  /// Get all loaded entries (optional)
+  /// 📦 Return all loaded soil entries
   List<SoilEntry> getAll() => _entries;
+
+  /// 🛡️ Safe CSV split supporting quoted strings
+  List<String> _safeSplit(String line) {
+    return line
+        .split(RegExp(r',(?=(?:[^"]*"[^"]*")*[^"]*$)'))
+        .map((s) => s.replaceAll('"', '').trim())
+        .toList();
+  }
 }
