@@ -8,6 +8,7 @@ import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/profile/farmer_profile_form.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
+import 'package:agrix_beta_2025/screens/core/qr_preview_screen.dart'; // ✅ Required for final fallback screen
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({super.key});
@@ -33,35 +34,51 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
   String cell = '';
   String farmType = '';
 
-  final List<String> roles = ['Farmer', 'Investor', 'AREX Officer', 'Government Official', 'Admin'];
+  final List<String> roles = [
+    'Farmer',
+    'Investor',
+    'AREX Officer',
+    'Government Official',
+    'Admin',
+  ];
 
   Future<void> _registerUser() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
 
     final userId = DateTime.now().millisecondsSinceEpoch.toString();
-    final user = UserModel(id: userId, role: role, name: name, passcode: passcode);
+    final user = UserModel(
+      id: userId,
+      role: role,
+      name: name,
+      passcode: passcode,
+    );
 
     await _saveUserToFile(user);
 
-    // Redirect based on role
+    // Navigate based on role
+    if (!mounted) return;
     if (role == 'Investor') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => InvestorRegistrationScreen(userId: userId, name: name)),
+        MaterialPageRoute(
+          builder: (_) => InvestorRegistrationScreen(userId: userId, name: name),
+        ),
       );
     } else if (role == 'Farmer') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => FarmerProfileForm(userId: userId, name: name)),
+        MaterialPageRoute(
+          builder: (_) => FarmerProfileForm(userId: userId, name: name),
+        ),
       );
     } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ User registered successfully')),
-        );
-        Navigator.pop(context);
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QRPreviewScreen(userId: userId, userName: name),
+        ),
+      );
     }
   }
 
@@ -69,6 +86,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     try {
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/registered_users.json');
+
       List<dynamic> users = [];
 
       if (await file.exists()) {
@@ -95,10 +113,15 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
         obscureText: obscure,
         keyboardType: keyboardType,
-        validator: validator ? (val) => val == null || val.isEmpty ? 'Required' : null : null,
+        validator: validator
+            ? (val) => (val == null || val.isEmpty) ? 'Required' : null
+            : null,
         onSaved: onSaved,
       ),
     );
@@ -108,13 +131,13 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     return [
       _buildTextField(
         label: 'ID Number',
-        onSaved: (val) => idNumber = val!,
+        onSaved: (val) => idNumber = val ?? '',
         validator: true,
       ),
       _buildTextField(
         label: 'Phone Number',
         keyboardType: TextInputType.phone,
-        onSaved: (val) => phone = val!,
+        onSaved: (val) => phone = val ?? '',
         validator: true,
       ),
       _buildTextField(label: 'Province', onSaved: (val) => province = val ?? ''),
@@ -144,14 +167,14 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
               ),
               _buildTextField(
                 label: 'Username / Full Name',
-                onSaved: (val) => name = val!,
+                onSaved: (val) => name = val ?? '',
                 validator: true,
               ),
               if (role == 'Farmer') ..._buildFarmerFields(),
               _buildTextField(
                 label: 'Passcode',
                 obscure: true,
-                onSaved: (val) => passcode = val!,
+                onSaved: (val) => passcode = val ?? '',
                 validator: true,
               ),
               const SizedBox(height: 20),
