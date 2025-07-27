@@ -14,7 +14,7 @@ class ProgramFormScreen extends StatefulWidget {
 
 class _ProgramFormScreenState extends State<ProgramFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final ProgramService _programService = ProgramService();
+  final _programService = ProgramService();
 
   late TextEditingController _programNameController;
   late TextEditingController _farmerController;
@@ -22,12 +22,14 @@ class _ProgramFormScreenState extends State<ProgramFormScreen> {
   late TextEditingController _impactController;
   late TextEditingController _regionController;
   late TextEditingController _officerController;
+
   late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
     final program = widget.existingProgram ?? ProgramLog.empty();
+
     _programNameController = TextEditingController(text: program.programName);
     _farmerController = TextEditingController(text: program.farmer);
     _resourceController = TextEditingController(text: program.resource);
@@ -48,47 +50,67 @@ class _ProgramFormScreenState extends State<ProgramFormScreen> {
     super.dispose();
   }
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      final newLog = ProgramLog(
-        programName: _programNameController.text.trim(),
-        farmer: _farmerController.text.trim(),
-        resource: _resourceController.text.trim(),
-        impact: _impactController.text.trim(),
-        region: _regionController.text.trim(),
-        officer: _officerController.text.trim(),
-        date: _selectedDate,
-      );
-
-      await _programService.addProgram(newLog);
-      if (!mounted) return;
-      Navigator.pop(context, true);
-    }
-  }
-
   Future<void> _pickDate() async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
     }
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState?.validate() != true) return;
+
+    final log = ProgramLog(
+      programName: _programNameController.text.trim(),
+      farmer: _farmerController.text.trim(),
+      region: _regionController.text.trim(),
+      resource: _resourceController.text.trim(),
+      impact: _impactController.text.trim(),
+      officer: _officerController.text.trim(),
+      date: _selectedDate,
+    );
+
+    try {
+      await _programService.addProgram(log);
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Error saving program: $e')),
+      );
+    }
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        validator: (value) =>
+            value == null || value.trim().isEmpty ? 'Please enter $label' : null,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.existingProgram != null;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? '✏️ Edit Program' : '➕ Add Program'),
+        backgroundColor: Colors.green.shade700,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
@@ -99,42 +121,27 @@ class _ProgramFormScreenState extends State<ProgramFormScreen> {
               _buildTextField(_resourceController, 'Resource Used'),
               _buildTextField(_impactController, 'Impact Observed'),
               _buildTextField(_officerController, 'Officer Name'),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text('📅 Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
               TextButton.icon(
                 onPressed: _pickDate,
                 icon: const Icon(Icons.calendar_today),
                 label: const Text('Select Date'),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: _submitForm,
                 icon: const Icon(Icons.save),
                 label: const Text('Save Program'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[700],
+                  backgroundColor: Colors.green.shade700,
                   padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16),
                 ),
-              )
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        validator: (value) => value == null || value.trim().isEmpty
-            ? 'Please enter $label'
-            : null,
       ),
     );
   }
