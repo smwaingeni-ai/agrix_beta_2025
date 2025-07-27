@@ -16,7 +16,8 @@ class TrainingLogService {
         final jsonMap = json.decode(item);
         logs.add(TrainingLog.fromJson(jsonMap));
       } catch (e) {
-        // You may log the error for diagnostics
+        // Optionally log the error for diagnostics
+        print('❌ Error decoding training log: $e');
       }
     }
 
@@ -28,7 +29,7 @@ class TrainingLogService {
     final prefs = await SharedPreferences.getInstance();
     final logs = await loadLogs();
 
-    // Avoid duplicate IDs
+    // Avoid duplicate entries by ID
     logs.removeWhere((existing) => existing.id == log.id);
     logs.insert(0, log); // newest first
 
@@ -46,7 +47,7 @@ class TrainingLogService {
     await prefs.setStringList(_storageKey, encoded);
   }
 
-  /// 🔹 Clear all logs (admin/debug)
+  /// 🔹 Clear all training logs (admin/debug use)
   static Future<void> clearLogs() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
