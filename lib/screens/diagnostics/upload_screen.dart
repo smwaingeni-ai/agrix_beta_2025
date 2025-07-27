@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
+import 'package:agrix_beta_2025/services/diagnostics/crop_diagnosis_service.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({Key? key}) : super(key: key);
@@ -19,52 +17,40 @@ class _UploadScreenState extends State<UploadScreen> {
   File? _image;
   String? _result;
   String? _timestamp;
-
-  Interpreter? _interpreter;
-  List<String> _labels = [];
   final ImagePicker _picker = ImagePicker();
-  final IMAGE_SIZE = 224;
 
   @override
   void initState() {
     super.initState();
-    _loadModelAndLabels();
   }
 
-  Future<void> _loadModelAndLabels() async {
-    try {
-      _interpreter = await Interpreter.fromAsset('tflite/crop_disease_model.tflite');
-      final rawLabels = await File('assets/data/crop_labels.txt').readAsLines();
-      _labels = rawLabels.map((l) => l.trim()).toList();
-      debugPrint('✅ Model and labels loaded');
-    } catch (e) {
-      debugPrint('❌ Error loading model: $e');
+  Future<void> _diagnoseFromText(String input) async {
+    final rules = await CropDiagnosisService.loadCropRules();
+    final match = rules.entries.firstWhere(
+      (entry) => input.toLowerCase().contains(entry.key),
+      orElse: () => MapEntry('', {}),
+    );
+
+    if (match.key.isNotEmpty) {
+      final diagnosis = match.value;
+      setState(() {
+        _result = '''
+🌿 Symptom: ${match.key}
+🦠 Disease: ${diagnosis['disease']}
+💊 Treatment: ${diagnosis['treatment']}
+🌱 Crop: ${diagnosis['crop']}
+📈 Severity: ${diagnosis['severity']}
+📊 Likelihood: ${diagnosis['likelihood']}
+🖼 Image: ${diagnosis['image']}
+''';
+        _timestamp = DateTime.now().toLocal().toIso8601String();
+      });
+    } else {
+      setState(() {
+        _result = '❌ No diagnosis found for symptom.';
+        _timestamp = DateTime.now().toLocal().toIso8601String();
+      });
     }
-  }
-
-  Future<void> _classifyImage(File image) async {
-    final imageProcessor = ImageProcessorBuilder()
-        .add(ResizeOp(IMAGE_SIZE, IMAGE_SIZE, ResizeMethod.BILINEAR))
-        .build();
-
-    final inputImage = FileImage(image);
-    final rawImage = await inputImage.obtainKey(const ImageConfiguration());
-    final input = TensorImage.fromFile(image);
-    final processedImage = imageProcessor.process(input);
-
-    final inputTensor = processedImage.buffer;
-    final outputTensor = TensorBuffer.createFixedSize(<int>[1, _labels.length], TfLiteType.float32);
-    _interpreter?.run(inputTensor, outputTensor.buffer);
-
-    final confidences = outputTensor.getDoubleList();
-    final topIndex = confidences.indexWhere((score) => score == confidences.reduce(max));
-    final topLabel = _labels[topIndex];
-    final topScore = confidences[topIndex];
-
-    setState(() {
-      _result = '🔍 Prediction: $topLabel\n📊 Confidence: ${(topScore * 100).toStringAsFixed(2)}%';
-      _timestamp = DateTime.now().toLocal().toIso8601String();
-    });
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -72,8 +58,12 @@ class _UploadScreenState extends State<UploadScreen> {
     if (picked == null) return;
 
     final file = File(picked.path);
+    final fileName = picked.name.toLowerCase();
+
     setState(() => _image = file);
-    await _classifyImage(file);
+
+    // Use file name or sample tag to simulate diagnosis
+    await _diagnoseFromText(fileName); // E.g., 'wilt.jpg' triggers 'wilting'
   }
 
   Future<void> _shareResult() async {
@@ -115,16 +105,10 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   @override
-  void dispose() {
-    _interpreter?.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📷 Upload Sample for Diagnosis'),
+        title: const Text('📷 Upload Crop Image'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -154,7 +138,7 @@ class _UploadScreenState extends State<UploadScreen> {
                       margin: const EdgeInsets.symmetric(vertical: 12),
                       child: ListTile(
                         leading: const Icon(Icons.check_circle, color: Colors.green),
-                        title: Text(_result!, style: const TextStyle(fontSize: 16)),
+                        title: Text(_result!, style: const TextStyle(fontSize: 14)),
                         subtitle: Text('🕒 Timestamp: $_timestamp'),
                       ),
                     ),
