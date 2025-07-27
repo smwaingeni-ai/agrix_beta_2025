@@ -1,24 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import '../../models/officers/officer_profile.dart';
+import 'package:agrix_beta_2025/models/officers/officer_profile.dart';
 
 class OfficerProfileService {
   static const String _fileName = 'officer_profile.json';
 
-  /// 🔹 Get local path
+  /// 🔹 Get the local path for storing files
   static Future<String> _localPath() async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
 
-  /// 🔹 Get file reference
+  /// 🔹 Get a reference to the officer profile file
   static Future<File> _localFile() async {
     final path = await _localPath();
     return File('$path/$_fileName');
   }
 
-  /// 🔹 Load profile
+  /// 📥 Load an officer profile from the local file
   static Future<OfficerProfile?> loadProfile() async {
     try {
       final file = await _localFile();
@@ -27,23 +27,23 @@ class OfficerProfileService {
       final contents = await file.readAsString();
       return OfficerProfile.fromJson(jsonDecode(contents));
     } catch (e) {
-      print('❌ Error loading profile: $e');
+      print('❌ Error loading officer profile: $e');
       return null;
     }
   }
 
-  /// 🔹 Save profile
+  /// 💾 Save an officer profile to the local file
   static Future<void> saveProfile(OfficerProfile profile) async {
     try {
       final file = await _localFile();
-      await file.writeAsString(jsonEncode(profile.toJson()));
+      await file.writeAsString(jsonEncode(profile.toJson()), flush: true);
       print('✅ Officer profile saved.');
     } catch (e) {
-      print('❌ Error saving profile: $e');
+      print('❌ Error saving officer profile: $e');
     }
   }
 
-  /// 🔹 Delete profile
+  /// 🗑️ Delete the stored officer profile
   static Future<void> deleteProfile() async {
     try {
       final file = await _localFile();
@@ -52,7 +52,7 @@ class OfficerProfileService {
         print('🗑️ Officer profile deleted.');
       }
     } catch (e) {
-      print('❌ Error deleting profile: $e');
+      print('❌ Error deleting officer profile: $e');
     }
   }
 }
