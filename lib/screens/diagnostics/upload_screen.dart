@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
 import 'package:agrix_beta_2025/services/diagnostics/crop_diagnosis_service.dart';
+import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart'; // ✅ added
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({Key? key}) : super(key: key);
@@ -15,8 +16,6 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   File? _image;
-  String? _result;
-  String? _timestamp;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -32,24 +31,29 @@ class _UploadScreenState extends State<UploadScreen> {
     );
 
     if (match.key.isNotEmpty) {
-      final diagnosis = match.value;
-      setState(() {
-        _result = '''
-🌿 Symptom: ${match.key}
-🦠 Disease: ${diagnosis['disease']}
-💊 Treatment: ${diagnosis['treatment']}
-🌱 Crop: ${diagnosis['crop']}
-📈 Severity: ${diagnosis['severity']}
-📊 Likelihood: ${diagnosis['likelihood']}
-🖼 Image: ${diagnosis['image']}
-''';
-        _timestamp = DateTime.now().toLocal().toIso8601String();
-      });
+      final diagnosis = {
+        'symptom': match.key,
+        'disease': match.value['disease'],
+        'treatment': match.value['treatment'],
+        'crop': match.value['crop'],
+        'severity': match.value['severity'],
+        'likelihood': match.value['likelihood'],
+        'image': match.value['image'],
+      };
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DiagnosisScreen(
+            diagnosis: diagnosis,
+            image: _image,
+          ),
+        ),
+      );
     } else {
-      setState(() {
-        _result = '❌ No diagnosis found for symptom.';
-        _timestamp = DateTime.now().toLocal().toIso8601String();
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❌ No diagnosis found for symptom.')),
+      );
     }
   }
 
@@ -62,19 +66,16 @@ class _UploadScreenState extends State<UploadScreen> {
 
     setState(() => _image = file);
 
-    // Use file name or sample tag to simulate diagnosis
-    await _diagnoseFromText(fileName); // E.g., 'wilt.jpg' triggers 'wilting'
+    await _diagnoseFromText(fileName); // E.g., 'wilt.jpg'
   }
 
   Future<void> _shareResult() async {
-    if (_result == null || _timestamp == null) return;
-    final message = '📋 $_result\n🕒 Timestamp: $_timestamp';
-    await Share.share(message);
+    // Optional: Keep for possible future use
+    await Share.share('📋 Diagnosis result shared.');
   }
 
   Future<void> _shareViaWhatsApp() async {
-    if (_result == null || _timestamp == null) return;
-    final message = '📋 $_result\n🕒 Timestamp: $_timestamp';
+    final message = '📋 See attached diagnosis result.';
     final url = Uri.parse("whatsapp://send?text=${Uri.encodeComponent(message)}");
 
     if (await canLaunchUrl(url)) {
@@ -96,10 +97,7 @@ class _UploadScreenState extends State<UploadScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TransactionScreen(
-          result: _result,
-          timestamp: _timestamp,
-        ),
+        builder: (context) => const TransactionScreen(),
       ),
     );
   }
@@ -132,16 +130,6 @@ class _UploadScreenState extends State<UploadScreen> {
                 children: [
                   Image.file(_image!, height: 200),
                   const SizedBox(height: 12),
-                  if (_result != null)
-                    Card(
-                      color: Colors.green.shade50,
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      child: ListTile(
-                        leading: const Icon(Icons.check_circle, color: Colors.green),
-                        title: Text(_result!, style: const TextStyle(fontSize: 14)),
-                        subtitle: Text('🕒 Timestamp: $_timestamp'),
-                      ),
-                    ),
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
