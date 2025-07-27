@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
 import 'package:agrix_beta_2025/services/contracts/contract_offer_service.dart';
 import 'package:agrix_beta_2025/screens/contracts/contract_offer_form.dart';
@@ -14,6 +15,7 @@ class ContractsDashboardScreen extends StatefulWidget {
 class _ContractsDashboardScreenState extends State<ContractsDashboardScreen> {
   List<ContractOffer> _offers = [];
   bool _loading = true;
+  final _currencyFormat = NumberFormat.simpleCurrency(name: 'ZMW');
 
   @override
   void initState() {
@@ -22,6 +24,7 @@ class _ContractsDashboardScreenState extends State<ContractsDashboardScreen> {
   }
 
   Future<void> _fetchContractOffers() async {
+    setState(() => _loading = true);
     try {
       final offers = await ContractOfferService().loadOffers();
       setState(() {
@@ -41,7 +44,7 @@ class _ContractsDashboardScreenState extends State<ContractsDashboardScreen> {
       context,
       MaterialPageRoute(builder: (_) => const ContractOfferForm()),
     );
-    _fetchContractOffers(); // Refresh after new offer
+    _fetchContractOffers(); // 🔄 Refresh after new offer added
   }
 
   void _openApplications(ContractOffer offer) {
@@ -55,23 +58,30 @@ class _ContractsDashboardScreenState extends State<ContractsDashboardScreen> {
 
   Widget _buildContractCard(ContractOffer offer) {
     return Card(
-      elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        title: Text(offer.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        title: Text(
+          offer.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('📍 ${offer.location}'),
-            Text('💰 ${offer.amount}'),
+            const SizedBox(height: 6),
+            Text('📍 Location: ${offer.location}'),
+            Text('💰 Amount: ${_currencyFormat.format(offer.amount)}'),
             Text('📆 Duration: ${offer.duration}'),
           ],
         ),
         trailing: IconButton(
           icon: const Icon(Icons.group, color: Colors.green),
+          tooltip: 'View Applicants',
           onPressed: () => _openApplications(offer),
         ),
+        onTap: () => _openApplications(offer),
       ),
     );
   }
@@ -92,7 +102,12 @@ class _ContractsDashboardScreenState extends State<ContractsDashboardScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _offers.isEmpty
-              ? const Center(child: Text('No contract offers yet.'))
+              ? const Center(
+                  child: Text(
+                    '📭 No contract offers available.\nTap "+" to create one.',
+                    textAlign: TextAlign.center,
+                  ),
+                )
               : ListView.builder(
                   itemCount: _offers.length,
                   itemBuilder: (context, index) => _buildContractCard(_offers[index]),
