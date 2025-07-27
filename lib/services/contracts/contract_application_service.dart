@@ -1,3 +1,5 @@
+// lib/services/contracts/contract_application_service.dart
+
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -6,7 +8,7 @@ import 'package:agrix_beta_2025/models/contracts/contract_application.dart';
 class ContractApplicationService {
   final String _storageKey = 'contract_applications';
 
-  /// Loads all applications associated with a specific contract offer ID
+  /// 🔄 Load all contract applications tied to a specific offer ID
   Future<List<ContractApplication>> loadApplicationsByOffer(String offerId) async {
     final prefs = await SharedPreferences.getInstance();
     final storedData = prefs.getStringList(_storageKey) ?? [];
@@ -24,7 +26,7 @@ class ContractApplicationService {
         .toList();
   }
 
-  /// Loads all saved contract applications (regardless of offer)
+  /// 📦 Load all contract applications regardless of offer
   Future<List<ContractApplication>> loadAllApplications() async {
     final prefs = await SharedPreferences.getInstance();
     final storedData = prefs.getStringList(_storageKey) ?? [];
@@ -41,7 +43,7 @@ class ContractApplicationService {
         .toList();
   }
 
-  /// Saves a new application for a specific contract offer
+  /// 💾 Save a new contract application entry
   Future<void> saveApplication({
     required String offerId,
     required String farmerName,
@@ -74,7 +76,7 @@ class ContractApplicationService {
     await prefs.setStringList(_storageKey, existing);
   }
 
-  /// Deletes all stored contract applications (optional admin use)
+  /// 🗑️ Delete all stored contract applications (e.g. admin cleanup)
   Future<void> clearAllApplications() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
