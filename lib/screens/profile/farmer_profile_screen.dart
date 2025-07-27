@@ -112,6 +112,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
                 validator: (value) => value == null || value.isEmpty ? 'Enter name' : null,
+                textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
                 controller: _idController,
@@ -134,9 +135,10 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                 title: const Text('Government Subsidised'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              ElevatedButton.icon(
+                icon: const Icon(Icons.save),
                 onPressed: _saveProfile,
-                child: const Text('Save Profile'),
+                label: const Text('Save Profile'),
               ),
             ],
           ),
