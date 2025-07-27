@@ -15,6 +15,7 @@ class DiagnosisScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasImage = image != null && image!.existsSync();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('🌾 Diagnosis Result'),
