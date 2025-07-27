@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:agrix_beta_2025/models/loan/loan_application.dart';
 import 'package:agrix_beta_2025/services/loan/loan_application_service.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
-import 'package:intl/intl.dart';
 
 class LoanListScreen extends StatefulWidget {
   const LoanListScreen({super.key});
@@ -14,7 +14,6 @@ class LoanListScreen extends StatefulWidget {
 class _LoanListScreenState extends State<LoanListScreen> {
   List<LoanApplication> _loans = [];
   bool _loading = true;
-  String? _activeFarmerId;
 
   @override
   void initState() {
@@ -26,6 +25,7 @@ class _LoanListScreenState extends State<LoanListScreen> {
     try {
       final profile = await FarmerProfileService.loadActiveProfile();
       final farmerId = profile?.farmerId;
+
       if (farmerId == null || farmerId.isEmpty) {
         setState(() {
           _loans = [];
@@ -39,39 +39,62 @@ class _LoanListScreenState extends State<LoanListScreen> {
 
       setState(() {
         _loans = filtered;
-        _activeFarmerId = farmerId;
         _loading = false;
       });
     } catch (e) {
       debugPrint('❌ Error loading loans: $e');
-      setState(() => _loading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load loans.')),
+        );
+        setState(() => _loading = false);
+      }
     }
+  }
+
+  Widget _buildLoanCard(LoanApplication loan) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: const Icon(Icons.credit_score, color: Colors.green),
+        title: Text(
+          'ZMW ${loan.amount.toStringAsFixed(2)}',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('📄 Purpose: ${loan.purpose}'),
+              Text('📆 Duration: ${loan.durationMonths} months'),
+              Text('📊 Status: ${loan.status}'),
+              Text('🕒 Applied: ${DateFormat.yMMMd().format(loan.applicationDate)}'),
+            ],
+          ),
+        ),
+        isThreeLine: true,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Loan Applications')),
+      appBar: AppBar(title: const Text('💼 My Loan Applications')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _loans.isEmpty
-              ? const Center(child: Text('No loan applications found.'))
-              : ListView.builder(
-                  itemCount: _loans.length,
-                  itemBuilder: (context, index) {
-                    final loan = _loans[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        leading: const Icon(Icons.credit_score),
-                        title: Text('ZMW ${loan.amount.toStringAsFixed(2)}'),
-                        subtitle: Text(
-                          'Status: ${loan.status}\nPurpose: ${loan.purpose}\nDuration: ${loan.durationMonths} months\nApplied: ${DateFormat.yMMMd().format(loan.applicationDate)}',
-                        ),
-                        isThreeLine: true,
-                      ),
-                    );
-                  },
+              ? const Center(child: Text('🚫 No loan applications found.'))
+              : RefreshIndicator(
+                  onRefresh: _loadLoans,
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: _loans.length,
+                    itemBuilder: (context, index) => _buildLoanCard(_loans[index]),
+                  ),
                 ),
     );
   }
