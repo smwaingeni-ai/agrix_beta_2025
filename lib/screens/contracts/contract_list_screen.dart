@@ -45,12 +45,21 @@ class _ContractListScreenState extends State<ContractListScreen> {
   Widget _buildContractCard(ContractOffer contract) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      elevation: 2,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
-        leading: const Icon(Icons.handshake_outlined, color: Colors.teal),
-        title: Text(contract.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(
-          '${contract.cropOrLivestockType} • ${contract.location} • ZMW ${contract.amount.toStringAsFixed(2)}',
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        leading: const Icon(Icons.handshake_outlined, color: Colors.teal, size: 28),
+        title: Text(
+          contract.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Text(
+            '${contract.cropOrLivestockType} • ${contract.location} • ZMW ${contract.amount.toStringAsFixed(2)}',
+            style: const TextStyle(fontSize: 14),
+          ),
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
@@ -89,18 +98,25 @@ class _ContractListScreenState extends State<ContractListScreen> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text('❌ Failed to load contracts.\n${snapshot.error}'),
+              child: Text(
+                '❌ Failed to load contracts.\n${snapshot.error}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
             );
           }
 
           final contracts = snapshot.data ?? [];
           if (contracts.isEmpty) {
-            return const Center(child: Text('No contract offers available.'));
+            return const Center(
+              child: Text('No contract offers available.'),
+            );
           }
 
           return ListView.builder(
             itemCount: contracts.length,
-            itemBuilder: (context, index) => _buildContractCard(contracts[index]),
+            itemBuilder: (context, index) =>
+                _buildContractCard(contracts[index]),
           );
         },
       ),
