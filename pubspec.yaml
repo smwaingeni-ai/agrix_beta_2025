@@ -59,6 +59,7 @@ flutter:
     - assets/tflite/crop_disease_model.tflite
     - assets/data/crop_labels.txt
     - assets/crops/
+    - assets/data/crop_rules.csv
 
     # 🐄 Livestock rules and images
     - assets/data/livestock_rules.csv
