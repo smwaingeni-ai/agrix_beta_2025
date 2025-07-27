@@ -33,26 +33,34 @@ class _SustainabilityLogScreenState extends State<SustainabilityLogScreen> {
   Future<void> _saveLog() async {
     if (_formKey.currentState!.validate()) {
       final log = SustainabilityLog.empty().copyWith(
-        activity: _activityController.text,
-        impact: _impactController.text,
-        region: _regionController.text,
+        activity: _activityController.text.trim(),
+        impact: _impactController.text.trim(),
+        region: _regionController.text.trim(),
         date: _selectedDate,
       );
 
       await SustainabilityLogService.saveLog(log);
+
       _activityController.clear();
       _impactController.clear();
       _regionController.clear();
-      setState(() {
-        _selectedDate = DateTime.now();
-      });
+      setState(() => _selectedDate = DateTime.now());
+
       await _loadLogs();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✅ Log saved successfully')),
+      );
     }
   }
 
   Future<void> _deleteLog(int index) async {
     await SustainabilityLogService.deleteLog(index);
     await _loadLogs();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('🗑️ Log deleted')),
+    );
   }
 
   Future<void> _pickDate() async {
@@ -68,9 +76,17 @@ class _SustainabilityLogScreenState extends State<SustainabilityLogScreen> {
   }
 
   @override
+  void dispose() {
+    _activityController.dispose();
+    _impactController.dispose();
+    _regionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sustainability Log')),
+      appBar: AppBar(title: const Text('🌍 Sustainability Log')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -82,56 +98,74 @@ class _SustainabilityLogScreenState extends State<SustainabilityLogScreen> {
                   TextFormField(
                     controller: _activityController,
                     decoration: const InputDecoration(labelText: 'Activity'),
-                    validator: (value) => value == null || value.isEmpty ? 'Enter activity' : null,
+                    validator: (value) =>
+                        value == null || value.trim().isEmpty ? 'Enter activity' : null,
                   ),
+                  const SizedBox(height: 8),
                   TextFormField(
                     controller: _impactController,
                     decoration: const InputDecoration(labelText: 'Impact'),
-                    validator: (value) => value == null || value.isEmpty ? 'Enter impact' : null,
+                    validator: (value) =>
+                        value == null || value.trim().isEmpty ? 'Enter impact' : null,
                   ),
+                  const SizedBox(height: 8),
                   TextFormField(
                     controller: _regionController,
                     decoration: const InputDecoration(labelText: 'Region'),
-                    validator: (value) => value == null || value.isEmpty ? 'Enter region' : null,
+                    validator: (value) =>
+                        value == null || value.trim().isEmpty ? 'Enter region' : null,
                   ),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text('Date: ${DateFormat.yMMMd().format(_selectedDate)}'),
-                      TextButton(
+                      Text('📅 ${DateFormat.yMMMd().format(_selectedDate)}'),
+                      const Spacer(),
+                      TextButton.icon(
                         onPressed: _pickDate,
-                        child: const Text('Change'),
+                        icon: const Icon(Icons.calendar_today),
+                        label: const Text('Change'),
                       ),
                     ],
                   ),
-                  ElevatedButton(
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
                     onPressed: _saveLog,
-                    child: const Text('Save Log'),
+                    icon: const Icon(Icons.save),
+                    label: const Text('Save Log'),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 8),
             const Text(
-              'Logged Activities:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              '📋 Logged Activities',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
+            const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
-                itemCount: _logs.length,
-                itemBuilder: (context, index) {
-                  final log = _logs[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(log.activity),
-                      subtitle: Text('${log.impact} | ${log.region} | ${DateFormat.yMMMd().format(log.date)}'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteLog(index),
-                      ),
+              child: _logs.isEmpty
+                  ? const Center(child: Text('📭 No logs recorded yet.'))
+                  : ListView.builder(
+                      itemCount: _logs.length,
+                      itemBuilder: (context, index) {
+                        final log = _logs[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          child: ListTile(
+                            title: Text(log.activity),
+                            subtitle: Text(
+                              '${log.impact} | ${log.region} | ${DateFormat.yMMMd().format(log.date)}',
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteLog(index),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
