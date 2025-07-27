@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
 import 'package:agrix_beta_2025/services/market/market_service.dart';
 
@@ -12,6 +13,7 @@ class InvestmentOffersScreen extends StatefulWidget {
 class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
   List<InvestmentOffer> _offers = [];
   bool _loading = true;
+  final _currencyFormatter = NumberFormat.currency(symbol: '\$');
 
   @override
   void initState() {
@@ -44,7 +46,7 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
   Widget _buildOfferCard(InvestmentOffer offer) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      elevation: 4,
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -56,10 +58,10 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
-            Text('📞 ${offer.contact}'),
-            Text('💰 Amount: \$${offer.amount.toStringAsFixed(2)}'),
-            Text('📈 Rate: ${offer.interestRate}%'),
-            Text('📅 Term: ${offer.term}'),
+            if (offer.contact.isNotEmpty) Text('📞 ${offer.contact}'),
+            Text('💰 Amount: ${_currencyFormatter.format(offer.amount)}'),
+            Text('📈 Interest Rate: ${offer.interestRate.toStringAsFixed(2)}%'),
+            Text('⏱ Term: ${offer.term.isNotEmpty ? offer.term : 'N/A'}'),
             Text(
               '📊 Status: ${offer.isAccepted ? "✅ Accepted" : "⏳ Pending"}',
               style: TextStyle(
@@ -67,8 +69,11 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Text('🕒 Posted: ${offer.timestamp.toLocal().toString().split('.')[0]}'),
-            const SizedBox(height: 8),
+            Text(
+              '🕒 Posted: ${offer.timestamp.toLocal().toString().split('.').first}',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
@@ -101,8 +106,8 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
               : RefreshIndicator(
                   onRefresh: _fetchOffers,
                   child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: _offers.length,
+                    physics: const AlwaysScrollableScrollPhysics(),
                     itemBuilder: (context, index) =>
                         _buildOfferCard(_offers[index]),
                   ),
