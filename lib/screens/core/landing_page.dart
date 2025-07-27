@@ -163,7 +163,7 @@ class _LandingPageState extends State<LandingPage> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('Create Farmer Profile'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/profile')
+                      Navigator.pushNamed(context, '/farmerProfile')
                           .then((_) => _loadProfile());
                     },
                   ),
