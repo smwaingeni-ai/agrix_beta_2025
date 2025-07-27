@@ -26,7 +26,10 @@ class CropsScreen extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         leading: Icon(icon, size: 30, color: Colors.green.shade700),
-        title: Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 18),
         onTap: onPressed,
       ),
