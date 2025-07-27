@@ -1,17 +1,19 @@
+// lib/services/auth/session_service.dart
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SessionService {
   static const _userKey = 'agrix_active_user';
   static final FlutterSecureStorage? _secureStorage =
       !kIsWeb ? const FlutterSecureStorage() : null;
 
-  /// 🔐 Save session to secure storage and local JSON
+  /// 🔐 Save session to secure storage and local file
   static Future<void> saveUserSession(UserModel user) async {
     try {
       if (!kIsWeb && _secureStorage != null) {
@@ -22,13 +24,13 @@ class SessionService {
       final file = File('${dir.path}/session.json');
       await file.writeAsString(jsonEncode(user.toJson()));
 
-      print('✅ User session saved${kIsWeb ? '' : ' to secure storage'} and session.json');
+      print('✅ User session saved ${kIsWeb ? '' : 'to secure storage'} and session.json');
     } catch (e) {
       print('❌ Failed to save user session: $e');
     }
   }
 
-  /// 📥 Load user session from secure storage or file
+  /// 📥 Load session from secure storage or local file
   static Future<UserModel?> getActiveUser() async {
     try {
       String? jsonStr;
@@ -54,7 +56,7 @@ class SessionService {
     }
   }
 
-  /// 🧹 Clear secure storage and file session
+  /// 🧹 Clear session from secure storage and local file
   static Future<void> clearSession() async {
     try {
       if (!kIsWeb && _secureStorage != null) {
@@ -74,7 +76,7 @@ class SessionService {
     }
   }
 
-  /// 🔐 Validate biometric + session
+  /// ✅ Biometric + session validation for secure app entry
   static Future<bool> checkSession() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -91,7 +93,7 @@ class SessionService {
         return false;
       }
 
-      final bool isBioValid = await BiometricAuthService.authenticate();
+      final isBioValid = await BiometricAuthService.authenticate();
       print(isBioValid
           ? '✅ Session and biometrics validated'
           : '❌ Biometric auth failed');
@@ -102,7 +104,7 @@ class SessionService {
     }
   }
 
-  /// 🔎 Web-safe check: user session only
+  /// 🌐 Web-friendly login status check (file-based only)
   static Future<bool> isUserLoggedIn() async {
     final user = await getActiveUser();
     return user != null && user.id.trim().isNotEmpty;
