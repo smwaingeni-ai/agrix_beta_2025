@@ -1,6 +1,9 @@
+// lib/services/diagnostics/livestock_service.dart
+
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
+/// 🐄 Rule representing a livestock symptom-disease-treatment mapping
 class LivestockRule {
   final String symptom;
   final String disease;
@@ -28,7 +31,7 @@ class LivestockRule {
       species: fields[3],
       severity: fields[4],
       likelihoodScore: double.tryParse(fields[5]) ?? 0.0,
-      sampleImage: fields[6],
+      sampleImage: 'assets/images/livestock/${fields[6]}',
     );
   }
 
@@ -43,11 +46,12 @@ class LivestockRule {
       };
 }
 
+/// 🧠 LivestockService for loading and searching rules
 class LivestockService {
   static const String _csvPath = 'assets/data/livestock_rules.csv';
   final List<LivestockRule> _rules = [];
 
-  /// Load rules from CSV
+  /// 🔄 Load CSV rules from assets
   Future<void> loadRules() async {
     try {
       final raw = await rootBundle.loadString(_csvPath);
@@ -55,31 +59,35 @@ class LivestockService {
 
       for (int i = 1; i < lines.length; i++) {
         final line = lines[i];
-        final fields = line.split(',').map((e) => e.trim()).toList();
+        final fields = _safeSplit(line);
         if (fields.length >= 7) {
           _rules.add(LivestockRule.fromCsv(fields));
         }
       }
 
-      print('✅ LivestockService: Loaded ${_rules.length} rules.');
+      print('✅ LivestockService: Loaded ${_rules.length} rules');
     } catch (e) {
-      print('❌ Error loading livestock_rules.csv: $e');
+      print('❌ LivestockService: Error loading rules - $e');
     }
   }
 
-  /// Search by partial symptom keyword(s)
+  /// 🔍 Search rules by partial symptom input
   List<LivestockRule> search(String input) {
     final query = input.toLowerCase().trim();
-
-    final matches = _rules.where((rule) {
-      return rule.symptom.toLowerCase().contains(query);
-    }).toList();
-
-    // Sort by descending likelihood
+    final matches = _rules.where((rule) =>
+        rule.symptom.toLowerCase().contains(query)).toList();
     matches.sort((a, b) => b.likelihoodScore.compareTo(a.likelihoodScore));
     return matches;
   }
 
-  /// Get all loaded rules
+  /// 📦 Return all loaded rules
   List<LivestockRule> getAll() => _rules;
+
+  /// 🛡️ Safe CSV split with support for quoted commas
+  List<String> _safeSplit(String line) {
+    return line
+        .split(RegExp(r',(?=(?:[^"]*"[^"]*")*[^"]*$)'))
+        .map((e) => e.replaceAll('"', '').trim())
+        .toList();
+  }
 }
