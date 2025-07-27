@@ -37,15 +37,15 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final replyText = await ChatService.getBotResponse(text);
-      final botMessage = ChatMessage(sender: 'AgriGPT', message: replyText);
-
-      setState(() => _messages.add(botMessage));
+      final reply = await ChatService.getBotResponse(text);
+      setState(() {
+        _messages.add(ChatMessage(sender: 'AgriGPT', message: reply));
+      });
     } catch (e) {
       setState(() {
         _messages.add(ChatMessage(
           sender: 'AgriGPT',
-          message: '⚠️ Failed to get response. Please try again later.',
+          message: '⚠️ Unable to respond. Please try again later.',
         ));
       });
     } finally {
@@ -55,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 150), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -68,18 +68,31 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageBubble(ChatMessage msg) {
     final isUser = msg.sender == 'You';
+    final color = isUser ? Colors.green.shade100 : Colors.grey.shade300;
+    final align = isUser ? Alignment.centerRight : Alignment.centerLeft;
+    final icon = isUser ? Icons.person : Icons.smart_toy;
+
     return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: align,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isUser ? Colors.green.shade100 : Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(14),
+          color: color,
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Text(
-          '${msg.sender}: ${msg.message}',
-          style: const TextStyle(fontSize: 15),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: Colors.grey.shade700),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                msg.message,
+                style: const TextStyle(fontSize: 15),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -89,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('💬 AgriX Chat Assistant'),
+        title: const Text('💬 AgriGPT Chat Assistant'),
         centerTitle: true,
       ),
       body: Column(
@@ -105,11 +118,11 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           if (_isSending)
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(vertical: 10),
               child: CircularProgressIndicator(),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 14),
             child: Row(
               children: [
                 Expanded(
