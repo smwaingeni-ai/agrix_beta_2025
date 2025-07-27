@@ -1,4 +1,4 @@
-// /lib/screens/loans/loan_application.dart
+// lib/screens/loans/loan_application.dart
 
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart' as model;
@@ -42,7 +42,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
         setState(() => _loading = false);
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error loading farmers. Please try again later.')),
+        const SnackBar(content: Text('❌ Error loading farmers. Please try again later.')),
       );
     }
   }
@@ -55,7 +55,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
   void _submitLoanApplication() {
     if (!_formKey.currentState!.validate()) return;
 
-    final amount = double.tryParse(_amountController.text.trim());
+    final amount = double.tryParse(_amountController.text.trim())!;
     final score = _scoreFarmer(_selectedFarmer!);
     final approved = score > 30;
 
@@ -65,6 +65,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
         title: const Text('Loan Application Result'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               approved
@@ -73,8 +74,8 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Text('Score: ${score.toStringAsFixed(1)}'),
-            Text('Requested Amount: ZMW ${amount!.toStringAsFixed(2)}'),
+            Text('📊 Score: ${score.toStringAsFixed(1)}'),
+            Text('💰 Requested: ZMW ${amount.toStringAsFixed(2)}'),
           ],
         ),
         actions: [
@@ -90,7 +91,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Apply for Loan')),
+      appBar: AppBar(title: const Text('💰 Apply for Loan')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -103,13 +104,15 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
                     DropdownButtonFormField<model.FarmerProfile>(
                       isExpanded: true,
                       decoration: const InputDecoration(
-                        labelText: 'Select Farmer',
+                        labelText: '👨‍🌾 Select Farmer',
                         border: OutlineInputBorder(),
                       ),
                       items: _farmerMap.values.map((farmer) {
                         return DropdownMenuItem<model.FarmerProfile>(
                           value: farmer,
-                          child: Text('${farmer.displayName} (${farmer.govtAffiliated ? 'Govt' : 'Private'})'),
+                          child: Text(
+                            '${farmer.displayName} (${farmer.govtAffiliated ? 'Govt' : 'Private'})',
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) => setState(() => _selectedFarmer = value),
@@ -119,7 +122,7 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
                     TextFormField(
                       controller: _amountController,
                       decoration: const InputDecoration(
-                        labelText: 'Loan Amount (ZMW)',
+                        labelText: '💵 Loan Amount (ZMW)',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
@@ -133,12 +136,12 @@ class _LoanApplicationScreenState extends State<LoanApplicationScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
-                      onPressed: _submitLoanApplication,
                       icon: const Icon(Icons.check_circle_outline),
                       label: const Text('Submit Loan Application'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                       ),
+                      onPressed: _submitLoanApplication,
                     ),
                   ],
                 ),
