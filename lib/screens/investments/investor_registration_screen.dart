@@ -77,10 +77,10 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Investor Registered Successfully!')),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true); // Return to refresh caller
       }
     } catch (e) {
-      print('❌ Error saving investor: $e');
+      debugPrint('❌ Error saving investor: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('❌ Failed to register investor')),
@@ -140,11 +140,14 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
     TextInputType inputType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label, helperText: helper),
-      keyboardType: inputType,
-      validator: validator ?? (value) => value == null || value.isEmpty ? 'Required' : null,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(labelText: label, helperText: helper),
+        keyboardType: inputType,
+        validator: validator ?? (value) => value == null || value.isEmpty ? 'Required' : null,
+      ),
     );
   }
 
