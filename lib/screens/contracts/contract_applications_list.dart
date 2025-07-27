@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
 import 'package:agrix_beta_2025/models/contracts/contract_application.dart';
 import 'package:agrix_beta_2025/services/contracts/contract_application_service.dart';
@@ -20,11 +21,34 @@ class _ContractApplicationsListScreenState
   @override
   void initState() {
     super.initState();
+    _loadApplications();
+  }
+
+  void _loadApplications() {
     _futureApplications =
         ContractApplicationService().loadApplications(widget.offer.id);
   }
 
+  Future<void> _refreshApplications() async {
+    setState(() {
+      _loadApplications();
+    });
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.orange;
+    }
+  }
+
   Widget _buildApplicationCard(ContractApplication app) {
+    final appliedDate = DateFormat('dd MMM yyyy').format(app.appliedAt.toLocal());
+
     return Card(
       elevation: 3,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -44,8 +68,14 @@ class _ContractApplicationsListScreenState
               Text('📞 Contact: ${app.phoneNumber.isNotEmpty ? app.phoneNumber : 'N/A'}'),
               if (app.motivation.isNotEmpty)
                 Text('📝 Motivation: ${app.motivation}'),
-              Text('📅 Applied: ${app.appliedAt.toLocal().toString().split(' ').first}'),
-              Text('🔖 Status: ${app.status}'),
+              Text('📅 Applied: $appliedDate'),
+              Text(
+                '🔖 Status: ${app.status}',
+                style: TextStyle(
+                  color: _getStatusColor(app.status),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
@@ -79,10 +109,13 @@ class _ContractApplicationsListScreenState
           }
 
           final applications = snapshot.data!;
-          return ListView.builder(
-            itemCount: applications.length,
-            itemBuilder: (context, index) =>
-                _buildApplicationCard(applications[index]),
+          return RefreshIndicator(
+            onRefresh: _refreshApplications,
+            child: ListView.builder(
+              itemCount: applications.length,
+              itemBuilder: (context, index) =>
+                  _buildApplicationCard(applications[index]),
+            ),
           );
         },
       ),
