@@ -64,6 +64,11 @@ import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'
 import 'package:agrix_beta_2025/screens/profile/credit_score_screen.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 
+// ✅ Admin
+import 'package:agrix_beta_2025/screens/admin/admin_logs_screen.dart';
+import 'package:agrix_beta_2025/screens/admin/admin_users_screen.dart';
+import 'package:agrix_beta_2025/screens/admin/admin_modules_screen.dart';
+
 final Map<String, WidgetBuilder> appRoutes = {
   // 🔹 Core
   '/': (context) => const LandingPage(),
@@ -85,7 +90,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/cropsScreen': (context) => const CropsScreen(),
   '/diagnosis': (context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
     return DiagnosisScreen(
       diagnosis: args?['diagnosis'] ?? {},
       image: args?['image'],
@@ -143,4 +147,9 @@ final Map<String, WidgetBuilder> appRoutes = {
 
   // 🔹 Programs
   '/programTracking': (context) => const ProgramTrackingScreen(),
+
+  // 🔹 Admin
+  '/admin/logs': (context) => const AdminLogsScreen(),
+  '/admin/users': (context) => const AdminUsersScreen(),
+  '/admin/modules': (context) => const AdminModulesScreen(),
 };
