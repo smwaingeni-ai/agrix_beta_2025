@@ -8,23 +8,31 @@ class MarketDetailScreen extends StatelessWidget {
   const MarketDetailScreen({Key? key, required this.marketItem}) : super(key: key);
 
   Widget _buildImageGallery(List<String>? paths) {
-    if (paths == null || paths.isEmpty) return const Text('No images provided.');
+    if (paths == null || paths.isEmpty) {
+      return const Text('🖼️ No images provided.');
+    }
 
     return SizedBox(
-      height: 150,
+      height: 160,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: paths.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
+          final path = paths[index];
           return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
             child: Image.file(
-              File(paths[index]),
-              width: 150,
-              height: 150,
+              File(path),
+              width: 160,
+              height: 160,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+              errorBuilder: (_, __, ___) => Container(
+                width: 160,
+                height: 160,
+                color: Colors.grey.shade200,
+                child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+              ),
             ),
           );
         },
@@ -49,7 +57,7 @@ class MarketDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDetailRow(String label, String? value) {
-    if (value == null || value.isEmpty) return const SizedBox.shrink();
+    if (value == null || value.trim().isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -63,21 +71,31 @@ class MarketDetailScreen extends StatelessWidget {
   }
 
   Widget _buildFlagsSection() {
-    return Row(
-      children: [
-        if (marketItem.isAvailable) const Chip(label: Text("Available")),
-        if (marketItem.isLoanAccepted) const Chip(label: Text("Loan Accepted")),
-        if (marketItem.isInvestmentOpen) const Chip(label: Text("Investment Open")),
-      ],
-    );
+    final flags = <Widget>[];
+    if (marketItem.isAvailable) {
+      flags.add(const Chip(label: Text("✅ Available")));
+    }
+    if (marketItem.isLoanAccepted) {
+      flags.add(const Chip(label: Text("💰 Loan Accepted")));
+    }
+    if (marketItem.isInvestmentOpen) {
+      flags.add(const Chip(label: Text("📈 Investment Open")));
+    }
+
+    return flags.isEmpty
+        ? const SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Wrap(spacing: 8, children: flags),
+          );
   }
 
   @override
   Widget build(BuildContext context) {
-    final postedDate = "Posted At: ${marketItem.postedAt.toLocal().toString().split('.')[0]}";
+    final postedAt = marketItem.postedAt.toLocal().toString().split('.')[0];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Market Item Details')),
+      appBar: AppBar(title: const Text('🛒 Market Item Details')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -86,25 +104,31 @@ class MarketDetailScreen extends StatelessWidget {
               marketItem.title,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 8),
-            _buildImageGallery(marketItem.imagePaths),
-            const SizedBox(height: 16),
-            _buildDetailRow("Description", marketItem.description),
-            _buildDetailRow("Category", marketItem.category),
-            _buildDetailRow("Type", marketItem.type),
-            _buildDetailRow("Listing Type", marketItem.listingType),
-            _buildDetailRow("Location", marketItem.location),
-            _buildDetailRow("Price", marketItem.price.toStringAsFixed(2)),
-            _buildDetailRow("Owner", marketItem.ownerName),
-            _buildDetailRow("Contact", marketItem.ownerContact),
-            _buildDetailRow("Investment Status", marketItem.investmentStatus),
-            _buildDetailRow("Investment Term", marketItem.investmentTerm),
             const SizedBox(height: 12),
-            _buildChips("Contact Methods", marketItem.contactMethods),
-            _buildChips("Payment Options", marketItem.paymentOptions),
+
+            _buildImageGallery(marketItem.imagePaths),
+            const SizedBox(height: 20),
+
+            _buildDetailRow("📝 Description", marketItem.description),
+            _buildDetailRow("📦 Category", marketItem.category),
+            _buildDetailRow("🔖 Type", marketItem.type),
+            _buildDetailRow("📋 Listing Type", marketItem.listingType),
+            _buildDetailRow("📍 Location", marketItem.location),
+            _buildDetailRow("💵 Price", "ZMW ${marketItem.price.toStringAsFixed(2)}"),
+            _buildDetailRow("👤 Owner", marketItem.ownerName),
+            _buildDetailRow("📞 Contact", marketItem.ownerContact),
+            _buildDetailRow("📊 Investment Status", marketItem.investmentStatus),
+            _buildDetailRow("⏳ Investment Term", marketItem.investmentTerm),
+
+            const SizedBox(height: 12),
+
+            _buildChips("📡 Contact Methods", marketItem.contactMethods),
+            _buildChips("💳 Payment Options", marketItem.paymentOptions),
+
             _buildFlagsSection(),
-            const SizedBox(height: 16),
-            Text(postedDate, style: const TextStyle(color: Colors.grey)),
+
+            const SizedBox(height: 20),
+            Text('📅 Posted At: $postedAt', style: const TextStyle(color: Colors.grey)),
           ],
         ),
       ),
