@@ -1,4 +1,6 @@
-import 'package:flutter/foundation.dart'; // For kIsWeb
+// lib/services/auth/biometric_auth_service.dart
+
+import 'package:flutter/foundation.dart'; // ✅ For kIsWeb
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
