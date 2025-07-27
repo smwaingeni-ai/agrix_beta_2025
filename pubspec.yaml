@@ -16,7 +16,7 @@ dependencies:
 
   # 🔷 State & Storage
   shared_preferences: ^2.0.15
-  flutter_secure_storage: ^8.1.0     # ✅ Stable to avoid ffi/win32 clash
+  flutter_secure_storage: ^8.1.0
   local_auth: ^2.1.6
 
   # 🔷 Utilities & Core
@@ -24,16 +24,17 @@ dependencies:
   url_launcher: ^6.1.7
   path_provider: ^2.1.2
   image_picker: ^1.0.4
-  share_plus: ^6.3.1                 # ✅ Compatible with ffi 1.x
+  share_plus: ^6.3.1
   csv: ^5.0.2
   qr_flutter: ^4.0.0
+  intl: ^0.18.1
 
-  # 🔷 TFLite – AI Inference (MOBILE ONLY)
-  tflite_flutter: ^0.9.0             # ✅ Compatible with ffi 1.1.x
+  # 🔷 TFLite – AI Inference (Mobile Only)
+  tflite_flutter: ^0.9.0
   tflite_flutter_helper: ^0.2.1
 
-  # 🔷 FFI Support (explicit for mobile)
-  ffi: ^1.1.2                         # ✅ Safe for tflite_flutter 0.9.0 (NOT 2.x)
+  # 🔷 FFI Support
+  ffi: ^1.1.2
 
   # 🔷 JSON Serialization
   json_annotation: ^4.8.0
@@ -58,9 +59,9 @@ flutter:
     # 📷 Crop AI
     - assets/tflite/crop_disease_model.tflite
     - assets/data/crop_labels.txt
-    - assets/crops/
     - assets/data/crop_rules.csv
     - assets/images/crops/
+    - assets/crops/
 
     # 🐄 Livestock rules and images
     - assets/data/livestock_rules.csv
@@ -76,6 +77,6 @@ flutter:
     - assets/data/officials.json
     - assets/data/traders.json
 
-    # 🖼 Icons and misc
+    # 🖼 General assets
     - assets/images/
     - assets/icons/
