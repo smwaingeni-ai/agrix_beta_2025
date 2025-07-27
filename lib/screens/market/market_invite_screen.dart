@@ -11,13 +11,11 @@ class MarketInviteScreen extends StatefulWidget {
 
 class _MarketInviteScreenState extends State<MarketInviteScreen> {
   final TextEditingController _messageController = TextEditingController();
-
   final List<String> _contacts = [
     '+263771234567',
     '+260971234567',
     '+254701234567',
   ];
-
   String _selectedContact = '';
 
   @override
@@ -25,37 +23,34 @@ class _MarketInviteScreenState extends State<MarketInviteScreen> {
     super.initState();
     _selectedContact = _contacts.isNotEmpty ? _contacts.first : '';
     _messageController.text =
-        "📢 Join us for AgriX Market Day! Browse listings, trade, invest, or lease assets across Africa. 🌍";
+        "📢 Join us for AgriX Market Day! Trade, invest, lease, and connect across Africa 🌍.";
   }
 
-  Future<void> _inviteViaWhatsApp() async {
-    if (_selectedContact.isEmpty) return _showError("No contact selected");
-    final uri = Uri.parse("https://wa.me/$_selectedContact?text=${Uri.encodeComponent(_messageController.text)}");
+  Future<void> _launch(String method, Uri uri) async {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      _showError("Could not open WhatsApp");
+      _showError("❌ Could not launch $method for $_selectedContact");
     }
+  }
+
+  Future<void> _inviteViaWhatsApp() async {
+    if (_selectedContact.isEmpty) return _showError("Please select a contact.");
+    final uri = Uri.parse(
+        "https://wa.me/$_selectedContact?text=${Uri.encodeComponent(_messageController.text)}");
+    await _launch("WhatsApp", uri);
   }
 
   Future<void> _inviteViaSMS() async {
-    if (_selectedContact.isEmpty) return _showError("No contact selected");
+    if (_selectedContact.isEmpty) return _showError("Please select a contact.");
     final uri = Uri.parse("sms:$_selectedContact?body=${Uri.encodeComponent(_messageController.text)}");
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      _showError("Could not send SMS");
-    }
+    await _launch("SMS", uri);
   }
 
   Future<void> _callContact() async {
-    if (_selectedContact.isEmpty) return _showError("No contact selected");
+    if (_selectedContact.isEmpty) return _showError("Please select a contact.");
     final uri = Uri.parse("tel:$_selectedContact");
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      _showError("Could not initiate call");
-    }
+    await _launch("Call", uri);
   }
 
   void _showError(String msg) {
@@ -84,7 +79,7 @@ class _MarketInviteScreenState extends State<MarketInviteScreen> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            const Text("Select Contact", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("📇 Select Contact", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: _selectedContact.isNotEmpty ? _selectedContact : null,
@@ -93,15 +88,13 @@ class _MarketInviteScreenState extends State<MarketInviteScreen> {
                 contentPadding: EdgeInsets.symmetric(horizontal: 12),
               ),
               isExpanded: true,
-              items: _contacts
-                  .map((phone) => DropdownMenuItem(value: phone, child: Text(phone)))
-                  .toList(),
-              onChanged: (val) {
-                if (val != null) setState(() => _selectedContact = val);
-              },
+              items: _contacts.map((phone) {
+                return DropdownMenuItem(value: phone, child: Text(phone));
+              }).toList(),
+              onChanged: (val) => setState(() => _selectedContact = val ?? ''),
             ),
             const SizedBox(height: 20),
-            const Text("Message", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("✉️ Message", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
               controller: _messageController,
@@ -112,7 +105,7 @@ class _MarketInviteScreenState extends State<MarketInviteScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            const Text("Choose an Action", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("📲 Choose an Action", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Wrap(
               spacing: 16,
