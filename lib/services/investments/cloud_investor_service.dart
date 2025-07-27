@@ -1,5 +1,7 @@
+// lib/services/investments/cloud_investor_service.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/investor_profile.dart';
+import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
 
 class CloudInvestorService {
   final CollectionReference _collection =
