@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import '../../models/officers/officer_assessment.dart';
+import 'package:agrix_beta_2025/models/officers/officer_assessment.dart';
 
 class OfficerAssessmentService {
   static const String _fileName = 'officer_assessments.json';
@@ -48,7 +48,7 @@ class OfficerAssessmentService {
     }
   }
 
-  /// 🔹 Update an assessment by index (optional enhancement: use ID if available)
+  /// 🔹 Update an assessment by index
   static Future<void> updateAssessment(int index, OfficerAssessment updated) async {
     try {
       final file = await _localFile();
