@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/screens/core/auth_gate.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/core/sync_screen.dart';
-import 'package:agrix_beta_2025/screens/core/notifications_screen.dart';
+import 'package:agrix_beta_2025/screens/notifications/notifications_screen.dart';
 
 // 🔐 Auth
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
@@ -16,13 +16,12 @@ import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'
 import 'package:agrix_beta_2025/screens/profile/credit_score_screen.dart';
 
 // 💰 Loans
-import 'package:agrix_beta_2025/screens/loans/loan_screen.dart';
-import 'package:agrix_beta_2025/screens/loans/loan_application.dart';
+import 'package:agrix_beta_2025/screens/loan/loan_screen.dart';
+import 'package:agrix_beta_2025/screens/loan/loan_application_screen.dart';
+import 'package:agrix_beta_2025/screens/loan/loan_list_screen.dart';
 
 // 📒 Logs
 import 'package:agrix_beta_2025/screens/logs/logbook_screen.dart';
-import 'package:agrix_beta_2025/screens/logs/sustainability_log_screen.dart';
-import 'package:agrix_beta_2025/screens/logs/training_log_screen.dart';
 
 // 📊 Diagnostics
 import 'package:agrix_beta_2025/screens/diagnostics/upload_screen.dart';
@@ -34,6 +33,7 @@ import 'package:agrix_beta_2025/screens/diagnostics/soil_screen.dart';
 import 'package:agrix_beta_2025/screens/market/market_screen.dart';
 import 'package:agrix_beta_2025/screens/market/market_item_form.dart';
 import 'package:agrix_beta_2025/screens/market/market_detail_screen.dart';
+import 'package:agrix_beta_2025/screens/market/market_invite_screen.dart';
 
 // 📈 Investments
 import 'package:agrix_beta_2025/screens/investments/investor_list_screen.dart';
@@ -51,7 +51,6 @@ import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
 import 'package:agrix_beta_2025/screens/officers/officer_tasks_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/task_entry_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/field_assessment_screen.dart';
-import 'package:agrix_beta_2025/screens/officers/officer_assessments_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/arex_officer_dashboard.dart';
 
 // 🏛️ Officials
@@ -65,7 +64,10 @@ import 'package:agrix_beta_2025/screens/programs/program_detail_screen.dart';
 // 🌿 Sustainability
 import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
 
-// 🛍️ Traders
+// 🧠 Training
+import 'package:agrix_beta_2025/screens/training/training_log_screen.dart';
+
+// 🛍️ Trader
 import 'package:agrix_beta_2025/screens/trader/trader_dashboard.dart';
 
 // 💬 Help & Chat
@@ -73,46 +75,48 @@ import 'package:agrix_beta_2025/screens/chat_help/chat_screen.dart';
 import 'package:agrix_beta_2025/screens/chat_help/help_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
-  // ✅ Core & Auth
+  // 🧭 Core
   '/': (context) => const LandingPage(),
+  '/authGate': (context) => const AuthGate(),
+  '/sync': (context) => const SyncScreen(),
+  '/notifications': (context) => const NotificationsScreen(),
+
+  // 🔐 Auth
   '/login': (context) => const LoginScreen(),
   '/register': (context) => const RegisterUserScreen(),
-  '/authGate': (context) => const AuthGate(),
-  '/notifications': (context) => const NotificationsScreen(),
-  '/sync': (context) => const SyncScreen(),
 
-  // ✅ Profile
+  // 🧑‍🌾 Profile
   '/farmerProfile': (context) => const FarmerProfileScreen(),
   '/editFarmerProfile': (context) => const EditFarmerProfileScreen(),
   '/creditScore': (context) => const CreditScoreScreen(),
 
-  // ✅ Loans
+  // 💰 Loans
   '/loan': (context) => const LoanScreen(),
   '/loanApplication': (context) => const LoanApplicationScreen(),
+  '/loanList': (context) => const LoanListScreen(),
 
-  // ✅ Logs
+  // 📒 Logs
   '/logbook': (context) => const LogbookScreen(),
-  '/sustainabilityLog': (context) => const SustainabilityLogScreen(),
-  '/trainingLog': (context) => const TrainingLogScreen(),
 
-  // ✅ Diagnostics
+  // 📊 Diagnostics
   '/upload': (context) => const UploadScreen(),
   '/crops': (context) => const CropsScreen(),
   '/livestock': (context) => const LivestockScreen(),
   '/soil': (context) => const SoilScreen(),
 
-  // ✅ Market
+  // 🛒 Market
   '/market': (context) => const MarketScreen(),
   '/market/add': (context) => MarketItemForm(onSubmit: (_) {}),
   '/market/detail': (context) => const MarketDetailScreen(),
+  '/market/invite': (context) => const MarketInviteScreen(),
 
-  // ✅ Investments
+  // 📈 Investments
   '/investors': (context) => const InvestorListScreen(),
   '/investors/register': (context) => const InvestorRegistrationScreen(),
   '/investment/offer': (context) => const InvestmentOfferScreen(),
   '/investment/offers': (context) => const InvestmentOffersScreen(),
 
-  // ✅ Contracts
+  // 🤝 Contracts
   '/contracts/list': (context) => const ContractListScreen(),
   '/contracts/new': (context) => const ContractOfferForm(),
   '/contracts/detail': (context) {
@@ -120,24 +124,30 @@ final Map<String, WidgetBuilder> appRoutes = {
     return ContractDetailScreen(contract: offer);
   },
 
-  // ✅ Officers & AREX
+  // 🧑‍🏫 Officers & AREX
   '/officer/tasks': (context) => const OfficerTasksScreen(),
   '/task_entry': (context) => const TaskEntryScreen(),
   '/field_assessment': (context) => const FieldAssessmentScreen(),
-  '/officer/assessments': (context) => const OfficerAssessmentsScreen(),
   '/officer/dashboard': (context) => const ArexOfficerDashboard(),
 
-  // ✅ Government Officials
+  // 🏛️ Government Officials
   '/official/dashboard': (context) => const OfficialDashboard(),
 
-  // ✅ Programs
+  // 📋 Programs
   '/program_tracking': (context) => const ProgramTrackingScreen(),
   '/program_form': (context) => const ProgramFormScreen(),
+  '/program_detail': (context) => const ProgramDetailScreen(),
 
-  // ✅ Trader
+  // 🌿 Sustainability
+  '/sustainabilityLog': (context) => const SustainabilityLogScreen(),
+
+  // 🧠 Training
+  '/trainingLog': (context) => const TrainingLogScreen(),
+
+  // 🛍️ Trader
   '/trader/dashboard': (context) => const TraderDashboard(),
 
-  // ✅ Help & Chat
+  // 💬 Help & Chat
   '/chat': (context) => const ChatScreen(),
   '/help': (context) => const HelpScreen(),
 };
