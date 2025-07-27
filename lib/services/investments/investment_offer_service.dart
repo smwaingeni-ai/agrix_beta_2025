@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/investments/investment_offer.dart';
+import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
 
 class InvestmentOfferService {
   final CollectionReference _collection =
       FirebaseFirestore.instance.collection('investment_offers');
 
-  /// 🔹 Create or update an investment offer in Firestore
+  /// 🔹 Save or update an investment offer in Firestore
   Future<void> saveOffer(InvestmentOffer offer) async {
     try {
       await _collection
@@ -34,7 +34,7 @@ class InvestmentOfferService {
     }
   }
 
-  /// 🔹 Get offer by ID
+  /// 🔹 Get investment offer by ID
   Future<InvestmentOffer?> getOfferById(String id) async {
     try {
       final doc = await _collection.doc(id).get();
@@ -51,7 +51,7 @@ class InvestmentOfferService {
     }
   }
 
-  /// 🔹 Delete an offer by ID
+  /// 🔹 Delete an investment offer by ID
   Future<void> deleteOffer(String id) async {
     try {
       await _collection.doc(id).delete();
@@ -63,12 +63,11 @@ class InvestmentOfferService {
     }
   }
 
-  /// 🔹 Load offers filtered by investor ID or farmer ID (optional)
+  /// 🔹 Load offers filtered by party ID (investor or farmer)
   Future<List<InvestmentOffer>> loadOffersByParty(String partyId) async {
     try {
-      final snapshot = await _collection
-          .where('parties', arrayContains: partyId)
-          .get();
+      final snapshot =
+          await _collection.where('parties', arrayContains: partyId).get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
