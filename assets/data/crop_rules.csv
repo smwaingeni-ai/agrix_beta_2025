@@ -5,7 +5,7 @@ yellow leaves,Nutrient Deficiency,Add nitrogen fertilizer,Rice,Mild,0.6,yellow_l
 white powder,Powdery Mildew,Use sulfur-based fungicide,Cucumber,Moderate,0.72,powdery_mildew.jpg
 brown patches,Brown Patch,"Reduce watering, use fungicide",Lettuce,Severe,0.81,brown_patch.jpg
 Yellowing leaves,Nitrogen Deficiency,Apply nitrogen-rich fertilizer,Maize,Moderate,0.7,yellowing.jpg
-Leaf spots,Leaf Spot Disease,Use fungicide spray,Tomato,Mild,0.5,leaf_spot.jpg
-Wilting,Fusarium Wilt,Soil solarization,Tomato,Severe,0.9,wilt.jpg
+Leaf spots,Leaf Spot Disease,Use fungicide spray,Tomato,Mild,0.5,leaf_spot2.jpg
+Wilting,Fusarium Wilt,Soil solarization,Tomato,Severe,0.9,wilt2.jpg
 Stunted growth,Root Knot Nematodes,Apply nematicide,Soybean,Severe,0.85,nematode.jpg
 Blotchy patches,Blight,Copper-based spray,Potato,Moderate,0.65,blight.jpg
