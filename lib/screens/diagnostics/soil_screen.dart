@@ -47,7 +47,8 @@ class _SoilScreenState extends State<SoilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final regions = _soilData.map((e) => e['Region']).whereType<String>().toSet().toList()..sort();
+    final regions = _soilData.map((e) => e['Region']).whereType<String>().toSet().toList()
+      ..sort();
 
     return Scaffold(
       appBar: AppBar(title: const Text("🧱 Soil Advisor")),
