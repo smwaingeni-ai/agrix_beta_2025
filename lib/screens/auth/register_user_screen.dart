@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:agrix_beta_2025/models/user_model.dart';
-import 'package:agrix_beta_2025/models/farmer_profile.dart';
-import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/profile/farmer_profile_form.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
@@ -36,7 +33,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
   String cell = '';
   String farmType = '';
 
-  final List<String> roles = ['Farmer', 'Investor', 'Officer', 'Official', 'Admin'];
+  final List<String> roles = ['Farmer', 'Investor', 'AREX Officer', 'Government Official', 'Admin'];
 
   Future<void> _registerUser() async {
     if (!_formKey.currentState!.validate()) return;
@@ -51,22 +48,20 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     if (role == 'Investor') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => InvestorRegistrationScreen(userId: userId, name: name),
-        ),
+        MaterialPageRoute(builder: (_) => InvestorRegistrationScreen(userId: userId, name: name)),
       );
     } else if (role == 'Farmer') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => FarmerProfileForm(userId: userId, name: name),
-        ),
+        MaterialPageRoute(builder: (_) => FarmerProfileForm(userId: userId, name: name)),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ User registered successfully')),
-      );
-      Navigator.pop(context); // Go back to login or dashboard
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ User registered successfully')),
+        );
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -86,7 +81,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
       users.add(user.toJson());
       await file.writeAsString(jsonEncode(users));
     } catch (e) {
-      print('❌ Error saving user: $e');
+      debugPrint('❌ Error saving user: $e');
     }
   }
 
@@ -97,19 +92,31 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     TextInputType keyboardType = TextInputType.text,
     required FormFieldSetter<String> onSaved,
   }) {
-    return TextFormField(
-      decoration: InputDecoration(labelText: label),
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      validator: validator ? (val) => val == null || val.isEmpty ? 'Required' : null : null,
-      onSaved: onSaved,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
+        obscureText: obscure,
+        keyboardType: keyboardType,
+        validator: validator ? (val) => val == null || val.isEmpty ? 'Required' : null : null,
+        onSaved: onSaved,
+      ),
     );
   }
 
   List<Widget> _buildFarmerFields() {
     return [
-      _buildTextField(label: 'ID Number', onSaved: (val) => idNumber = val!, validator: true),
-      _buildTextField(label: 'Phone Number', keyboardType: TextInputType.phone, onSaved: (val) => phone = val!, validator: true),
+      _buildTextField(
+        label: 'ID Number',
+        onSaved: (val) => idNumber = val!,
+        validator: true,
+      ),
+      _buildTextField(
+        label: 'Phone Number',
+        keyboardType: TextInputType.phone,
+        onSaved: (val) => phone = val!,
+        validator: true,
+      ),
       _buildTextField(label: 'Province', onSaved: (val) => province = val ?? ''),
       _buildTextField(label: 'District', onSaved: (val) => district = val ?? ''),
       _buildTextField(label: 'Ward', onSaved: (val) => ward = val ?? ''),
@@ -135,9 +142,18 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
                 items: roles.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
                 onChanged: (val) => setState(() => role = val!),
               ),
-              _buildTextField(label: 'Username / Full Name', onSaved: (val) => name = val!, validator: true),
+              _buildTextField(
+                label: 'Username / Full Name',
+                onSaved: (val) => name = val!,
+                validator: true,
+              ),
               if (role == 'Farmer') ..._buildFarmerFields(),
-              _buildTextField(label: 'Passcode', obscure: true, onSaved: (val) => passcode = val!, validator: true),
+              _buildTextField(
+                label: 'Passcode',
+                obscure: true,
+                onSaved: (val) => passcode = val!,
+                validator: true,
+              ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 icon: const Icon(Icons.check_circle),
