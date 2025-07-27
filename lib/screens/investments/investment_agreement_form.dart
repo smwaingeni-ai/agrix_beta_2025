@@ -28,37 +28,35 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStart ? DateTime.now() : (_startDate ?? DateTime.now()).add(const Duration(days: 30)),
+      initialDate: isStart
+          ? (_startDate ?? DateTime.now())
+          : (_endDate ?? DateTime.now().add(const Duration(days: 30))),
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
 
     if (picked != null) {
       setState(() {
-        if (isStart) {
-          _startDate = picked;
-        } else {
-          _endDate = picked;
-        }
+        isStart ? _startDate = picked : _endDate = picked;
       });
     }
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState?.validate() != true || _startDate == null || _endDate == null) {
+    if (!_formKey.currentState!.validate() || _startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields and select dates.')),
+        const SnackBar(content: Text('❗ Fill all fields and pick dates.')),
       );
       return;
     }
 
     final agreement = InvestmentAgreement(
       agreementId: const Uuid().v4(),
-      farmerName: _farmerNameController.text,
-      investorName: _investorNameController.text,
-      amount: double.parse(_amountController.text),
-      currency: _currencyController.text,
-      terms: _termsController.text,
+      farmerName: _farmerNameController.text.trim(),
+      investorName: _investorNameController.text.trim(),
+      amount: double.parse(_amountController.text.trim()),
+      currency: _currencyController.text.trim(),
+      terms: _termsController.text.trim(),
       startDate: _startDate!,
       endDate: _endDate!,
       status: _status,
@@ -66,92 +64,89 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
 
     await InvestmentAgreementService().saveAgreement(agreement);
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Agreement submitted successfully.')),
+      const SnackBar(content: Text('✅ Agreement saved successfully!')),
     );
+    Navigator.of(context).pop();
+  }
 
-    Navigator.of(context).pop(); // go back to previous screen
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    bool required = true,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        validator: required
+            ? (value) => value == null || value.trim().isEmpty ? 'Required' : null
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildDateRow(String label, DateTime? date, bool isStart) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Text('$label: ',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            date != null ? DateFormat.yMMMd().format(date) : 'Not selected',
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () => _selectDate(context, isStart),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Investment Agreement')),
+      appBar: AppBar(title: const Text('📑 New Investment Agreement')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
-                controller: _farmerNameController,
-                decoration: const InputDecoration(labelText: 'Farmer Name'),
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-              ),
-              TextFormField(
-                controller: _investorNameController,
-                decoration: const InputDecoration(labelText: 'Investor Name'),
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-              ),
-              TextFormField(
+              _buildTextField(controller: _farmerNameController, label: 'Farmer Name'),
+              _buildTextField(controller: _investorNameController, label: 'Investor Name'),
+              _buildTextField(
                 controller: _amountController,
-                decoration: const InputDecoration(labelText: 'Amount'),
+                label: 'Amount',
                 keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Required';
-                  final parsed = double.tryParse(value);
-                  return parsed == null ? 'Enter valid number' : null;
-                },
               ),
-              TextFormField(
-                controller: _currencyController,
-                decoration: const InputDecoration(labelText: 'Currency'),
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-              ),
-              TextFormField(
+              _buildTextField(controller: _currencyController, label: 'Currency'),
+              _buildTextField(
                 controller: _termsController,
-                decoration: const InputDecoration(labelText: 'Terms'),
+                label: 'Terms & Conditions',
                 maxLines: 4,
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Text('Start Date:'),
-                  const SizedBox(width: 10),
-                  Text(_startDate == null
-                      ? 'Not selected'
-                      : DateFormat.yMMMd().format(_startDate!)),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context, true),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  const Text('End Date:'),
-                  const SizedBox(width: 10),
-                  Text(_endDate == null
-                      ? 'Not selected'
-                      : DateFormat.yMMMd().format(_endDate!)),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context, false),
-                  ),
-                ],
-              ),
+              _buildDateRow('Start Date', _startDate, true),
+              _buildDateRow('End Date', _endDate, false),
               DropdownButtonFormField<String>(
                 value: _status,
                 items: ['Pending', 'Active', 'Completed']
-                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                     .toList(),
                 decoration: const InputDecoration(labelText: 'Status'),
-                onChanged: (val) {
-                  if (val != null) {
-                    setState(() => _status = val);
-                  }
-                },
+                onChanged: (val) => setState(() => _status = val!),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
