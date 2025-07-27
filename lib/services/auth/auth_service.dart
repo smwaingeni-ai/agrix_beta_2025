@@ -1,3 +1,5 @@
+// lib/services/auth/auth_service.dart
+
 class AuthService {
   static final List<Map<String, String>> dummyUsers = [
     {'role': 'Farmer', 'name': 'demo', 'passcode': '123456'},
