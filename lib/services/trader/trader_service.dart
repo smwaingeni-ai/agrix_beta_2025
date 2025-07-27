@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../../models/trader/trader_profile.dart';
+import 'package:agrix_beta_2025/models/trader/trader_profile.dart';
 
 class TraderService {
   static const String _dataPath = 'assets/data/traders.json';
