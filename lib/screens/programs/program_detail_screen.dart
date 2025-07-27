@@ -14,6 +14,8 @@ class ProgramDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('📋 Program Details'),
+        centerTitle: true,
+        backgroundColor: Colors.green.shade700,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -22,22 +24,15 @@ class ProgramDetailScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
               children: [
-                _buildDetailRow('📌 Program Name:', program.programName),
-                const SizedBox(height: 12),
-                _buildDetailRow('👨‍🌾 Farmer:', program.farmer),
-                const SizedBox(height: 12),
-                _buildDetailRow('📍 Region:', program.region),
-                const SizedBox(height: 12),
-                _buildDetailRow('🛠️ Resource:', program.resource),
-                const SizedBox(height: 12),
-                _buildDetailRow('🌱 Impact:', program.impact),
-                const SizedBox(height: 12),
-                _buildDetailRow('🧑‍💼 Officer:', program.officer),
-                const SizedBox(height: 12),
-                _buildDetailRow('📅 Date:', formattedDate),
+                _buildDetailRow('📌 Program Name', program.programName),
+                _buildDetailRow('👨‍🌾 Farmer', program.farmer),
+                _buildDetailRow('📍 Region', program.region),
+                _buildDetailRow('🛠️ Resource', program.resource),
+                _buildDetailRow('🌱 Impact', program.impact),
+                _buildDetailRow('🧑‍💼 Officer', program.officer),
+                _buildDetailRow('📅 Date', formattedDate),
               ],
             ),
           ),
@@ -47,24 +42,26 @@ class ProgramDetailScreen extends StatelessWidget {
   }
 
   Widget _buildDetailRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value.isNotEmpty ? value : 'N/A',
-            style: const TextStyle(fontSize: 16),
+          Expanded(
+            child: Text(
+              value.isNotEmpty ? value : 'N/A',
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
