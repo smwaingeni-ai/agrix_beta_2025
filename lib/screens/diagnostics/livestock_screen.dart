@@ -36,8 +36,8 @@ class _LivestockScreenState extends State<LivestockScreen> {
       }
     }
 
-    results.sort((a, b) => double.parse(b['likelihoodscore'])
-        .compareTo(double.parse(a['likelihoodscore'])));
+    results.sort((a, b) =>
+        double.parse(b['likelihoodscore']).compareTo(double.parse(a['likelihoodscore'])));
 
     setState(() => _matches = results);
   }
@@ -54,7 +54,11 @@ class _LivestockScreenState extends State<LivestockScreen> {
       child: ListTile(
         contentPadding: const EdgeInsets.all(12),
         leading: imagePath != null
-            ? Image.asset(imagePath, width: 50, errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported))
+            ? Image.asset(
+                imagePath,
+                width: 50,
+                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+              )
             : const Icon(Icons.pets, size: 36),
         title: Text("🦠 ${m['disease']} (${m['species']})",
             style: const TextStyle(fontWeight: FontWeight.bold)),
