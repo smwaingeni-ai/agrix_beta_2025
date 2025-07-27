@@ -18,6 +18,7 @@ import 'package:agrix_beta_2025/screens/diagnostics/upload_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/livestock_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/soil_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/crops_screen.dart';
+import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart';
 
 // Contracts
 import 'package:agrix_beta_2025/screens/contracts/contract_offer_form.dart';
@@ -82,6 +83,14 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/livestockScreen': (context) => const LivestockScreen(),
   '/soilScreen': (context) => const SoilScreen(),
   '/cropsScreen': (context) => const CropsScreen(),
+  '/diagnosis': (context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    return DiagnosisScreen(
+      diagnosis: args?['diagnosis'] ?? {},
+      image: args?['image'],
+    );
+  },
 
   // 🔹 Contracts
   '/contractOffer': (context) => const ContractOfferForm(),
@@ -108,9 +117,7 @@ final Map<String, WidgetBuilder> appRoutes = {
     return MarketDetailScreen(marketItem: args);
   },
   '/marketForm': (context) => MarketItemForm(
-        onSubmit: (MarketItem item) {
-          // Optional override
-        },
+        onSubmit: (MarketItem item) {},
       ),
   '/marketInvite': (context) => const MarketInviteScreen(),
 
