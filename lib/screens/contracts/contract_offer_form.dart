@@ -43,44 +43,45 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
   }
 
   Future<void> _submit() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isSubmitting = true);
+    if (!_formKey.currentState!.validate()) return;
 
-      final offer = ContractOffer(
-        id: const Uuid().v4(),
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        location: _locationController.text.trim(),
-        duration: _durationController.text.trim(),
-        paymentTerms: _paymentTermsController.text.trim(),
-        contact: _contactController.text.trim(),
-        parties: _partiesController.text
-            .split(',')
-            .map((p) => p.trim())
-            .where((p) => p.isNotEmpty)
-            .toList(),
-        amount: double.tryParse(_amountController.text.trim()) ?? 0.0,
-        cropOrLivestockType: _cropTypeController.text.trim(),
-        terms: _termsController.text.trim(),
-        isActive: _isActive,
-        postedAt: DateTime.now(),
+    setState(() => _isSubmitting = true);
+
+    final offer = ContractOffer(
+      id: const Uuid().v4(),
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      location: _locationController.text.trim(),
+      duration: _durationController.text.trim(),
+      paymentTerms: _paymentTermsController.text.trim(),
+      contact: _contactController.text.trim(),
+      parties: _partiesController.text
+          .split(',')
+          .map((p) => p.trim())
+          .where((p) => p.isNotEmpty)
+          .toList(),
+      amount: double.tryParse(_amountController.text.trim()) ?? 0.0,
+      cropOrLivestockType: _cropTypeController.text.trim(),
+      terms: _termsController.text.trim(),
+      isActive: _isActive,
+      postedAt: DateTime.now(),
+    );
+
+    try {
+      await ContractService.addContractOffer(offer);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✅ Contract offer saved successfully')),
       );
-
-      try {
-        await ContractService.addContractOffer(offer);
-
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Contract offer saved successfully')),
-        );
-        Navigator.pop(context);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Failed to save: $e')),
-        );
-      } finally {
-        setState(() => _isSubmitting = false);
-      }
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Failed to save: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -116,7 +117,7 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Contract Offer')),
+      appBar: AppBar(title: const Text('📝 Create Contract Offer')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -132,10 +133,13 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
               _buildTextField(
                 controller: _descriptionController,
                 label: 'Description',
-                maxLines: 3,
                 required: true,
+                maxLines: 3,
               ),
-              _buildTextField(controller: _locationController, label: 'Location'),
+              _buildTextField(
+                controller: _locationController,
+                label: 'Location',
+              ),
               _buildTextField(
                 controller: _durationController,
                 label: 'Duration',
@@ -147,13 +151,14 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
               ),
               _buildTextField(
                 controller: _contactController,
-                label: 'Contact',
+                label: 'Contact Info',
+                hint: 'Phone or Email',
                 required: true,
               ),
               _buildTextField(
                 controller: _partiesController,
-                label: 'Parties',
-                hint: 'Comma-separated: e.g., Buyer, Seller',
+                label: 'Parties Involved',
+                hint: 'Comma-separated (e.g., Buyer, Seller)',
                 required: true,
               ),
               _buildTextField(
@@ -161,6 +166,7 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
                 label: 'Amount',
                 hint: 'e.g., 1000.00',
                 keyboardType: TextInputType.number,
+                required: true,
               ),
               _buildTextField(
                 controller: _cropTypeController,
@@ -172,7 +178,7 @@ class _ContractOfferFormState extends State<ContractOfferForm> {
                 maxLines: 3,
               ),
               SwitchListTile(
-                title: const Text('Is Active?'),
+                title: const Text('Mark as Active'),
                 value: _isActive,
                 onChanged: (value) => setState(() => _isActive = value),
               ),
