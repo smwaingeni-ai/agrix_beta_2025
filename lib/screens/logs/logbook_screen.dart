@@ -47,62 +47,45 @@ class _LogbookScreenState extends State<LogbookScreen> {
   Future<void> _deleteEntry(int index) async {
     final file = await _getLogbookFile();
     final original = List<Map<String, dynamic>>.from(_entries.reversed);
-    original.removeAt(_entries.length - 1 - index); // reverse index
+    original.removeAt(_entries.length - 1 - index);
     await file.writeAsString(json.encode(original));
     _loadLogbook();
   }
 
   Future<void> _exportToCSV() async {
-    final rows = [
-      ['Timestamp', 'Result', 'Cost', 'Note'],
-      ..._entries.map((e) => [
-            e['timestamp'] ?? '',
-            e['result'] ?? '',
-            e['cost'] ?? '',
-            e['note'] ?? '',
-          ])
-    ];
-    final csv = const ListToCsvConverter().convert(rows);
-    final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/logbook_export.csv');
-    await file.writeAsString(csv);
-    Share.shareXFiles([XFile(file.path)], text: 'AgriX Logbook CSV Export');
+    try {
+      final rows = [
+        ['Timestamp', 'Result', 'Cost', 'Note'],
+        ..._entries.map((e) => [
+              e['timestamp'] ?? '',
+              e['result'] ?? '',
+              e['cost'] ?? '',
+              e['note'] ?? '',
+            ])
+      ];
+      final csv = const ListToCsvConverter().convert(rows);
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/logbook_export.csv');
+      await file.writeAsString(csv);
+      await Share.shareXFiles([XFile(file.path)], text: 'AgriX Logbook Export');
+    } catch (e) {
+      debugPrint('❌ CSV Export Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❌ Failed to export CSV')),
+      );
+    }
   }
 
   Future<void> _shareSummary() async {
-    final summary = _entries.map((e) {
-      return '📅 ${e['timestamp']}\n📝 ${e['result']}\n💰 ${e['cost'] ?? 'N/A'}\n${e['note'] != null ? "🗒 ${e['note']}" : ""}';
-    }).join('\n\n');
-    Share.share(summary, subject: 'AgriX Logbook Summary');
-  }
+    try {
+      final summary = _entries.map((e) {
+        return '📅 ${e['timestamp']}\n📝 ${e['result']}\n💰 ${e['cost'] ?? 'N/A'}\n${e['note'] != null ? "🗒 ${e['note']}" : ""}';
+      }).join('\n\n');
 
-  Widget _buildEntry(Map<String, dynamic> entry, int index) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: ListTile(
-        leading: const Icon(Icons.assignment_turned_in, color: Colors.green),
-        title: Text(entry['result'] ?? '📝 No result description'),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('🕒 ${entry['timestamp']}'),
-            if (entry['note'] != null) Text('Note: ${entry['note']}'),
-          ],
-        ),
-        trailing: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(entry['cost'] ?? 'N/A',
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-              onPressed: () => _confirmDelete(index),
-              tooltip: 'Delete Entry',
-            ),
-          ],
-        ),
-      ),
-    );
+      await Share.share(summary, subject: 'AgriX Logbook Summary');
+    } catch (e) {
+      debugPrint('❌ Share Error: $e');
+    }
   }
 
   void _confirmDelete(int index) {
@@ -125,11 +108,43 @@ class _LogbookScreenState extends State<LogbookScreen> {
     );
   }
 
+  Widget _buildEntry(Map<String, dynamic> entry, int index) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: ListTile(
+        leading: const Icon(Icons.assignment_turned_in, color: Colors.green),
+        title: Text(entry['result'] ?? '📝 No result description'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('🕒 ${entry['timestamp']}'),
+            if (entry['note'] != null) Text('🗒 Note: ${entry['note']}'),
+          ],
+        ),
+        trailing: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              entry['cost'] ?? 'N/A',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+              onPressed: () => _confirmDelete(index),
+              tooltip: 'Delete Entry',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AgriX Logbook'),
+        title: const Text('📔 AgriX Logbook'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download),
@@ -156,6 +171,7 @@ class _LogbookScreenState extends State<LogbookScreen> {
               : RefreshIndicator(
                   onRefresh: _loadLogbook,
                   child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: _entries.length,
                     itemBuilder: (context, index) =>
                         _buildEntry(_entries[index], index),
