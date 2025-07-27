@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../../models/admin/system_stats.dart';
+import 'package:agrix_beta_2025/models/admin/system_stats.dart';
 
 class AdminService {
   Future<SystemStats> fetchSystemStats() async {
