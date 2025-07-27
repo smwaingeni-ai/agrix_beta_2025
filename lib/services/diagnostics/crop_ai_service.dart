@@ -1,3 +1,5 @@
+// lib/services/diagnostics/crop_ai_service.dart
+
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/services.dart';
@@ -14,29 +16,33 @@ class CropAIService {
   late ImageProcessor _imageProcessor;
   bool _isLoaded = false;
 
-  /// Initialize model and labels
+  /// 🔁 Load the TFLite model and crop labels
   Future<void> loadModel() async {
     try {
       _interpreter = await Interpreter.fromAsset(_modelPath);
       final labelData = await rootBundle.loadString(_labelPath);
-      _labels = labelData.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+      _labels = labelData
+          .split('\n')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
 
       _imageProcessor = ImageProcessorBuilder()
           .add(ResizeOp(_imageSize, _imageSize, ResizeMethod.BILINEAR))
           .build();
 
       _isLoaded = true;
-      print('✅ CropAIService: Model and labels loaded.');
+      print('✅ CropAIService: Model and labels loaded successfully.');
     } catch (e) {
-      print('❌ Error loading crop AI model: $e');
+      print('❌ CropAIService: Failed to load model - $e');
       _isLoaded = false;
     }
   }
 
-  /// Predict top label from an image
+  /// 🌿 Classify a crop image and return the top prediction
   Future<Map<String, dynamic>?> classify(File imageFile) async {
     if (!_isLoaded) {
-      print('⚠️ CropAIService not initialized.');
+      print('⚠️ CropAIService: Model not initialized.');
       return null;
     }
 
@@ -45,7 +51,10 @@ class CropAIService {
       final processedImage = _imageProcessor.process(tensorImage);
 
       final input = processedImage.buffer;
-      final output = TensorBuffer.createFixedSize([1, _labels.length], TfLiteType.float32);
+      final output = TensorBuffer.createFixedSize(
+        [1, _labels.length],
+        TfLiteType.float32,
+      );
 
       _interpreter.run(input, output.buffer);
 
@@ -60,14 +69,15 @@ class CropAIService {
         'scorePercent': (confidence * 100).toStringAsFixed(2),
       };
     } catch (e) {
-      print('❌ Classification error: $e');
+      print('❌ CropAIService: Classification error - $e');
       return null;
     }
   }
 
-  /// Dispose model when done
+  /// 🧹 Clean up the interpreter when done
   void dispose() {
     _interpreter.close();
     _isLoaded = false;
+    print('🛑 CropAIService: Model disposed.');
   }
 }
