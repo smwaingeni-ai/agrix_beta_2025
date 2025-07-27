@@ -1,15 +1,15 @@
-import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
-// Dummy users for demo purposes (make sure this list exists in your file or elsewhere)
+// 🔹 Dummy users – to be replaced with real auth logic
 final List<UserModel> dummyUsers = [
   UserModel(id: '1', name: 'John', role: 'Farmer', passcode: '1234'),
   UserModel(id: '2', name: 'Alice', role: 'Trader', passcode: '5678'),
-  // Add more users as needed
+  UserModel(id: '3', name: 'AdminUser', role: 'Admin', passcode: 'admin'),
 ];
 
 class LoginScreen extends StatefulWidget {
@@ -63,18 +63,16 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => LandingPage(
-            farmer: FarmerProfile.fromUser(user),
-          ),
+          builder: (_) => LandingPage(farmer: FarmerProfile.fromUser(user)),
         ),
       );
     } else {
       final routeMap = {
-        'AREX Officer': '/officer_dashboard',
-        'Government Official': '/official_dashboard',
-        'Admin': '/admin_panel',
-        'Trader': '/trader_dashboard',
-        'Investor': '/investor_dashboard',
+        'AREX Officer': '/officerDashboard',
+        'Government Official': '/officialDashboard',
+        'Admin': '/adminPanel',
+        'Trader': '/traderDashboard',
+        'Investor': '/investorDashboard',
       };
 
       final route = routeMap[role];
@@ -160,21 +158,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _validateLogin,
               ),
               const SizedBox(height: 10),
-
-              // ✅ Only show biometric login button if on supported platform
               if (!kIsWeb && selectedRole == 'Farmer')
                 ElevatedButton.icon(
                   icon: const Icon(Icons.fingerprint),
                   label: const Text('Login with Biometrics'),
                   onPressed: _loginWithBiometrics,
                 ),
-
               const SizedBox(height: 10),
               TextButton.icon(
                 icon: const Icon(Icons.person_add_alt),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
+                onPressed: () => Navigator.pushNamed(context, '/register'),
                 label: const Text('Create New Account'),
               ),
             ],
