@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agrix_africa_adt2025/models/tasks/task_model.dart'; // Ensure OfficerTask is defined here
+import 'package:agrix_africa_adt2025/models/tasks/task_model.dart'; // Ensure OfficerTask is correctly defined
 
 class OfficerTasksScreen extends StatefulWidget {
   const OfficerTasksScreen({super.key});
@@ -28,14 +28,12 @@ class _OfficerTasksScreenState extends State<OfficerTasksScreen> {
   ];
 
   void _markTaskAsCompleted(int index) {
-    setState(() {
-      _tasks[index].status = 'Completed';
-    });
+    setState(() => _tasks[index].status = 'Completed');
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('✅ "${_tasks[index].title}" marked as completed.'),
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: Colors.green.shade600,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -59,7 +57,7 @@ class _OfficerTasksScreenState extends State<OfficerTasksScreen> {
       case 'In Progress':
         return Icons.timelapse;
       default:
-        return Icons.pending;
+        return Icons.pending_actions;
     }
   }
 
@@ -71,12 +69,7 @@ class _OfficerTasksScreenState extends State<OfficerTasksScreen> {
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: Icon(
-          _statusIcon(task.status),
-          color: _statusColor(task.status),
-          size: 30,
-        ),
+        leading: Icon(_statusIcon(task.status), color: _statusColor(task.status), size: 30),
         title: Text(task.title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,11 +95,17 @@ class _OfficerTasksScreenState extends State<OfficerTasksScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AREX Officer: Task Log'),
+        title: const Text('🗂 Officer Task Log'),
         centerTitle: true,
       ),
       body: _tasks.isEmpty
-          ? const Center(child: Text('🎉 No tasks available.'))
+          ? const Center(
+              child: Text(
+                '🎉 No tasks available.\nYou are all caught up!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+            )
           : ListView.builder(
               itemCount: _tasks.length,
               itemBuilder: (context, index) => _buildTaskTile(index),
