@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
 import 'package:agrix_beta_2025/services/profile/investor_service.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
@@ -29,6 +30,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
       _loading = true;
       _error = false;
     });
+
     try {
       final data = await InvestorService().loadInvestors();
       setState(() {
@@ -104,8 +106,8 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
             if (investor.interests.isNotEmpty)
               Text('💼 Interests: ${investor.interests.join(', ')}'),
             if (investor.preferredHorizons.isNotEmpty)
-              Text('⏳ Horizons: ${investor.preferredHorizons.map((e) => e.name).join(', ')}'),
-            Text('📊 Status: ${investor.status.name}'),
+              Text('⏳ Horizons: ${investor.preferredHorizons.map((e) => e.label).join(', ')}'),
+            Text('📊 Status: ${investor.status.label}'),
           ],
         ),
         trailing: PopupMenuButton<String>(
@@ -123,9 +125,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
   }
 
   Widget _buildBody() {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (_loading) return const Center(child: CircularProgressIndicator());
 
     if (_error) {
       return Center(
@@ -163,7 +163,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Investor Directory'),
+        title: const Text('💼 Investor Directory'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -202,9 +202,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
               builder: (_) => const InvestorRegistrationScreen(),
             ),
           );
-          if (result == true) {
-            _loadInvestors();
-          }
+          if (result == true) _loadInvestors();
         },
         tooltip: 'Add New Investor',
         child: const Icon(Icons.person_add),
