@@ -14,6 +14,7 @@ class MarketService {
   // 📦 MARKET ITEM METHODS
   // ================================
 
+  /// Load all locally stored market items
   static Future<List<MarketItem>> loadItems() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -26,6 +27,7 @@ class MarketService {
     }
   }
 
+  /// Save full list of market items
   static Future<void> saveItems(List<MarketItem> items) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -36,6 +38,7 @@ class MarketService {
     }
   }
 
+  /// Add a new market item if not duplicate
   static Future<void> addItem(MarketItem item) async {
     final items = await loadItems();
     if (!items.any((existing) => existing.id == item.id)) {
@@ -44,12 +47,14 @@ class MarketService {
     }
   }
 
+  /// Overwrite a market item
   static Future<void> saveItem(MarketItem item) async {
     final items = await loadItems();
     final updated = items.where((e) => e.id != item.id).toList()..add(item);
     await saveItems(updated);
   }
 
+  /// Update item by ID
   static Future<void> updateItem(MarketItem updatedItem) async {
     final items = await loadItems();
     final index = items.indexWhere((item) => item.id == updatedItem.id);
@@ -63,6 +68,7 @@ class MarketService {
   // 💸 INVESTMENT OFFER METHODS
   // ================================
 
+  /// Load all investment offers from local storage
   static Future<List<InvestmentOffer>> loadOffers() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -77,6 +83,7 @@ class MarketService {
     }
   }
 
+  /// Save full list of investment offers
   static Future<void> saveOffers(List<InvestmentOffer> offers) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -87,6 +94,7 @@ class MarketService {
     }
   }
 
+  /// Add a new investment offer if not duplicate
   static Future<void> addOffer(InvestmentOffer offer) async {
     final offers = await loadOffers();
     if (!offers.any((existing) => existing.id == offer.id)) {
@@ -95,12 +103,14 @@ class MarketService {
     }
   }
 
+  /// Overwrite an investment offer
   static Future<void> saveOffer(InvestmentOffer offer) async {
     final offers = await loadOffers();
     final updated = offers.where((e) => e.id != offer.id).toList()..add(offer);
     await saveOffers(updated);
   }
 
+  /// Update investment offer by ID
   static Future<void> updateOffer(InvestmentOffer updatedOffer) async {
     final offers = await loadOffers();
     final index = offers.indexWhere((e) => e.id == updatedOffer.id);
