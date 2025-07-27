@@ -1,24 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart'; // ⬅️ Required for kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
-
-/// ✅ Conditionally import only if not on Web
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SessionService {
   static const _userKey = 'agrix_active_user';
-
-  /// ✅ Only initialize secure storage if not on web
   static final FlutterSecureStorage? _secureStorage =
       !kIsWeb ? const FlutterSecureStorage() : null;
 
-  /// 🔐 Save user session securely and persist to session.json
+  /// 🔐 Save session to secure storage and local JSON
   static Future<void> saveUserSession(UserModel user) async {
     try {
-      // ✅ Secure storage only if not web
       if (!kIsWeb && _secureStorage != null) {
         await _secureStorage!.write(key: _userKey, value: user.toRawJson());
       }
@@ -33,7 +28,7 @@ class SessionService {
     }
   }
 
-  /// 📥 Load active user from secure storage or fallback
+  /// 📥 Load user session from secure storage or file
   static Future<UserModel?> getActiveUser() async {
     try {
       String? jsonStr;
@@ -42,7 +37,6 @@ class SessionService {
         jsonStr = await _secureStorage!.read(key: _userKey);
       }
 
-      // Fallback to session.json if secure storage unavailable or empty
       if (jsonStr == null || jsonStr.trim().isEmpty) {
         final dir = await getApplicationDocumentsDirectory();
         final file = File('${dir.path}/session.json');
@@ -60,7 +54,7 @@ class SessionService {
     }
   }
 
-  /// 🧹 Clear session from both secure storage and file
+  /// 🧹 Clear secure storage and file session
   static Future<void> clearSession() async {
     try {
       if (!kIsWeb && _secureStorage != null) {
@@ -80,7 +74,7 @@ class SessionService {
     }
   }
 
-  /// 🔎 Check if session is valid and passes biometric auth
+  /// 🔐 Validate biometric + session
   static Future<bool> checkSession() async {
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -108,7 +102,7 @@ class SessionService {
     }
   }
 
-  /// 🔄 Quick check for secure user presence
+  /// 🔎 Web-safe check: user session only
   static Future<bool> isUserLoggedIn() async {
     final user = await getActiveUser();
     return user != null && user.id.trim().isNotEmpty;
