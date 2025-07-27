@@ -1,0 +1,6 @@
+symptom,disease,treatment,crop,severity,likelihoodscore,sampleimage
+leaf spots,Leaf Spot Disease,Apply fungicide,Corn,Moderate,0.78,leaf_spot.jpg
+wilting,Verticillium Wilt,Improve drainage,Tomato,Severe,0.85,wilt.jpg
+yellow leaves,Nutrient Deficiency,Add nitrogen fertilizer,Rice,Mild,0.6,yellow_leaf.jpg
+white powder,Powdery Mildew,Use sulfur-based fungicide,Cucumber,Moderate,0.72,powdery_mildew.jpg
+brown patches,Brown Patch,"Reduce watering, use fungicide",Lettuce,Severe,0.81,brown_patch.jpg
