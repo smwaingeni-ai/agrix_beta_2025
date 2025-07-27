@@ -25,14 +25,14 @@ class _SoilScreenState extends State<SoilScreen> {
     final raw = await rootBundle.loadString('assets/data/soil_map_africa.csv');
     List<List<dynamic>> csv = const CsvToListConverter().convert(raw, eol: '\n');
 
-    final headers = csv.first.cast<String>();
-    final dataRows = csv.skip(1);
+    final headers = csv.first.map((e) => e.toString()).toList();
+    final rows = csv.skip(1);
 
-    _soilData = dataRows.map((row) {
-      return Map.fromIterables(headers, row.map((e) => e.toString()));
-    }).toList();
-
-    setState(() {});
+    setState(() {
+      _soilData = rows.map((row) {
+        return Map.fromIterables(headers, row.map((e) => e.toString()));
+      }).toList();
+    });
   }
 
   void _selectRegion(String? region) {
@@ -47,7 +47,7 @@ class _SoilScreenState extends State<SoilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final regions = _soilData.map((e) => e['Region']!).toSet().toList();
+    final regions = _soilData.map((e) => e['Region']).whereType<String>().toSet().toList()..sort();
 
     return Scaffold(
       appBar: AppBar(title: const Text("🧱 Soil Advisor")),
@@ -62,28 +62,41 @@ class _SoilScreenState extends State<SoilScreen> {
                     decoration: const InputDecoration(labelText: "Select Region"),
                     value: _selectedRegion,
                     items: regions
-                        .map((region) => DropdownMenuItem(
-                              value: region,
-                              child: Text(region),
-                            ))
+                        .map((region) => DropdownMenuItem(value: region, child: Text(region)))
                         .toList(),
                     onChanged: _selectRegion,
                   ),
                   const SizedBox(height: 20),
-                  if (_selectedResult != null) ...[
-                    Text("🌱 Soil Type: ${_selectedResult!['SoilType']}", style: const TextStyle(fontSize: 16)),
-                    Text("🌾 Crops: ${_selectedResult!['SuitableCrops']}"),
-                    Text("🧪 Fertility: ${_selectedResult!['Fertility']}"),
-                    Text("💊 Treatment: ${_selectedResult!['Treatment']}"),
-                    const SizedBox(height: 16),
-                    if (_selectedResult!['ImageName'] != null)
+                  if (_selectedResult != null && _selectedResult!.isNotEmpty) ...[
+                    _buildDetail("🌱 Soil Type", _selectedResult!['SoilType']),
+                    _buildDetail("🌾 Suitable Crops", _selectedResult!['SuitableCrops']),
+                    _buildDetail("🧪 Fertility", _selectedResult!['Fertility']),
+                    _buildDetail("💊 Treatment", _selectedResult!['Treatment']),
+                    const SizedBox(height: 12),
+                    if (_selectedResult!['ImageName'] != null &&
+                        _selectedResult!['ImageName']!.isNotEmpty)
                       Image.asset(
-                        "assets/soil/${_selectedResult!['ImageName']}",
+                        "assets/images/soil/${_selectedResult!['ImageName']}",
                         height: 180,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Text("⚠️ Image not found."),
                       ),
+                  ] else ...[
+                    const SizedBox(height: 20),
+                    const Text('❌ No data found for this region.'),
                   ],
                 ],
               ),
+      ),
+    );
+  }
+
+  Widget _buildDetail(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text(
+        "$label: ${value?.isNotEmpty == true ? value! : 'N/A'}",
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }
