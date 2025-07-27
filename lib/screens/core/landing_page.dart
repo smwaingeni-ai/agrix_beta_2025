@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -94,8 +95,8 @@ class _LandingPageState extends State<LandingPage> {
       {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
       {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
       {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
-      {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
-      {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
+      {'label': 'Trader Dashboard', 'route': '/traderDashboard', 'icon': Icons.dashboard},
+      {'label': 'Official Dashboard', 'route': '/officialDashboard', 'icon': Icons.admin_panel_settings},
     ];
 
     return Scaffold(
@@ -121,7 +122,8 @@ class _LandingPageState extends State<LandingPage> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     child: Column(
                       children: [
-                        if (_profile!.photoPath != null &&
+                        if (!kIsWeb &&
+                            _profile!.photoPath != null &&
                             File(_profile!.photoPath!).existsSync()) ...[
                           const SizedBox(height: 8),
                           Image.file(
