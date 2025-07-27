@@ -21,42 +21,40 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
   InvestmentHorizon? _selectedHorizon;
 
   Future<void> _submitOffer() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
 
-      final now = DateTime.now();
-      final offer = InvestmentOffer(
-        id: now.millisecondsSinceEpoch.toString(),
-        listingId: 'listing_${now.millisecondsSinceEpoch}',
-        investorId: _investorId,
-        investorName: _investorName,
-        amount: _amount,
-        term: _selectedHorizon!.code,
-        interestRate: _interestRate,
-        isAccepted: false,
-        contact: _contact,
-        timestamp: now,
+    final now = DateTime.now();
+    final offer = InvestmentOffer(
+      id: now.millisecondsSinceEpoch.toString(),
+      listingId: 'listing_${now.millisecondsSinceEpoch}',
+      investorId: _investorId,
+      investorName: _investorName,
+      amount: _amount,
+      term: _selectedHorizon!.code,
+      interestRate: _interestRate,
+      isAccepted: false,
+      contact: _contact,
+      timestamp: now,
+    );
+
+    try {
+      await MarketService.addOffer(offer);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("✅ Investment offer submitted successfully!"),
+          backgroundColor: Colors.green,
+        ),
       );
-
-      try {
-        await MarketService.addOffer(offer);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("✅ Investment offer submitted successfully!"),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pop(context);
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("❌ Error submitting offer: $e"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("❌ Error submitting offer: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -72,22 +70,22 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
             children: [
               _buildTextField(
                 label: 'Investor ID',
-                onSaved: (value) => _investorId = value!,
+                onSaved: (val) => _investorId = val!.trim(),
               ),
               _buildTextField(
                 label: 'Investor Name',
-                onSaved: (value) => _investorName = value!,
+                onSaved: (val) => _investorName = val!.trim(),
               ),
               _buildTextField(
-                label: 'Contact',
-                onSaved: (value) => _contact = value!,
+                label: 'Contact Info',
+                onSaved: (val) => _contact = val!.trim(),
               ),
               _buildTextField(
                 label: 'Amount (USD)',
                 keyboardType: TextInputType.number,
-                onSaved: (value) => _amount = double.parse(value!),
-                validator: (value) {
-                  final parsed = double.tryParse(value ?? '');
+                onSaved: (val) => _amount = double.tryParse(val ?? '0') ?? 0.0,
+                validator: (val) {
+                  final parsed = double.tryParse(val ?? '');
                   return (parsed == null || parsed <= 0)
                       ? 'Enter a valid amount'
                       : null;
@@ -96,36 +94,38 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
               _buildTextField(
                 label: 'Interest Rate (%)',
                 keyboardType: TextInputType.number,
-                onSaved: (value) => _interestRate = double.parse(value!),
-                validator: (value) {
-                  final parsed = double.tryParse(value ?? '');
+                onSaved: (val) => _interestRate = double.tryParse(val ?? '0') ?? 0.0,
+                validator: (val) {
+                  final parsed = double.tryParse(val ?? '');
                   return (parsed == null || parsed < 0)
                       ? 'Enter a valid interest rate'
                       : null;
                 },
               ),
               DropdownButtonFormField<InvestmentHorizon>(
-                decoration: const InputDecoration(labelText: 'Investment Term'),
                 value: _selectedHorizon,
-                items: InvestmentHorizon.values.map((horizon) {
+                decoration: const InputDecoration(
+                  labelText: 'Investment Term',
+                  border: OutlineInputBorder(),
+                ),
+                items: InvestmentHorizon.values.map((h) {
                   return DropdownMenuItem(
-                    value: horizon,
-                    child: Text(horizon.label),
+                    value: h,
+                    child: Text(h.label),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedHorizon = value!;
-                  });
-                },
+                onChanged: (value) => setState(() => _selectedHorizon = value),
                 validator: (value) =>
-                    value == null ? 'Select an investment term' : null,
+                    value == null ? 'Please select a term' : null,
               ),
               const SizedBox(height: 20),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.send),
-                label: const Text('Submit Offer'),
-                onPressed: _submitOffer,
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.send),
+                  label: const Text('Submit Offer'),
+                  onPressed: _submitOffer,
+                ),
               ),
             ],
           ),
@@ -143,11 +143,13 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
         keyboardType: keyboardType,
         validator: validator ??
-            (value) =>
-                value == null || value.trim().isEmpty ? 'Required' : null,
+            (val) => val == null || val.trim().isEmpty ? 'Required' : null,
         onSaved: onSaved,
       ),
     );
