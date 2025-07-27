@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../models/officers/officer_profile.dart';
-import '../../services/officers/officer_profile_service.dart';
+import 'package:agrix_beta_2025/models/officers/officer_profile.dart';
+import 'package:agrix_beta_2025/services/officers/officer_profile_service.dart';
 
 class OfficerProfileScreen extends StatefulWidget {
   const OfficerProfileScreen({Key? key}) : super(key: key);
@@ -47,9 +47,12 @@ class _OfficerProfileScreenState extends State<OfficerProfileScreen> {
       );
 
       await OfficerProfileService.saveProfile(updated);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Profile saved')),
-      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Profile saved')),
+        );
+      }
     }
   }
 
@@ -62,9 +65,20 @@ class _OfficerProfileScreenState extends State<OfficerProfileScreen> {
       _contactController.clear();
       _regionController.clear();
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('🧹 Profile cleared')),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('🧹 Profile cleared')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _designationController.dispose();
+    _contactController.dispose();
+    _regionController.dispose();
+    super.dispose();
   }
 
   @override
