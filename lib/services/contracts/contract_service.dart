@@ -1,3 +1,5 @@
+// lib/services/contracts/contract_service.dart
+
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -7,19 +9,19 @@ class ContractService {
   static const String _contractsKey = 'contract_offers';
   static final Uuid _uuid = Uuid();
 
-  /// Save all contract offers to local storage
+  /// 💾 Save all contract offers to local storage
   static Future<void> saveContracts(List<ContractOffer> offers) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonList = offers.map((e) => e.toJson()).toList();
       await prefs.setString(_contractsKey, json.encode(jsonList));
-      print('[ContractService] Contracts saved (${offers.length} items)');
+      print('[ContractService] ✅ Contracts saved (${offers.length})');
     } catch (e) {
-      print('[ContractService] Error saving contracts: $e');
+      print('[ContractService] ❌ Error saving contracts: $e');
     }
   }
 
-  /// Load all contract offers from local storage
+  /// 📥 Load all contract offers from local storage
   static Future<List<ContractOffer>> loadContracts() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -33,27 +35,27 @@ class ContractService {
           .map((e) => ContractOffer.fromJson(e))
           .whereType<ContractOffer>()
           .toList();
-      print('[ContractService] Loaded ${offers.length} contracts');
+      print('[ContractService] 📦 Loaded ${offers.length} contracts');
       return offers;
     } catch (e) {
-      print('[ContractService] Error loading contracts: $e');
+      print('[ContractService] ❌ Error loading contracts: $e');
       return [];
     }
   }
 
-  /// Add a new contract offer to local storage
+  /// ➕ Add a new contract offer
   static Future<void> addContract(ContractOffer offer) async {
     try {
       final offers = await loadContracts();
       offers.add(offer);
       await saveContracts(offers);
-      print('[ContractService] Added new contract: ${offer.title}');
+      print('[ContractService] 🆕 Added contract: ${offer.title}');
     } catch (e) {
-      print('[ContractService] Error adding contract: $e');
+      print('[ContractService] ❌ Error adding contract: $e');
     }
   }
 
-  /// Update an existing contract offer by ID
+  /// ✏️ Update an existing contract by ID
   static Future<void> updateContract(ContractOffer updatedOffer) async {
     try {
       final offers = await loadContracts();
@@ -61,16 +63,16 @@ class ContractService {
       if (index != -1) {
         offers[index] = updatedOffer;
         await saveContracts(offers);
-        print('[ContractService] Updated contract: ${updatedOffer.id}');
+        print('[ContractService] 🔄 Updated contract: ${updatedOffer.id}');
       } else {
-        print('[ContractService] Contract not found: ${updatedOffer.id}');
+        print('[ContractService] ⚠️ Contract not found: ${updatedOffer.id}');
       }
     } catch (e) {
-      print('[ContractService] Error updating contract: $e');
+      print('[ContractService] ❌ Error updating contract: $e');
     }
   }
 
-  /// Retrieve a contract offer by ID
+  /// 🔍 Get contract offer by ID
   static Future<ContractOffer?> getContractById(String id) async {
     try {
       final offers = await loadContracts();
@@ -78,37 +80,36 @@ class ContractService {
         (offer) => offer.id == id,
         orElse: () => ContractOffer.empty(),
       );
-      if (contract.id.isEmpty) return null;
-      return contract;
+      return contract.id.isEmpty ? null : contract;
     } catch (e) {
-      print('[ContractService] Error retrieving contract by ID: $e');
+      print('[ContractService] ❌ Error retrieving contract: $e');
       return null;
     }
   }
 
-  /// Delete a contract offer by ID
+  /// 🗑️ Delete a contract offer by ID
   static Future<void> deleteContract(String id) async {
     try {
       final offers = await loadContracts();
       final updated = offers.where((offer) => offer.id != id).toList();
       await saveContracts(updated);
-      print('[ContractService] Deleted contract: $id');
+      print('[ContractService] 🗑️ Deleted contract: $id');
     } catch (e) {
-      print('[ContractService] Error deleting contract: $e');
+      print('[ContractService] ❌ Error deleting contract: $e');
     }
   }
 
-  // 🔁 Aliases for compatibility and backward usage
+  // 🔁 Aliases for backward compatibility
 
-  /// Alias for addContract()
+  /// Alias for [addContract]
   static Future<void> addContractOffer(ContractOffer offer) async {
-    print('[ContractService] Alias: addContractOffer called');
+    print('[ContractService] ➕ Alias used: addContractOffer()');
     await addContract(offer);
   }
 
-  /// Alias for loadContracts()
+  /// Alias for [loadContracts]
   static Future<List<ContractOffer>> loadOffers() async {
-    print('[ContractService] Alias: loadOffers called');
+    print('[ContractService] 📥 Alias used: loadOffers()');
     return await loadContracts();
   }
 }
