@@ -1,64 +1,64 @@
 import 'package:flutter/material.dart';
 
-// Core
+// ✅ Core
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/core/notifications_screen.dart';
 import 'package:agrix_beta_2025/screens/core/sync_screen.dart';
 
-// Auth
+// ✅ Auth
 import 'package:agrix_beta_2025/screens/auth/login_screen.dart';
 import 'package:agrix_beta_2025/screens/auth/register_user_screen.dart';
 
-// Chat & Help
+// ✅ Chat & Help
 import 'package:agrix_beta_2025/screens/chat_help/chat_screen.dart';
 import 'package:agrix_beta_2025/screens/chat_help/help_screen.dart';
 
-// Diagnostics
+// ✅ Diagnostics
 import 'package:agrix_beta_2025/screens/diagnostics/upload_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/livestock_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/soil_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/crops_screen.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart';
 
-// Contracts
+// ✅ Contracts
 import 'package:agrix_beta_2025/screens/contracts/contract_offer_form.dart';
 import 'package:agrix_beta_2025/screens/contracts/contract_list_screen.dart';
 
-// Investments
+// ✅ Investments
 import 'package:agrix_beta_2025/screens/investments/investment_offer_screen.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_list_screen.dart';
 
-// Loans
+// ✅ Loans
 import 'package:agrix_beta_2025/screens/loans/loan_application.dart';
 import 'package:agrix_beta_2025/screens/loans/loan_screen.dart';
 
-// Logs
+// ✅ Logs
 import 'package:agrix_beta_2025/screens/logs/logbook_screen.dart';
 import 'package:agrix_beta_2025/screens/logs/training_log_screen.dart';
 import 'package:agrix_beta_2025/screens/logs/sustainability_log_screen.dart';
 
-// Market
+// ✅ Market
 import 'package:agrix_beta_2025/screens/market/market_screen.dart';
 import 'package:agrix_beta_2025/screens/market/market_detail_screen.dart';
 import 'package:agrix_beta_2025/screens/market/market_item_form.dart';
 import 'package:agrix_beta_2025/screens/market/market_invite_screen.dart';
 import 'package:agrix_beta_2025/models/market/market_item.dart';
 
-// Officers & Tasks
+// ✅ Officers & Tasks
 import 'package:agrix_beta_2025/screens/officers/officer_tasks_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/officer_assessments_screen.dart';
 import 'package:agrix_beta_2025/screens/tasks/task_entry_screen.dart';
 import 'package:agrix_beta_2025/screens/assessments/field_assessment_screen.dart';
 
-// Dashboards
+// ✅ Dashboards
 import 'package:agrix_beta_2025/screens/dashboards/official_dashboard.dart';
 import 'package:agrix_beta_2025/screens/dashboards/trader_dashboard.dart';
 
-// Programs
+// ✅ Programs
 import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
 
-// Profile
+// ✅ Profile
 import 'package:agrix_beta_2025/screens/profile/farmer_profile_screen.dart';
 import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart';
 import 'package:agrix_beta_2025/screens/profile/credit_score_screen.dart';
@@ -79,7 +79,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/help': (context) => const HelpScreen(),
 
   // 🔹 Diagnostics
-  '/diagnostic-upload': (context) => const UploadScreen(),
+  '/diagnosticUpload': (context) => const UploadScreen(),
   '/livestockScreen': (context) => const LivestockScreen(),
   '/soilScreen': (context) => const SoilScreen(),
   '/cropsScreen': (context) => const CropsScreen(),
@@ -117,19 +117,21 @@ final Map<String, WidgetBuilder> appRoutes = {
     return MarketDetailScreen(marketItem: args);
   },
   '/marketForm': (context) => MarketItemForm(
-        onSubmit: (MarketItem item) {},
+        onSubmit: (MarketItem item) {
+          // TODO: implement save or redirect
+        },
       ),
   '/marketInvite': (context) => const MarketInviteScreen(),
 
   // 🔹 Officers & Tasks
   '/officerTasks': (context) => const OfficerTasksScreen(),
   '/officerAssessments': (context) => const OfficerAssessmentsScreen(),
-  '/task_entry': (context) => const TaskEntryScreen(),
-  '/field_assessment': (context) => const FieldAssessmentScreen(),
+  '/taskEntry': (context) => const TaskEntryScreen(),
+  '/fieldAssessment': (context) => const FieldAssessmentScreen(),
 
   // 🔹 Dashboards
-  '/official/dashboard': (context) => const OfficialDashboard(),
-  '/trader/dashboard': (context) => const TraderDashboard(),
+  '/officialDashboard': (context) => const OfficialDashboard(),
+  '/traderDashboard': (context) => const TraderDashboard(),
 
   // 🔹 Profile
   '/profile': (context) => const FarmerProfileScreen(),
@@ -140,5 +142,5 @@ final Map<String, WidgetBuilder> appRoutes = {
   },
 
   // 🔹 Programs
-  '/program_tracking': (context) => const ProgramTrackingScreen(),
+  '/programTracking': (context) => const ProgramTrackingScreen(),
 };
