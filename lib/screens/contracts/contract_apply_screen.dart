@@ -19,6 +19,15 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
   final _notesController = TextEditingController();
   bool _isSubmitting = false;
 
+  @override
+  void dispose() {
+    _farmerNameController.dispose();
+    _farmLocationController.dispose();
+    _contactInfoController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
   Future<void> _submitApplication() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -35,26 +44,24 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("✅ Application submitted successfully!")),
+        const SnackBar(
+          content: Text("✅ Application submitted successfully!"),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
+
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("❌ Error submitting application: $e")),
+        SnackBar(
+          content: Text("❌ Error submitting application: $e"),
+          backgroundColor: Colors.red.shade400,
+        ),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
-  }
-
-  @override
-  void dispose() {
-    _farmerNameController.dispose();
-    _farmLocationController.dispose();
-    _contactInfoController.dispose();
-    _notesController.dispose();
-    super.dispose();
   }
 
   @override
@@ -73,14 +80,15 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '📋 Please fill in your details to apply for this contract offer.',
+                '📋 Fill in your details to apply for this contract offer.',
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
               ),
               const SizedBox(height: 16),
 
-              // Farmer Name
+              // 👤 Farmer Name
               TextFormField(
                 controller: _farmerNameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
                   labelText: '👤 Farmer Name',
                   border: OutlineInputBorder(),
@@ -90,7 +98,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Farm Location
+              // 📍 Farm Location
               TextFormField(
                 controller: _farmLocationController,
                 decoration: const InputDecoration(
@@ -102,7 +110,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Contact Info
+              // 📞 Contact Info
               TextFormField(
                 controller: _contactInfoController,
                 decoration: const InputDecoration(
@@ -114,7 +122,7 @@ class _ContractApplyScreenState extends State<ContractApplyScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Additional Notes
+              // 📝 Notes
               TextFormField(
                 controller: _notesController,
                 decoration: const InputDecoration(
