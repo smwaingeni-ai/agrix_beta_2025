@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
 
+/// 📦 Handles local storage of contract offers using SharedPreferences
 class ContractService {
   static const String _contractsKey = 'contract_offers';
   static final Uuid _uuid = Uuid();
@@ -17,7 +18,7 @@ class ContractService {
       await prefs.setString(_contractsKey, json.encode(jsonList));
       print('[ContractService] ✅ Contracts saved (${offers.length})');
     } catch (e) {
-      print('[ContractService] ❌ Error saving contracts: $e');
+      print('[ContractService] ❌ Failed to save contracts: $e');
     }
   }
 
@@ -31,14 +32,11 @@ class ContractService {
       final decoded = json.decode(raw);
       if (decoded is! List) return [];
 
-      final offers = decoded
-          .map((e) => ContractOffer.fromJson(e))
-          .whereType<ContractOffer>()
+      return decoded
+          .map((e) => ContractOffer.fromJson(e as Map<String, dynamic>))
           .toList();
-      print('[ContractService] 📦 Loaded ${offers.length} contracts');
-      return offers;
     } catch (e) {
-      print('[ContractService] ❌ Error loading contracts: $e');
+      print('[ContractService] ❌ Failed to load contracts: $e');
       return [];
     }
   }
@@ -51,7 +49,7 @@ class ContractService {
       await saveContracts(offers);
       print('[ContractService] 🆕 Added contract: ${offer.title}');
     } catch (e) {
-      print('[ContractService] ❌ Error adding contract: $e');
+      print('[ContractService] ❌ Failed to add contract: $e');
     }
   }
 
@@ -68,11 +66,11 @@ class ContractService {
         print('[ContractService] ⚠️ Contract not found: ${updatedOffer.id}');
       }
     } catch (e) {
-      print('[ContractService] ❌ Error updating contract: $e');
+      print('[ContractService] ❌ Failed to update contract: $e');
     }
   }
 
-  /// 🔍 Get contract offer by ID
+  /// 🔍 Get a contract offer by ID
   static Future<ContractOffer?> getContractById(String id) async {
     try {
       final offers = await loadContracts();
@@ -82,7 +80,7 @@ class ContractService {
       );
       return contract.id.isEmpty ? null : contract;
     } catch (e) {
-      print('[ContractService] ❌ Error retrieving contract: $e');
+      print('[ContractService] ❌ Failed to get contract by ID: $e');
       return null;
     }
   }
@@ -95,7 +93,7 @@ class ContractService {
       await saveContracts(updated);
       print('[ContractService] 🗑️ Deleted contract: $id');
     } catch (e) {
-      print('[ContractService] ❌ Error deleting contract: $e');
+      print('[ContractService] ❌ Failed to delete contract: $e');
     }
   }
 
@@ -112,4 +110,7 @@ class ContractService {
     print('[ContractService] 📥 Alias used: loadOffers()');
     return await loadContracts();
   }
+
+  /// 🆔 Generate a new unique contract ID
+  static String generateId() => _uuid.v4();
 }
