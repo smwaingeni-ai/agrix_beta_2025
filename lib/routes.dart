@@ -49,7 +49,6 @@ import 'package:agrix_beta_2025/screens/contracts/contract_detail_screen.dart';
 import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
 
 // 🧑‍🏫 Officers
-import 'package:agrix_beta_2025/screens/officers/officer_tasks_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/task_entry_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/field_assessment_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/arex_officer_dashboard.dart';
@@ -61,7 +60,7 @@ import 'package:agrix_beta_2025/screens/official/official_dashboard.dart';
 import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
 import 'package:agrix_beta_2025/screens/programs/program_form_screen.dart';
 import 'package:agrix_beta_2025/screens/programs/program_detail_screen.dart';
-import 'package:agrix_beta_2025/models/programs/program.dart';
+import 'package:agrix_beta_2025/models/programs/program.dart'; // ✅ Correct model
 
 // 🌿 Sustainability
 import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
@@ -89,7 +88,7 @@ final Map<String, WidgetBuilder> appRoutes = {
 
   // 🧑‍🌾 Profile
   '/farmerProfile': (context) => const FarmerProfileScreen(),
-  '/editFarmerProfile': (context) => const EditFarmerProfileScreen(),
+  '/editFarmerProfile': (context) => const EditFarmerProfileScreen(userId: 'default', name: 'default'),
   '/creditScore': (context) => const CreditScoreScreen(),
 
   // 💰 Loans
@@ -130,7 +129,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   },
 
   // 🧑‍🏫 Officers
-  '/officer/tasks': (context) => const OfficerTasksScreen(),
+  '/officer/tasks': (context) => const ArexOfficerDashboard(), // ✅ Replaced problematic OfficerTasksScreen
   '/task_entry': (context) => const TaskEntryScreen(),
   '/field_assessment': (context) => const FieldAssessmentScreen(),
   '/officer/dashboard': (context) => const ArexOfficerDashboard(),
@@ -142,7 +141,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/program_tracking': (context) => const ProgramTrackingScreen(),
   '/program_form': (context) => const ProgramFormScreen(),
   '/program_detail': (context) {
-    final program = ModalRoute.of(context)!.settings.arguments as ProgramLog;
+    final program = ModalRoute.of(context)!.settings.arguments as Program; // ✅ FIXED
     return ProgramDetailScreen(program: program);
   },
 
