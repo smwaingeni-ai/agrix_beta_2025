@@ -46,7 +46,7 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
-  /// 🔁 General string parser (label or code)
+  /// 🔁 General-purpose string parser (handles both label and code)
   static InvestorStatus fromString(String value) {
     final result = fromLabel(value);
     if (result != InvestorStatus.indifferent || value.toLowerCase() == 'indifferent') {
@@ -54,6 +54,9 @@ extension InvestorStatusExtension on InvestorStatus {
     }
     return fromCode(value);
   }
+
+  /// ✅ Alias for legacy usage
+  static InvestorStatus fromName(String value) => fromString(value);
 
   /// 🔁 All status labels (for dropdowns/chips)
   static List<String> get allLabels =>
