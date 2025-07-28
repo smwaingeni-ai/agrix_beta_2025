@@ -13,7 +13,7 @@ class OfficerTask {
   final TaskStatus status;
   final DateTime createdAt;
 
-  OfficerTask({
+  const OfficerTask({
     required this.id,
     required this.title,
     required this.description,
@@ -25,7 +25,7 @@ class OfficerTask {
     required this.createdAt,
   });
 
-  /// 🔹 Safe empty constructor
+  /// 🔹 Factory for an empty task (e.g. draft UI use)
   factory OfficerTask.empty() {
     return OfficerTask(
       id: '',
@@ -40,7 +40,7 @@ class OfficerTask {
     );
   }
 
-  /// 🔹 From JSON
+  /// 🔹 Deserialize from JSON
   factory OfficerTask.fromJson(Map<String, dynamic> json) {
     return OfficerTask(
       id: json['id'] ?? '',
@@ -55,7 +55,7 @@ class OfficerTask {
     );
   }
 
-  /// 🔹 To JSON
+  /// 🔹 Serialize to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -70,6 +70,7 @@ class OfficerTask {
     };
   }
 
+  /// 🧾 Debug / Logging
   @override
   String toString() =>
       'OfficerTask(id: $id, title: $title, status: ${status.name}, due: $dueDate)';
