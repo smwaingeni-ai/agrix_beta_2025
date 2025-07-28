@@ -7,10 +7,10 @@ class MarketItem {
   final String description;
   final double price;
   final String category;
-  final String type; // ✅ crop/livestock/land/etc.
+  final String type; // ✅ e.g. crop/livestock/land
   final String contact;
-  final String imagePath; // Primary image (thumbnail)
-  final List<String> imagePaths; // For gallery display
+  final String imagePath; // Main thumbnail
+  final List<String> imagePaths; // For gallery
   final String listingType;
   final String location;
   final String ownerName;
@@ -48,7 +48,7 @@ class MarketItem {
     required this.postedAt,
   });
 
-  /// 🔁 Create MarketItem from JSON
+  /// 🔄 From JSON
   factory MarketItem.fromJson(Map<String, dynamic> json) {
     return MarketItem(
       id: json['id'] ?? '',
@@ -75,49 +75,45 @@ class MarketItem {
     );
   }
 
-  /// 🔁 Convert MarketItem to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'price': price,
-      'category': category,
-      'type': type,
-      'contact': contact,
-      'imagePath': imagePath,
-      'imagePaths': imagePaths,
-      'listingType': listingType,
-      'location': location,
-      'ownerName': ownerName,
-      'ownerContact': ownerContact,
-      'investmentStatus': investmentStatus,
-      'investmentTerm': investmentTerm,
-      'contactMethods': contactMethods,
-      'paymentOptions': paymentOptions,
-      'isAvailable': isAvailable,
-      'isLoanAccepted': isLoanAccepted,
-      'isInvestmentOpen': isInvestmentOpen,
-      'postedAt': postedAt.toIso8601String(),
-    };
-  }
+  /// 🔁 To JSON
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'price': price,
+        'category': category,
+        'type': type,
+        'contact': contact,
+        'imagePath': imagePath,
+        'imagePaths': imagePaths,
+        'listingType': listingType,
+        'location': location,
+        'ownerName': ownerName,
+        'ownerContact': ownerContact,
+        'investmentStatus': investmentStatus,
+        'investmentTerm': investmentTerm,
+        'contactMethods': contactMethods,
+        'paymentOptions': paymentOptions,
+        'isAvailable': isAvailable,
+        'isLoanAccepted': isLoanAccepted,
+        'isInvestmentOpen': isInvestmentOpen,
+        'postedAt': postedAt.toIso8601String(),
+      };
 
-  /// 📅 Display-friendly posted date
+  /// 🗓️ User-friendly display date
   String get displayDate => postedAt.toLocal().toString().split('T').first;
 
-  /// 🖼️ Check if an image path is set
+  /// 🖼️ Image presence check
   bool get hasImage => imagePath.isNotEmpty;
 
-  /// 🔄 Decode a JSON string into a list of MarketItems
+  /// 🔄 Decode a list from JSON string
   static List<MarketItem> decodeList(String jsonStr) {
     final List<dynamic> jsonList = json.decode(jsonStr);
     return jsonList.map((e) => MarketItem.fromJson(e)).toList();
   }
 
-  /// 🧾 Encode a list of MarketItems into a JSON string
+  /// 🔁 Encode a list to JSON string
   static String encodeList(List<MarketItem> items) {
-    final List<Map<String, dynamic>> data =
-        items.map((item) => item.toJson()).toList();
-    return json.encode(data);
+    return json.encode(items.map((e) => e.toJson()).toList());
   }
 }
