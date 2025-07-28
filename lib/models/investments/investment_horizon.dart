@@ -14,7 +14,7 @@ enum InvestmentHorizon {
     required this.label,
   });
 
-  /// ✅ Parse from label
+  /// 🔁 Parse from label (case-insensitive)
   static InvestmentHorizon fromLabel(String label) {
     return InvestmentHorizon.values.firstWhere(
       (e) => e.label.toLowerCase() == label.trim().toLowerCase(),
@@ -22,29 +22,24 @@ enum InvestmentHorizon {
     );
   }
 
-  /// ✅ Parse from enum name or code
+  /// 🔁 Parse from string (label, code, or name)
   static InvestmentHorizon fromString(String value) {
-    final matchByLabel = InvestmentHorizon.values.firstWhere(
-      (e) => e.label.toLowerCase() == value.trim().toLowerCase(),
+    final lowerValue = value.trim().toLowerCase();
+
+    return InvestmentHorizon.values.firstWhere(
+      (e) =>
+          e.label.toLowerCase() == lowerValue ||
+          e.code.toLowerCase() == lowerValue ||
+          e.name.toLowerCase() == lowerValue,
       orElse: () => InvestmentHorizon.shortTerm,
     );
-
-    // If label didn't match and fallback used, try matching by code or name
-    return matchByLabel.label.toLowerCase() == value.trim().toLowerCase()
-        ? matchByLabel
-        : InvestmentHorizon.values.firstWhere(
-            (e) =>
-                e.code.toLowerCase() == value.trim().toLowerCase() ||
-                e.name.toLowerCase() == value.trim().toLowerCase(),
-            orElse: () => InvestmentHorizon.shortTerm,
-          );
   }
 
-  /// ✅ All labels (for dropdown display)
+  /// 📋 All labels for dropdown display
   static List<String> get allLabels =>
       InvestmentHorizon.values.map((e) => e.label).toList();
 
-  /// ✅ All codes (for backend/API)
+  /// 📋 All codes for backend/API use
   static List<String> get allCodes =>
       InvestmentHorizon.values.map((e) => e.code).toList();
 }
