@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:agrix_beta_2025/models/diagnosis.dart'; // ✅ Import your typed model
+import 'package:agrix_beta_2025/models/diagnostics/diagnosis.dart'; // ✅ Import your typed model
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
 import 'package:agrix_beta_2025/services/diagnostics/crop_diagnosis_service.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart';
