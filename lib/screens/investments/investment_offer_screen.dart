@@ -31,6 +31,7 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
       investorId: _investorId,
       investorName: _investorName,
       amount: _amount,
+      currency: 'USD', // ✅ Required field added
       term: _selectedHorizon!.code,
       interestRate: _interestRate,
       isAccepted: false,
