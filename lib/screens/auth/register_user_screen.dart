@@ -6,9 +6,9 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
-import 'package:agrix_beta_2025/screens/profile/farmer_profile_form.dart';
+import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'; // ✅ Correct import
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
-import 'package:agrix_beta_2025/screens/core/qr_preview_screen.dart'; // ✅ Required for final fallback screen
+import 'package:agrix_beta_2025/screens/core/qr_preview_screen.dart';
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({super.key});
@@ -56,7 +56,6 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
 
     await _saveUserToFile(user);
 
-    // Navigate based on role
     if (!mounted) return;
     if (role == 'Investor') {
       Navigator.pushReplacement(
@@ -69,7 +68,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => FarmerProfileForm(userId: userId, name: name),
+          builder: (_) => EditFarmerProfileScreen(userId: userId, name: name), // ✅ Fixed
         ),
       );
     } else {
