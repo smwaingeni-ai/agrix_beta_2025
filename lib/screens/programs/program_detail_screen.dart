@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:agrix_beta_2025/models/programs/program_log.dart';
+import 'package:agrix_beta_2025/models/programs/program.dart'; // ✅ Fixed import
 
 class ProgramDetailScreen extends StatelessWidget {
   final ProgramLog program;
