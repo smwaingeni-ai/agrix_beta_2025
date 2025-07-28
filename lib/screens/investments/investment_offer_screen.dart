@@ -31,12 +31,15 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
       investorId: _investorId,
       investorName: _investorName,
       amount: _amount,
-      currency: 'USD', // ✅ Required field added
+      currency: 'USD',
+      durationMonths: _selectedHorizon!.months, // ✅ Added to fix the error
       term: _selectedHorizon!.code,
       interestRate: _interestRate,
+      message: '',
+      offerDate: now,
+      timestamp: now,
       isAccepted: false,
       contact: _contact,
-      timestamp: now,
     );
 
     try {
