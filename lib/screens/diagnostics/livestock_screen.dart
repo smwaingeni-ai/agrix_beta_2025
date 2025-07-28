@@ -18,28 +18,36 @@ class _LivestockScreenState extends State<LivestockScreen> {
     final input = _symptomController.text.trim().toLowerCase();
     if (input.isEmpty) return;
 
-    final csvRaw = await rootBundle.loadString('assets/data/livestock_rules.csv');
-    final csvList = const CsvToListConverter().convert(csvRaw, eol: '\n');
+    try {
+      final csvRaw = await rootBundle.loadString('assets/data/livestock_rules.csv');
+      final csvList = const CsvToListConverter().convert(csvRaw, eol: '\n');
 
-    final headers = csvList.first.map((e) => e.toString().toLowerCase()).toList();
-    final data = csvList.skip(1);
+      final headers = csvList.first.map((e) => e.toString().toLowerCase()).toList();
+      final data = csvList.skip(1);
 
-    List<Map<String, dynamic>> results = [];
+      List<Map<String, dynamic>> results = [];
 
-    for (final row in data) {
-      final map = {
-        for (var i = 0; i < headers.length; i++) headers[i]: row[i].toString()
-      };
+      for (final row in data) {
+        final map = {
+          for (var i = 0; i < headers.length; i++) headers[i]: row[i].toString()
+        };
 
-      if (map['symptom'].toLowerCase().contains(input)) {
-        results.add(map);
+        final symptom = map['symptom']?.toLowerCase() ?? '';
+        if (symptom.contains(input)) {
+          results.add(map);
+        }
       }
+
+      results.sort((a, b) =>
+          double.tryParse(b['likelihoodscore'] ?? '0')!
+              .compareTo(double.tryParse(a['likelihoodscore'] ?? '0')!));
+
+      setState(() => _matches = results);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Failed to load CSV: $e')),
+      );
     }
-
-    results.sort((a, b) =>
-        double.parse(b['likelihoodscore']).compareTo(double.parse(a['likelihoodscore'])));
-
-    setState(() => _matches = results);
   }
 
   Widget _buildDiagnosisCard(Map<String, dynamic> m) {
@@ -57,11 +65,14 @@ class _LivestockScreenState extends State<LivestockScreen> {
             ? Image.asset(
                 imagePath,
                 width: 50,
-                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.image_not_supported),
               )
             : const Icon(Icons.pets, size: 36),
-        title: Text("🦠 ${m['disease']} (${m['species']})",
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          "🦠 ${m['disease']} (${m['species']})",
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -102,10 +113,14 @@ class _LivestockScreenState extends State<LivestockScreen> {
             const SizedBox(height: 16),
             Expanded(
               child: _matches.isEmpty
-                  ? const Center(child: Text('🔍 No results yet. Enter a symptom to begin.'))
+                  ? const Center(
+                      child:
+                          Text('🔍 No results yet. Enter a symptom to begin.'),
+                    )
                   : ListView.builder(
                       itemCount: _matches.length,
-                      itemBuilder: (_, index) => _buildDiagnosisCard(_matches[index]),
+                      itemBuilder: (_, index) =>
+                          _buildDiagnosisCard(_matches[index]),
                     ),
             ),
           ],
