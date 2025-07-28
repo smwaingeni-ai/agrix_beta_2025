@@ -7,8 +7,9 @@ class MarketItem {
   final String description;
   final double price;
   final String category;
+  final String type; // ✅ NEW FIELD for crop/livestock/land/etc.
   final String contact;
-  final String imagePath; // Main image (optional fallback)
+  final String imagePath; // Primary image (thumbnail)
   final List<String> imagePaths; // For gallery display
   final String listingType;
   final String location;
@@ -29,6 +30,7 @@ class MarketItem {
     required this.description,
     required this.price,
     required this.category,
+    required this.type, // ✅
     required this.contact,
     required this.imagePath,
     required this.imagePaths,
@@ -52,6 +54,7 @@ class MarketItem {
         description: json['description'] ?? '',
         price: (json['price'] as num).toDouble(),
         category: json['category'] ?? '',
+        type: json['type'] ?? '', // ✅
         contact: json['contact'] ?? '',
         imagePath: json['imagePath'] ?? '',
         imagePaths: List<String>.from(json['imagePaths'] ?? []),
@@ -75,6 +78,7 @@ class MarketItem {
         'description': description,
         'price': price,
         'category': category,
+        'type': type, // ✅
         'contact': contact,
         'imagePath': imagePath,
         'imagePaths': imagePaths,
@@ -92,7 +96,9 @@ class MarketItem {
         'postedAt': postedAt.toIso8601String(),
       };
 
+  /// 💡 Display-friendly date string
   String get displayDate => postedAt.toLocal().toString().split('T').first;
 
+  /// ✅ Quick check for image availability
   bool get hasImage => imagePath.isNotEmpty;
 }
