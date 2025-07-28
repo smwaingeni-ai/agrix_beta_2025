@@ -2,8 +2,8 @@ class Diagnosis {
   final String symptom;
   final String disease;
   final String treatment;
-  final String? crop;     // for crop-specific
-  final String? species;  // for livestock-specific
+  final String? crop;     // 🌾 Crop-specific
+  final String? species;  // 🐄 Livestock-specific
   final String severity;
   final double likelihood;
   final String? image;
@@ -19,7 +19,7 @@ class Diagnosis {
     this.image,
   });
 
-  // Factory from Map (e.g. JSON or CSV row)
+  /// 🔄 Factory from Map (e.g. JSON or CSV row)
   factory Diagnosis.fromMap(Map<String, dynamic> map) {
     return Diagnosis(
       symptom: map['symptom'] ?? '',
@@ -33,7 +33,7 @@ class Diagnosis {
     );
   }
 
-  // To map (if needed for saving)
+  /// 🔁 Convert back to Map
   Map<String, dynamic> toMap() {
     return {
       'symptom': symptom,
@@ -46,4 +46,10 @@ class Diagnosis {
       'image': image,
     };
   }
+
+  /// 🧠 Unified access for display/logging
+  String get cropOrSpecies => crop ?? species ?? 'Unknown';
+
+  /// 🖼️ Safe image path
+  String get imagePath => image ?? '';
 }
