@@ -61,7 +61,7 @@ import 'package:agrix_beta_2025/screens/official/official_dashboard.dart';
 import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
 import 'package:agrix_beta_2025/screens/programs/program_form_screen.dart';
 import 'package:agrix_beta_2025/screens/programs/program_detail_screen.dart';
-import 'package:agrix_beta_2025/models/programs/program_log.dart';
+import 'package:agrix_beta_2025/models/programs/program.dart';
 
 // 🌿 Sustainability
 import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
