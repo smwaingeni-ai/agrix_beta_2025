@@ -1,3 +1,5 @@
+// lib/screens/profile/edit_farmer_profile_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -5,7 +7,14 @@ import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 
 class EditFarmerProfileScreen extends StatefulWidget {
-  const EditFarmerProfileScreen({Key? key}) : super(key: key);
+  final String userId;
+  final String name;
+
+  const EditFarmerProfileScreen({
+    Key? key,
+    required this.userId,
+    required this.name,
+  }) : super(key: key);
 
   @override
   State<EditFarmerProfileScreen> createState() => _EditFarmerProfileScreenState();
@@ -51,6 +60,8 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
         _subsidised = loaded.subsidised;
         _photoPath = loaded.photoPath;
       });
+    } else {
+      _nameController.text = widget.name;
     }
   }
 
@@ -68,7 +79,7 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final updated = FarmerProfile(
-      farmerId: _profile?.farmerId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      farmerId: _profile?.farmerId ?? widget.userId,
       fullName: _nameController.text.trim(),
       idNumber: _idNumberController.text.trim(),
       contactNumber: _contactController.text.trim(),
@@ -111,10 +122,6 @@ class _EditFarmerProfileScreenState extends State<EditFarmerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_profile == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       appBar: AppBar(title: const Text("Edit Farmer Profile")),
       body: Padding(
