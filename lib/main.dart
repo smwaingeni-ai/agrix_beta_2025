@@ -10,11 +10,16 @@ import 'package:agrix_beta_2025/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final bool isAuthenticated = kIsWeb
-      ? await SessionService.isUserLoggedIn()
-      : await SessionService.checkSession();
+  try {
+    final bool isAuthenticated = kIsWeb
+        ? await SessionService.isUserLoggedIn()
+        : await SessionService.checkSession();
 
-  runApp(AgriXApp(isAuthenticated: isAuthenticated));
+    runApp(AgriXApp(isAuthenticated: isAuthenticated));
+  } catch (e) {
+    // Optional: Log error to Firebase Crashlytics or console
+    runApp(const AgriXApp(isAuthenticated: false));
+  }
 }
 
 class AgriXApp extends StatelessWidget {
@@ -28,9 +33,11 @@ class AgriXApp extends StatelessWidget {
       title: 'AgriX Africa – ADT 2025',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.grey[100],
+        useMaterial3: true, // ✅ Material 3 styling (optional)
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'Roboto', // Replace if you use custom font
       ),
       initialRoute: isAuthenticated ? '/' : '/login',
       routes: appRoutes,
