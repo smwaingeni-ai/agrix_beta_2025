@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:agrix_beta_2025/models/programs/program_log.dart';
+import 'package:agrix_beta_2025/models/programs/program.dart'; // ✅ Corrected import
 
 class ProgramService {
   static const String _fileName = 'program_logs.json';
