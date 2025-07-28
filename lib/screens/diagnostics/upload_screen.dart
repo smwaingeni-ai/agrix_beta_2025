@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // ✅ Fix: Import FontAwesome
 
 import 'package:agrix_beta_2025/models/diagnostics/diagnosis.dart';
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
@@ -143,7 +144,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         onPressed: _shareResult,
                       ),
                       ElevatedButton.icon(
-                        icon: const Icon(Icons.whatsapp),
+                        icon: const FaIcon(FontAwesomeIcons.whatsapp), // ✅ Fixed here
                         label: const Text('WhatsApp'),
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                         onPressed: _shareViaWhatsApp,
@@ -151,15 +152,3 @@ class _UploadScreenState extends State<UploadScreen> {
                       ElevatedButton.icon(
                         icon: const Icon(Icons.receipt_long),
                         label: const Text('Transactions'),
-                        onPressed: _goToTransactions,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
