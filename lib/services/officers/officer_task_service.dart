@@ -1,5 +1,8 @@
+// 📁 lib/services/officers/officer_task_service.dart
+
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:agrix_beta_2025/models/officers/officer_task.dart';
 
@@ -7,13 +10,13 @@ import 'package:agrix_beta_2025/models/officers/officer_task.dart';
 class OfficerTaskService {
   static const String _fileName = 'officer_tasks.json';
 
-  // 🔹 Get path to local application storage
+  /// 📁 Returns app's documents directory path
   static Future<String> _localPath() async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
 
-  // 🔹 Get reference to the task JSON file
+  /// 📄 Returns a reference to the storage file
   static Future<File> _localFile() async {
     final path = await _localPath();
     return File('$path/$_fileName');
@@ -31,65 +34,67 @@ class OfficerTaskService {
       final List<dynamic> decoded = jsonDecode(contents);
       return decoded.map((e) => OfficerTask.fromJson(e)).toList();
     } catch (e) {
-      print('❌ Error loading officer tasks: $e');
+      print('❌ OfficerTaskService.loadTasks: $e');
       return [];
     }
   }
 
   // =============================
-  // 💾 Save New Task
+  // 💾 Save a New Task
   // =============================
   static Future<void> saveTask(OfficerTask task) async {
     try {
-      final file = await _localFile();
       final tasks = await loadTasks();
       tasks.add(task);
+      final file = await _localFile();
       await file.writeAsString(
         jsonEncode(tasks.map((t) => t.toJson()).toList()),
         flush: true,
       );
-      print('✅ Officer task saved.');
+      print('✅ Officer task saved: ${task.id}');
     } catch (e) {
-      print('❌ Error saving officer task: $e');
+      print('❌ OfficerTaskService.saveTask: $e');
     }
   }
 
   // =============================
-  // 🔁 Update Existing Task
+  // 🔁 Update an Existing Task
   // =============================
   static Future<void> updateTask(OfficerTask updatedTask) async {
     try {
-      final file = await _localFile();
       final tasks = await loadTasks();
       final index = tasks.indexWhere((t) => t.id == updatedTask.id);
       if (index != -1) {
         tasks[index] = updatedTask;
+        final file = await _localFile();
         await file.writeAsString(
           jsonEncode(tasks.map((t) => t.toJson()).toList()),
           flush: true,
         );
-        print('✅ Officer task updated.');
+        print('✅ Officer task updated: ${updatedTask.id}');
+      } else {
+        print('⚠️ Task not found for update: ${updatedTask.id}');
       }
     } catch (e) {
-      print('❌ Error updating officer task: $e');
+      print('❌ OfficerTaskService.updateTask: $e');
     }
   }
 
   // =============================
-  // 🗑️ Delete Task by ID
+  // 🗑️ Delete a Task by ID
   // =============================
   static Future<void> deleteTask(String taskId) async {
     try {
-      final file = await _localFile();
       final tasks = await loadTasks();
       tasks.removeWhere((t) => t.id == taskId);
+      final file = await _localFile();
       await file.writeAsString(
         jsonEncode(tasks.map((t) => t.toJson()).toList()),
         flush: true,
       );
-      print('🗑️ Officer task deleted.');
+      print('🗑️ Officer task deleted: $taskId');
     } catch (e) {
-      print('❌ Error deleting officer task: $e');
+      print('❌ OfficerTaskService.deleteTask: $e');
     }
   }
 
@@ -102,7 +107,7 @@ class OfficerTaskService {
       await file.writeAsString(jsonEncode([]), flush: true);
       print('🧹 All officer tasks cleared.');
     } catch (e) {
-      print('❌ Error clearing officer tasks: $e');
+      print('❌ OfficerTaskService.clearAllTasks: $e');
     }
   }
 }
