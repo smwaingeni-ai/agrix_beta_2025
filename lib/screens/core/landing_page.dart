@@ -12,7 +12,7 @@ import 'auth_gate.dart';
 class LandingPage extends StatefulWidget {
   final FarmerProfile? farmer;
 
-  const LandingPage({Key? key, this.farmer}) : super(key: key);
+  const LandingPage({super.key, this.farmer});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -28,8 +28,11 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _loadProfile() async {
-    _profile = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
-    if (mounted) setState(() {});
+    final loadedProfile =
+        widget.farmer ?? await FarmerProfileService.loadActiveProfile();
+    if (mounted) {
+      setState(() => _profile = loadedProfile);
+    }
   }
 
   Future<void> _deleteProfile() async {
@@ -39,6 +42,7 @@ class _LandingPageState extends State<LandingPage> {
 
   void _shareProfile() {
     if (_profile == null) return;
+
     final profileText = '''
 👤 Name: ${_profile!.fullName}
 🆔 ID: ${_profile!.idNumber}
@@ -60,14 +64,14 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  Widget buildGridButton(String label, String route, IconData icon) {
+  Widget _buildGridButton(String label, String route, IconData icon) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(12),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.green[900],
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        foregroundColor: Colors.green[800],
+        padding: const EdgeInsets.all(12),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       onPressed: () => Navigator.pushNamed(context, route),
       child: Column(
@@ -131,18 +135,18 @@ class _LandingPageState extends State<LandingPage> {
                       children: [
                         if (!kIsWeb &&
                             _profile!.photoPath != null &&
-                            File(_profile!.photoPath!).existsSync()) ...[
-                          const SizedBox(height: 8),
-                          ClipOval(
-                            child: Image.file(
-                              File(_profile!.photoPath!),
-                              height: 100,
-                              width: 100,
-                              fit: BoxFit.cover,
+                            File(_profile!.photoPath!).existsSync())
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: ClipOval(
+                              child: Image.file(
+                                File(_profile!.photoPath!),
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                        ],
                         ListTile(
                           title: Text(_profile!.fullName),
                           subtitle: Text(
@@ -170,12 +174,12 @@ class _LandingPageState extends State<LandingPage> {
             const SizedBox(height: 16),
             Expanded(
               child: GridView.count(
-                crossAxisCount: 2,
+                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.05,
                 children: buttons
-                    .map((btn) => buildGridButton(
+                    .map((btn) => _buildGridButton(
                           btn['label'] as String,
                           btn['route'] as String,
                           btn['icon'] as IconData,
