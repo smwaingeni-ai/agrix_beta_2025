@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // ✅ Fix: Import FontAwesome
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:agrix_beta_2025/models/diagnostics/diagnosis.dart';
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
@@ -46,10 +46,7 @@ class _UploadScreenState extends State<UploadScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => DiagnosisScreen(
-            diagnosis: diagnosis,
-            image: _image,
-          ),
+          builder: (_) => DiagnosisScreen(diagnosis: diagnosis, image: _image),
         ),
       );
     } else {
@@ -76,16 +73,49 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _shareViaWhatsApp() async {
-    const message = '📋 Check out this diagnosis result from AgriX.';
-    final url = Uri.parse("whatsapp://send?text=${Uri.encodeComponent(message)}");
+    const msg = '📋 Check out this diagnosis result from AgriX.';
+    final url = Uri.parse("whatsapp://send?text=${Uri.encodeComponent(msg)}");
 
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❌ WhatsApp not available on this device.')),
-      );
+      _showError('❌ WhatsApp not available.');
     }
+  }
+
+  Future<void> _shareViaTelegram() async {
+    const msg = '📋 AgriX result: crop or livestock diagnosis.';
+    final url = Uri.parse("tg://msg?text=${Uri.encodeComponent(msg)}");
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      _showError('❌ Telegram not available.');
+    }
+  }
+
+  Future<void> _shareViaEmail() async {
+    final subject = Uri.encodeComponent('AgriX Diagnosis Result');
+    final body = Uri.encodeComponent('📋 Attached is the diagnosis result from AgriX.');
+    final url = Uri.parse('mailto:?subject=$subject&body=$body');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      _showError('❌ Email client not available.');
+    }
+  }
+
+  void _exportToPDF() {
+    _showError('📝 Export to PDF coming soon.');
+    // Optionally integrate a package like pdf or printing
+  }
+
+  void _goToTransactions() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const TransactionScreen()),
+    );
   }
 
   void _saveResultLocally() {
@@ -94,10 +124,9 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  void _goToTransactions() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const TransactionScreen()),
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 
@@ -144,11 +173,39 @@ class _UploadScreenState extends State<UploadScreen> {
                         onPressed: _shareResult,
                       ),
                       ElevatedButton.icon(
-                        icon: const FaIcon(FontAwesomeIcons.whatsapp), // ✅ Fixed here
+                        icon: const FaIcon(FontAwesomeIcons.whatsapp),
                         label: const Text('WhatsApp'),
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                         onPressed: _shareViaWhatsApp,
                       ),
                       ElevatedButton.icon(
+                        icon: const FaIcon(FontAwesomeIcons.telegram),
+                        label: const Text('Telegram'),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                        onPressed: _shareViaTelegram,
+                      ),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.email_outlined),
+                        label: const Text('Email'),
+                        onPressed: _shareViaEmail,
+                      ),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.picture_as_pdf),
+                        label: const Text('Export PDF'),
+                        onPressed: _exportToPDF,
+                      ),
+                      ElevatedButton.icon(
                         icon: const Icon(Icons.receipt_long),
                         label: const Text('Transactions'),
+                        onPressed: _goToTransactions,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
