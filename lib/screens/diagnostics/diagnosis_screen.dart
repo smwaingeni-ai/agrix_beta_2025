@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:agrix_beta_2025/models/diagnostics/diagnosis.dart';
 
-/// ✅ Final DiagnosisScreen for Crop/Livestock Display
+/// ✅ Final DiagnosisScreen for Crop/Livestock Display using typed `Diagnosis`
 class DiagnosisScreen extends StatelessWidget {
-  final Map<String, dynamic> diagnosis;
+  final Diagnosis diagnosis;
   final File? image;
 
   const DiagnosisScreen({
@@ -46,13 +47,12 @@ class DiagnosisScreen extends StatelessWidget {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
-                    _buildInfoRow('🌿 Symptom', diagnosis['symptom']),
-                    _buildInfoRow('🦠 Disease', diagnosis['disease']),
-                    _buildInfoRow('💊 Treatment', diagnosis['treatment']),
-                    _buildInfoRow('🌾 Crop / Species',
-                        diagnosis['crop'] ?? diagnosis['species']),
-                    _buildInfoRow('📈 Severity', diagnosis['severity']),
-                    _buildInfoRow('📊 Likelihood', '${diagnosis['likelihood'] ?? 'N/A'}'),
+                    _buildInfoRow('🌿 Symptom', diagnosis.symptom),
+                    _buildInfoRow('🦠 Disease', diagnosis.disease),
+                    _buildInfoRow('💊 Treatment', diagnosis.treatment),
+                    _buildInfoRow('🌾 Crop / Species', diagnosis.cropOrSpecies),
+                    _buildInfoRow('📈 Severity', diagnosis.severity),
+                    _buildInfoRow('📊 Likelihood', '${diagnosis.likelihood.toStringAsFixed(2)}'),
                   ],
                 ),
               ),
@@ -75,7 +75,7 @@ class DiagnosisScreen extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              value?.toString().isNotEmpty == true ? value! : 'Unknown',
+              value?.isNotEmpty == true ? value! : 'Unknown',
               style: const TextStyle(color: Colors.black87),
             ),
           ),
