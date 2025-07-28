@@ -28,30 +28,13 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _loadProfile() async {
-    final loadedProfile =
-        widget.farmer ?? await FarmerProfileService.loadActiveProfile();
-    if (mounted) {
-      setState(() => _profile = loadedProfile);
-    }
+    final loaded = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
+    if (mounted) setState(() => _profile = loaded);
   }
 
   Future<void> _deleteProfile() async {
     await FarmerProfileService.clearActiveProfile();
     if (mounted) setState(() => _profile = null);
-  }
-
-  void _shareProfile() {
-    if (_profile == null) return;
-
-    final profileText = '''
-👤 Name: ${_profile!.fullName}
-🆔 ID: ${_profile!.idNumber}
-📞 Contact: ${_profile!.contactNumber}
-📐 Farm Size: ${_profile!.farmSizeHectares ?? 'N/A'} ha
-🌍 Region: ${_profile!.region ?? 'N/A'}
-🏛️ Subsidised: ${_profile!.subsidised ? "Yes" : "No"}
-''';
-    Share.share(profileText);
   }
 
   Future<void> _logout() async {
@@ -64,8 +47,24 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
+  void _shareProfile() {
+    if (_profile == null) return;
+
+    final data = '''
+👤 Name: ${_profile!.fullName}
+🆔 ID: ${_profile!.idNumber}
+📞 Phone: ${_profile!.contactNumber}
+📐 Size: ${_profile!.farmSizeHectares ?? 'N/A'} ha
+📍 Region: ${_profile!.region ?? 'N/A'}
+🏛️ Subsidised: ${_profile!.subsidised ? 'Yes' : 'No'}
+''';
+
+    Share.share(data);
+  }
+
   Widget _buildGridButton(String label, String route, IconData icon) {
     return ElevatedButton(
+      onPressed: () => Navigator.pushNamed(context, route),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
         foregroundColor: Colors.green[800],
@@ -73,7 +72,6 @@ class _LandingPageState extends State<LandingPage> {
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
-      onPressed: () => Navigator.pushNamed(context, route),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -87,7 +85,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> buttons = [
+    final buttons = [
       {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
       {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
       {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
@@ -157,7 +155,11 @@ class _LandingPageState extends State<LandingPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(icon: const Icon(Icons.share), onPressed: _shareProfile),
-                            IconButton(icon: const Icon(Icons.delete), color: Colors.red, onPressed: _deleteProfile),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              color: Colors.red,
+                              onPressed: _deleteProfile,
+                            ),
                           ],
                         ),
                       ],
