@@ -17,7 +17,8 @@ void main() async {
 
     runApp(AgriXApp(isAuthenticated: isAuthenticated));
   } catch (e) {
-    // Optional: Log error to Firebase Crashlytics or console
+    // Optional: Log to Crashlytics, Sentry, or debug console
+    debugPrint('❌ Session check failed: $e');
     runApp(const AgriXApp(isAuthenticated: false));
   }
 }
@@ -33,11 +34,11 @@ class AgriXApp extends StatelessWidget {
       title: 'AgriX Africa – ADT 2025',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        useMaterial3: true, // ✅ Material 3 styling (optional)
+        useMaterial3: true, // ✅ Modern Material Design
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: 'Roboto', // Replace if you use custom font
+        fontFamily: 'Roboto', // ✅ Replace with your preferred font
       ),
       initialRoute: isAuthenticated ? '/' : '/login',
       routes: appRoutes,
