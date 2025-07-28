@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
 import 'package:agrix_beta_2025/services/investments/cloud_investor_service.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
+import 'package:agrix_beta_2025/models/investments/investor_status.dart';
+import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
 
 class InvestorListScreen extends StatefulWidget {
   const InvestorListScreen({super.key});
