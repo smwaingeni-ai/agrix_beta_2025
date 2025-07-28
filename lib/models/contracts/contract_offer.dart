@@ -32,6 +32,23 @@ class ContractOffer {
     required this.terms,
   });
 
+  /// ✅ Fallback empty constructor (used in orElse scenarios)
+  factory ContractOffer.empty() => ContractOffer(
+        id: '',
+        title: '',
+        description: '',
+        location: '',
+        duration: '',
+        paymentTerms: '',
+        contact: '',
+        parties: [],
+        isActive: false,
+        postedAt: DateTime.now(),
+        amount: 0.0,
+        cropOrLivestockType: '',
+        terms: '',
+      );
+
   /// Creates a copy of this ContractOffer with updated fields.
   ContractOffer copyWith({
     String? id,
@@ -66,44 +83,40 @@ class ContractOffer {
   }
 
   /// Deserialize from a JSON object.
-  factory ContractOffer.fromJson(Map<String, dynamic> json) {
-    return ContractOffer(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      location: json['location'] ?? '',
-      duration: json['duration'] ?? '',
-      paymentTerms: json['paymentTerms'] ?? '',
-      contact: json['contact'] ?? '',
-      parties: List<String>.from(json['parties'] ?? []),
-      isActive: json['isActive'] ?? false,
-      postedAt: DateTime.tryParse(json['postedAt'] ?? '') ?? DateTime.now(),
-      amount: (json['amount'] is num)
-          ? (json['amount'] as num).toDouble()
-          : double.tryParse(json['amount']?.toString() ?? '') ?? 0.0,
-      cropOrLivestockType: json['cropOrLivestockType'] ?? '',
-      terms: json['terms'] ?? '',
-    );
-  }
+  factory ContractOffer.fromJson(Map<String, dynamic> json) => ContractOffer(
+        id: json['id'] ?? '',
+        title: json['title'] ?? '',
+        description: json['description'] ?? '',
+        location: json['location'] ?? '',
+        duration: json['duration'] ?? '',
+        paymentTerms: json['paymentTerms'] ?? '',
+        contact: json['contact'] ?? '',
+        parties: List<String>.from(json['parties'] ?? []),
+        isActive: json['isActive'] ?? false,
+        postedAt: DateTime.tryParse(json['postedAt'] ?? '') ?? DateTime.now(),
+        amount: (json['amount'] is num)
+            ? (json['amount'] as num).toDouble()
+            : double.tryParse(json['amount']?.toString() ?? '') ?? 0.0,
+        cropOrLivestockType: json['cropOrLivestockType'] ?? '',
+        terms: json['terms'] ?? '',
+      );
 
   /// Serialize to a JSON object.
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'location': location,
-      'duration': duration,
-      'paymentTerms': paymentTerms,
-      'contact': contact,
-      'parties': parties,
-      'isActive': isActive,
-      'postedAt': postedAt.toIso8601String(),
-      'amount': amount,
-      'cropOrLivestockType': cropOrLivestockType,
-      'terms': terms,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'location': location,
+        'duration': duration,
+        'paymentTerms': paymentTerms,
+        'contact': contact,
+        'parties': parties,
+        'isActive': isActive,
+        'postedAt': postedAt.toIso8601String(),
+        'amount': amount,
+        'cropOrLivestockType': cropOrLivestockType,
+        'terms': terms,
+      };
 
   /// Decode a JSON string into a list of ContractOffers.
   static List<ContractOffer> listFromJson(String jsonString) {
