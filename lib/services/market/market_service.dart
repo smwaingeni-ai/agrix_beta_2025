@@ -1,4 +1,4 @@
-// /lib/services/market/market_service.dart
+// lib/services/market/market_service.dart
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,9 +74,8 @@ class MarketService {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getString(_offersKey);
       if (raw == null || raw.isEmpty) return [];
-      return (jsonDecode(raw) as List)
-          .map((e) => InvestmentOffer.fromJson(e))
-          .toList();
+      final decoded = jsonDecode(raw) as List<dynamic>;
+      return decoded.map((e) => InvestmentOffer.fromJson(e)).toList();
     } catch (e) {
       print('❌ Error loading investment offers: $e');
       return [];
