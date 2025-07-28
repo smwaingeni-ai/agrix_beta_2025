@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:agrix_beta_2025/models/programs/program_log.dart';
+import 'package:agrix_beta_2025/models/programs/program.dart'; // ✅ Fixed import
 import 'package:agrix_beta_2025/services/programs/program_service.dart';
 
 class ProgramFormScreen extends StatefulWidget {
@@ -66,6 +66,7 @@ class _ProgramFormScreenState extends State<ProgramFormScreen> {
     if (_formKey.currentState?.validate() != true) return;
 
     final log = ProgramLog(
+      id: widget.existingProgram?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       programName: _programNameController.text.trim(),
       farmer: _farmerController.text.trim(),
       region: _regionController.text.trim(),
@@ -76,7 +77,7 @@ class _ProgramFormScreenState extends State<ProgramFormScreen> {
     );
 
     try {
-      await _programService.addProgram(log);
+      await _programService.addLog(log); // ✅ Fixed method name
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
