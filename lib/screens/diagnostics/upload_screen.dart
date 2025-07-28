@@ -27,20 +27,28 @@ class _UploadScreenState extends State<UploadScreen> {
 
     final match = rules.entries.firstWhere(
       (entry) => inputLower.contains(entry.key),
-      orElse: () => const MapEntry('', null),
+      orElse: () => MapEntry('', Diagnosis(
+        symptom: 'Unknown',
+        disease: 'Unknown',
+        treatment: 'None',
+        cropOrSpecies: 'Unknown',
+        severity: 'Low',
+        likelihood: 0.0,
+        imagePath: '',
+      )),
     );
 
-    if (match.key.isNotEmpty && match.value != null) {
-      final d = match.value!;
+    if (match.key.isNotEmpty) {
+      final d = match.value;
 
       final diagnosis = Diagnosis(
         symptom: match.key,
         disease: d.disease,
         treatment: d.treatment,
-        cropOrSpecies: d.crop ?? d.species ?? 'Unknown',
+        cropOrSpecies: d.cropOrSpecies,
         severity: d.severity,
-        likelihood: double.tryParse(d.likelihood.toString()) ?? 0.0,
-        imagePath: d.image ?? '',
+        likelihood: d.likelihood,
+        imagePath: d.imagePath,
       );
 
       Navigator.push(
@@ -50,9 +58,7 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❌ No diagnosis found for this image.')),
-      );
+      _showError('❌ No diagnosis found for this image.');
     }
   }
 
@@ -108,7 +114,6 @@ class _UploadScreenState extends State<UploadScreen> {
 
   void _exportToPDF() {
     _showError('📝 Export to PDF coming soon.');
-    // Optionally integrate a package like pdf or printing
   }
 
   void _goToTransactions() {
