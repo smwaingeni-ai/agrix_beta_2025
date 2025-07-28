@@ -1,14 +1,10 @@
 import 'dart:io';
-// Removed unused: import 'dart:ffi'; 
-// Removed: import 'package:tflite_flutter/tflite_flutter.dart';
-// Removed: import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:agrix_beta_2025/models/diagnostics/diagnosis.dart'; // ✅ Import your typed model
+import 'package:agrix_beta_2025/models/diagnostics/diagnosis.dart';
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
 import 'package:agrix_beta_2025/services/diagnostics/crop_diagnosis_service.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart';
@@ -34,15 +30,16 @@ class _UploadScreenState extends State<UploadScreen> {
     );
 
     if (match.key.isNotEmpty && match.value != null) {
+      final d = match.value!;
+
       final diagnosis = Diagnosis(
         symptom: match.key,
-        disease: match.value!.disease,
-        treatment: match.value!.treatment,
-        crop: match.value!.crop,
-        species: match.value!.species,
-        severity: match.value!.severity,
-        likelihood: match.value!.likelihood,
-        image: match.value!.image,
+        disease: d.disease,
+        treatment: d.treatment,
+        cropOrSpecies: d.crop ?? d.species ?? 'Unknown',
+        severity: d.severity,
+        likelihood: double.tryParse(d.likelihood.toString()) ?? 0.0,
+        imagePath: d.image ?? '',
       );
 
       Navigator.push(
