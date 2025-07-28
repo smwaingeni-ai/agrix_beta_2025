@@ -1,3 +1,5 @@
+// 📁 lib/models/diagnostics/diagnosis.dart
+
 class Diagnosis {
   final String symptom;
   final String disease;
@@ -18,6 +20,28 @@ class Diagnosis {
     required this.likelihood,
     this.image,
   });
+
+  /// ✅ Alternate constructor if `cropOrSpecies` is provided directly
+  factory Diagnosis.fromCropOrSpecies({
+    required String symptom,
+    required String disease,
+    required String treatment,
+    required String cropOrSpecies,
+    required String severity,
+    required double likelihood,
+    required String imagePath,
+  }) {
+    return Diagnosis(
+      symptom: symptom,
+      disease: disease,
+      treatment: treatment,
+      crop: cropOrSpecies, // Assume it's crop if unspecified
+      species: null,
+      severity: severity,
+      likelihood: likelihood,
+      image: imagePath,
+    );
+  }
 
   /// 🔄 Factory from Map (e.g. JSON or CSV row)
   factory Diagnosis.fromMap(Map<String, dynamic> map) {
