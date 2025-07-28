@@ -8,7 +8,7 @@ import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'; // ✅ Correct import
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
-import 'package:agrix_beta_2025/screens/core/qr_preview_screen.dart';
+import 'package:agrix_beta_2025//screens/auth/qr_preview_screen.dart';
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({super.key});
