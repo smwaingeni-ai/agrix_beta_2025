@@ -7,7 +7,7 @@ enum InvestorStatus {
 
 /// Extension providing human-readable labels and robust utility methods.
 extension InvestorStatusExtension on InvestorStatus {
-  /// Human-friendly label for display in UI
+  /// ✅ Human-friendly label for display in UI
   String get label {
     switch (this) {
       case InvestorStatus.open:
@@ -19,7 +19,7 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
-  /// Compact string for storage, API, or local DB
+  /// ✅ Compact string for storage, API, or local DB
   String get code => name;
 
   /// 🔁 Parse from code (enum name string)
@@ -55,14 +55,14 @@ extension InvestorStatusExtension on InvestorStatus {
     return fromCode(value);
   }
 
-  /// ✅ Alias for legacy usage
+  /// ✅ Legacy-friendly alias
   static InvestorStatus fromName(String value) => fromString(value);
 
-  /// 🔁 All status labels (for dropdowns/chips)
+  /// 📋 All status labels (for dropdowns/chips)
   static List<String> get allLabels =>
       InvestorStatus.values.map((e) => e.label).toList();
 
-  /// 🔁 All enum codes (for DB/API)
+  /// 📋 All enum codes (for DB/API)
   static List<String> get allCodes =>
       InvestorStatus.values.map((e) => e.code).toList();
 }
