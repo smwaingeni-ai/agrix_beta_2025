@@ -1,3 +1,5 @@
+import 'dart:io'; // ✅ Required for Image.file()
+
 import 'package:flutter/material.dart';
 import 'package:agrix_beta_2025/models/market/market_item.dart';
 import 'package:agrix_beta_2025/services/market/market_service.dart';
@@ -83,8 +85,10 @@ class _MarketScreenState extends State<MarketScreen> {
             : const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
         title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text('${item.category} • ${item.displayDate}'),
-        trailing: Text('ZMW ${item.price.toStringAsFixed(2)}',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        trailing: Text(
+          'ZMW ${item.price.toStringAsFixed(2)}',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         onTap: () => _openDetails(item),
       ),
     );
@@ -107,8 +111,11 @@ class _MarketScreenState extends State<MarketScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
               ? const Center(
-                  child: Text('📭 No market items available. Tap + to add.',
-                      style: TextStyle(fontSize: 16)))
+                  child: Text(
+                    '📭 No market items available. Tap + to add.',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )
               : RefreshIndicator(
                   onRefresh: _loadItems,
                   child: ListView.builder(
