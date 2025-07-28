@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-/// Represents an investment offer made by an investor on a listing.
+/// 💰 Represents an investment offer made by an investor on a listing.
 class InvestmentOffer {
   final String id;
   final String investorName;
@@ -34,7 +34,7 @@ class InvestmentOffer {
     this.isAccepted = false,
   });
 
-  /// 🔹 Create a blank default offer
+  /// 🆕 Creates a blank default offer
   factory InvestmentOffer.empty() => InvestmentOffer(
         id: '',
         investorName: '',
@@ -52,7 +52,7 @@ class InvestmentOffer {
         isAccepted: false,
       );
 
-  /// 🔹 Deserialize from JSON map
+  /// 🔁 Deserialize from JSON map
   factory InvestmentOffer.fromJson(Map<String, dynamic> json) {
     final now = DateTime.now();
     return InvestmentOffer(
@@ -61,11 +61,11 @@ class InvestmentOffer {
       listingId: json['listingId'] ?? '',
       investorId: json['investorId'] ?? '',
       contact: json['contact'] ?? '',
-      amount: (json['amount'] ?? 0).toDouble(),
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       currency: json['currency'] ?? 'USD',
       durationMonths: json['durationMonths'] ?? 0,
       term: json['term'] ?? '',
-      interestRate: (json['interestRate'] ?? 0).toDouble(),
+      interestRate: (json['interestRate'] as num?)?.toDouble() ?? 0.0,
       message: json['message'] ?? '',
       offerDate: DateTime.tryParse(json['offerDate'] ?? '') ?? now,
       timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? now,
@@ -73,7 +73,7 @@ class InvestmentOffer {
     );
   }
 
-  /// 🔹 Serialize to JSON map
+  /// 🔁 Serialize to JSON map
   Map<String, dynamic> toJson() => {
         'id': id,
         'investorName': investorName,
@@ -91,17 +91,17 @@ class InvestmentOffer {
         'isAccepted': isAccepted,
       };
 
-  /// 🔹 Encode a list of InvestmentOffer objects to a JSON string
+  /// 🔃 Encode a list to JSON string
   static String encode(List<InvestmentOffer> offers) =>
       jsonEncode(offers.map((e) => e.toJson()).toList());
 
-  /// 🔹 Decode a JSON string to a list of InvestmentOffer objects
+  /// 🔄 Decode from JSON string
   static List<InvestmentOffer> decode(String jsonStr) =>
       (jsonDecode(jsonStr) as List<dynamic>)
           .map((e) => InvestmentOffer.fromJson(e))
           .toList();
 
-  /// 🔹 Create a copy with optional overrides
+  /// 🧩 Create a modified copy
   InvestmentOffer copyWith({
     String? id,
     String? investorName,
@@ -142,25 +142,24 @@ class InvestmentOffer {
   }
 
   @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is InvestmentOffer &&
-            runtimeType == other.runtimeType &&
-            id == other.id &&
-            investorName == other.investorName &&
-            listingId == other.listingId &&
-            investorId == other.investorId &&
-            contact == other.contact &&
-            amount == other.amount &&
-            currency == other.currency &&
-            durationMonths == other.durationMonths &&
-            term == other.term &&
-            interestRate == other.interestRate &&
-            message == other.message &&
-            offerDate == other.offerDate &&
-            timestamp == other.timestamp &&
-            isAccepted == other.isAccepted;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InvestmentOffer &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          investorName == other.investorName &&
+          listingId == other.listingId &&
+          investorId == other.investorId &&
+          contact == other.contact &&
+          amount == other.amount &&
+          currency == other.currency &&
+          durationMonths == other.durationMonths &&
+          term == other.term &&
+          interestRate == other.interestRate &&
+          message == other.message &&
+          offerDate == other.offerDate &&
+          timestamp == other.timestamp &&
+          isAccepted == other.isAccepted;
 
   @override
   int get hashCode =>
