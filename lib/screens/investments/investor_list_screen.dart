@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
-import 'package:agrix_beta_2025/services/profile/investor_service.dart';
+import 'package:agrix_beta_2025/services/investments/cloud_investor_service.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 
 class InvestorListScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
     });
 
     try {
-      final data = await InvestorService().loadInvestors();
+      final data = await CloudInvestorService().loadInvestors(); // ✅ FIXED
       setState(() {
         _allInvestors = data;
         _applySearch();
