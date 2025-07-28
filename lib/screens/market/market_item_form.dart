@@ -55,34 +55,35 @@ class _MarketItemFormState extends State<MarketItemForm> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final marketItem = MarketItem(
-        id: _uuid.v4(),
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        price: double.tryParse(_priceController.text.trim()) ?? 0.0,
-        category: _categoryController.text.trim(),
-        contact: _ownerContactController.text.trim(),
-        imagePath: _imagePaths.isNotEmpty ? _imagePaths.first : '',
-        imagePaths: _imagePaths,
-        listingType: _listingTypeController.text.trim(),
-        location: _locationController.text.trim(),
-        ownerName: _ownerNameController.text.trim(),
-        ownerContact: _ownerContactController.text.trim(),
-        investmentStatus: _investmentStatusController.text.trim(),
-        investmentTerm: _investmentTermController.text.trim(),
-        contactMethods: _contactMethods,
-        paymentOptions: _paymentOptions,
-        isAvailable: _isAvailable,
-        isLoanAccepted: _isLoanAccepted,
-        isInvestmentOpen: _isInvestmentOpen,
-        postedAt: DateTime.now(),
-      );
+  if (_formKey.currentState!.validate()) {
+    final marketItem = MarketItem(
+      id: _uuid.v4(),
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      price: double.tryParse(_priceController.text.trim()) ?? 0.0,
+      category: _categoryController.text.trim(),
+      type: _typeController.text.trim(), // ✅ Added line to fix the error
+      contact: _ownerContactController.text.trim(),
+      imagePath: _imagePaths.isNotEmpty ? _imagePaths.first : '',
+      imagePaths: _imagePaths,
+      listingType: _listingTypeController.text.trim(),
+      location: _locationController.text.trim(),
+      ownerName: _ownerNameController.text.trim(),
+      ownerContact: _ownerContactController.text.trim(),
+      investmentStatus: _investmentStatusController.text.trim(),
+      investmentTerm: _investmentTermController.text.trim(),
+      contactMethods: _contactMethods,
+      paymentOptions: _paymentOptions,
+      isAvailable: _isAvailable,
+      isLoanAccepted: _isLoanAccepted,
+      isInvestmentOpen: _isInvestmentOpen,
+      postedAt: DateTime.now(),
+    );
 
-      widget.onSubmit(marketItem);
-      Navigator.pop(context);
-    }
+    widget.onSubmit(marketItem);
+    Navigator.pop(context);
   }
+}
 
   Widget _buildChipsSection(String title, List<String> options, List<String> selected, Function(List<String>) onChanged) {
     return Column(
