@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:agrix_beta_2025/models/diagnosis.dart'; // ✅ Import your typed model
 import 'package:agrix_beta_2025/screens/core/transaction_screen.dart';
 import 'package:agrix_beta_2025/services/diagnostics/crop_diagnosis_service.dart';
 import 'package:agrix_beta_2025/screens/diagnostics/diagnosis_screen.dart';
@@ -29,19 +30,20 @@ class _UploadScreenState extends State<UploadScreen> {
 
     final match = rules.entries.firstWhere(
       (entry) => inputLower.contains(entry.key),
-      orElse: () => MapEntry('', {}),
+      orElse: () => const MapEntry('', null),
     );
 
-    if (match.key.isNotEmpty) {
-      final diagnosis = {
-        'symptom': match.key,
-        'disease': match.value['disease'],
-        'treatment': match.value['treatment'],
-        'crop': match.value['crop'],
-        'severity': match.value['severity'],
-        'likelihood': match.value['likelihood'],
-        'image': match.value['image'],
-      };
+    if (match.key.isNotEmpty && match.value != null) {
+      final diagnosis = Diagnosis(
+        symptom: match.key,
+        disease: match.value!.disease,
+        treatment: match.value!.treatment,
+        crop: match.value!.crop,
+        species: match.value!.species,
+        severity: match.value!.severity,
+        likelihood: match.value!.likelihood,
+        image: match.value!.image,
+      );
 
       Navigator.push(
         context,
