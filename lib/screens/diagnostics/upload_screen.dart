@@ -27,15 +27,19 @@ class _UploadScreenState extends State<UploadScreen> {
 
     final match = rules.entries.firstWhere(
       (entry) => inputLower.contains(entry.key),
-      orElse: () => MapEntry('', Diagnosis(
-        symptom: 'Unknown',
-        disease: 'Unknown',
-        treatment: 'None',
-        cropOrSpecies: 'Unknown',
-        severity: 'Low',
-        likelihood: 0.0,
-        imagePath: '',
-      )),
+      orElse: () => MapEntry(
+        '',
+        Diagnosis(
+          symptom: 'Unknown',
+          disease: 'Unknown',
+          treatment: 'None',
+          crop: null,
+          species: null,
+          severity: 'Low',
+          likelihood: 0.0,
+          image: '',
+        ),
+      ),
     );
 
     if (match.key.isNotEmpty) {
@@ -45,16 +49,20 @@ class _UploadScreenState extends State<UploadScreen> {
         symptom: match.key,
         disease: d.disease,
         treatment: d.treatment,
-        cropOrSpecies: d.cropOrSpecies,
+        crop: d.crop,
+        species: d.species,
         severity: d.severity,
         likelihood: d.likelihood,
-        imagePath: d.imagePath,
+        image: d.image,
       );
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => DiagnosisScreen(diagnosis: diagnosis, image: _image),
+          builder: (_) => DiagnosisScreen(
+            diagnosis: diagnosis,
+            image: _image,
+          ),
         ),
       );
     } else {
