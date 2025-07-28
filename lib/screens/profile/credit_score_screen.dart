@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:agrix_africa_adt2025/models/farmer_profile.dart';
+import 'package:agrix_beta_2025/models/farmer_profile.dart';
 
 class CreditScoreScreen extends StatelessWidget {
   const CreditScoreScreen({super.key}); // 🔧 Now no longer requires named constructor argument
