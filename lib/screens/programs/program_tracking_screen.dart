@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:agrix_beta_2025/models/programs/program_log.dart';
+import 'package:agrix_beta_2025/models/programs/program.dart'; // ✅ FIXED problem, mismatch
 import 'package:agrix_beta_2025/services/programs/program_service.dart';
 
 class ProgramTrackingScreen extends StatefulWidget {
