@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
 import 'package:agrix_beta_2025/models/investments/investor_status.dart';
-import 'package:agrix_beta_2025/services/profile/investments/investor_service.dart';
+import 'package:agrix_beta_2025/services/investments/cloud_investor_service.dart';
 
 class InvestorRegistrationScreen extends StatefulWidget {
   final String? userId;
@@ -71,13 +71,13 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
     );
 
     try {
-      await InvestorService().saveInvestor(investor);
+      await CloudInvestorService().saveInvestor(investor); // ✅ FIXED
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Investor Registered Successfully!')),
         );
-        Navigator.pop(context, true); // Return to refresh caller
+        Navigator.pop(context, true);
       }
     } catch (e) {
       debugPrint('❌ Error saving investor: $e');
