@@ -8,9 +8,9 @@ import 'package:share_plus/share_plus.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
+import 'package:agrix_beta_2025/models/user_model.dart';
 
 import 'auth_gate.dart';
-import 'package:agrix_beta_2025/models/user_model.dart';
 
 class LandingPage extends StatefulWidget {
   final FarmerProfile? farmer;
@@ -73,106 +73,59 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _buildGridButton(String label, String route, IconData icon) {
-    return ElevatedButton(
-      onPressed: () => Navigator.pushNamed(context, route),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.green[800],
-        padding: const EdgeInsets.all(12),
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 28),
-          const SizedBox(height: 8),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13)),
-        ],
+    return SizedBox(
+      width: 160,
+      child: ElevatedButton(
+        onPressed: () => Navigator.pushNamed(context, route),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.green[800],
+          padding: const EdgeInsets.all(12),
+          elevation: 3,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 28),
+            const SizedBox(height: 8),
+            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13)),
+          ],
+        ),
       ),
     );
   }
 
-  List<Map<String, dynamic>> _getButtonsForRole(String? role) {
-    final List<Map<String, dynamic>> common = [
-      {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
-      {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
-      {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
-    ];
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
 
-    switch (role) {
-      case 'Farmer':
-        return [
-          {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
-          {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
-          {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
-          {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-          {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
-          {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
-          {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
-          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
-          {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
-          {'label': 'Market', 'route': '/market', 'icon': Icons.store},
-          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
-          ...common,
-        ];
-      case 'Investor':
-        return [
-          {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
-          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
-          ...common,
-        ];
-      case 'AREX Officer':
-        return [
-          {'label': 'Officer Tasks', 'route': '/officer/tasks', 'icon': Icons.task},
-          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
-          {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
-          ...common,
-        ];
-      case 'Trader':
-        return [
-          {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
-          {'label': 'Market', 'route': '/market', 'icon': Icons.store},
-          ...common,
-        ];
-      case 'Government Official':
-        return [
-          {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
-          {'label': 'Program Tracking', 'route': '/programTracking', 'icon': Icons.track_changes},
-          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
-          ...common,
-        ];
-      case 'Admin':
-        return [
-          {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
-          {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
-          {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
-          {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-          {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
-          {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
-          {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
-          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
-          {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
-          {'label': 'Market', 'route': '/market', 'icon': Icons.store},
-          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
-          {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
-          {'label': 'Officer Tasks', 'route': '/officer/tasks', 'icon': Icons.task},
-          {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
-          {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
-          ...common,
-        ];
-      default:
-        return common;
-    }
+  Widget _buildModuleRow(List<Map<String, dynamic>> modules) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children: modules
+            .map((btn) => _buildGridButton(
+                  btn['label'] as String,
+                  btn['route'] as String,
+                  btn['icon'] as IconData,
+                ))
+            .toList(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final role = _user?.role ?? 'Guest';
-    final buttons = _getButtonsForRole(role);
+    final isFarmer = _user?.role == 'Farmer';
 
     return Scaffold(
       appBar: AppBar(
@@ -198,23 +151,26 @@ class _LandingPageState extends State<LandingPage> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     child: Column(
                       children: [
-                        if (!kIsWeb &&
-                            _profile!.photoPath != null &&
-                            File(_profile!.photoPath!).existsSync())
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: ClipOval(
-                              child: Image.file(
-                                File(_profile!.photoPath!),
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.green.shade100,
+                            backgroundImage: (!kIsWeb &&
+                                    _profile!.photoPath != null &&
+                                    File(_profile!.photoPath!).existsSync())
+                                ? FileImage(File(_profile!.photoPath!))
+                                : null,
+                            child: (_profile!.photoPath == null ||
+                                    !File(_profile!.photoPath!).existsSync())
+                                ? const Icon(Icons.person, size: 50, color: Colors.grey)
+                                : null,
                           ),
+                        ),
                         ListTile(
                           title: Text(_profile!.fullName),
-                          subtitle: Text('${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha'),
+                          subtitle: Text(
+                              '${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha'),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -226,7 +182,8 @@ class _LandingPageState extends State<LandingPage> {
                               ElevatedButton.icon(
                                 icon: const Icon(Icons.edit),
                                 label: const Text('Edit Profile'),
-                                onPressed: () => Navigator.pushNamed(context, '/editFarmerProfile'),
+                                onPressed: () =>
+                                    Navigator.pushNamed(context, '/editFarmerProfile'),
                               ),
                               ElevatedButton.icon(
                                 icon: const Icon(Icons.share),
@@ -252,23 +209,92 @@ class _LandingPageState extends State<LandingPage> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('Create Farmer Profile'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/farmerProfile').then((_) => _loadProfile());
+                      Navigator.pushNamed(context, '/farmerProfile')
+                          .then((_) => _loadProfile());
                     },
                   ),
             const SizedBox(height: 16),
             Expanded(
-              child: GridView.count(
-                crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.05,
-                children: buttons
-                    .map((btn) => _buildGridButton(
-                          btn['label'] as String,
-                          btn['route'] as String,
-                          btn['icon'] as IconData,
-                        ))
-                    .toList(),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: isFarmer
+                      ? [
+                          _buildSectionHeader('💳 Credit Tools'),
+                          _buildModuleRow([
+                            {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
+                            {
+                              'label': 'Apply for Loan',
+                              'route': '/loanApplication',
+                              'icon': Icons.assignment
+                            },
+                            {
+                              'label': 'View Loans',
+                              'route': '/loan',
+                              'icon': Icons.account_balance
+                            },
+                          ]),
+                          _buildSectionHeader('🌾 Diagnostics'),
+                          _buildModuleRow([
+                            {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
+                            {
+                              'label': 'Livestock Diagnosis',
+                              'route': '/livestock',
+                              'icon': Icons.pets
+                            },
+                          ]),
+                          _buildSectionHeader('🎓 Training'),
+                          _buildModuleRow([
+                            {
+                              'label': 'Training Log',
+                              'route': '/trainingLog',
+                              'icon': Icons.school
+                            },
+                            {
+                              'label': 'View Training',
+                              'route': '/training/view',
+                              'icon': Icons.menu_book
+                            },
+                          ]),
+                          _buildSectionHeader('🛒 Trade & Market'),
+                          _buildModuleRow([
+                            {'label': 'Trade', 'route': '/market', 'icon': Icons.store},
+                            {
+                              'label': 'Marketplace',
+                              'route': '/market/listings',
+                              'icon': Icons.shopping_cart
+                            },
+                          ]),
+                          _buildSectionHeader('📘 Logs'),
+                          _buildModuleRow([
+                            {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
+                            {
+                              'label': 'Sustainability Log',
+                              'route': '/sustainabilityLog',
+                              'icon': Icons.nature
+                            },
+                          ]),
+                          _buildSectionHeader('💬 General'),
+                          _buildModuleRow([
+                            {
+                              'label': 'Notifications',
+                              'route': '/notifications',
+                              'icon': Icons.notifications
+                            },
+                            {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
+                            {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
+                          ]),
+                        ]
+                      : [
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'No role-specific layout yet for this role.',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                ),
               ),
             ),
           ],
