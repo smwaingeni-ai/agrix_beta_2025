@@ -12,29 +12,29 @@ dependencies:
   # 🔷 UI & Icons
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.9
-  font_awesome_flutter: ^10.7.0
+  font_awesome_flutter: ^10.7.0         # ✅ Used for WhatsApp, Telegram, Dashboard icons
 
   # 🔷 State & Storage
-  shared_preferences: ^2.0.15
-  flutter_secure_storage: ^8.1.0
-  local_auth: ^2.1.6
+  shared_preferences: ^2.0.15           # ✅ Local session and preferences
+  flutter_secure_storage: ^8.1.0        # ✅ For sensitive data
+  local_auth: ^2.1.6                    # ✅ Biometrics
 
   # 🔷 Utilities & Core
-  uuid: ^4.0.0
-  url_launcher: ^6.1.7
-  path_provider: ^2.1.2
-  image_picker: ^1.0.4
-  share_plus: ^6.3.1
-  csv: ^5.0.2
-  qr_flutter: ^4.0.0
-  intl: ^0.18.1
+  uuid: ^4.0.0                          # ✅ ID generation
+  url_launcher: ^6.1.7                 # ✅ WhatsApp, Telegram, Email deep linking
+  path_provider: ^2.1.2                 # ✅ File persistence (e.g. tasks, profiles)
+  image_picker: ^1.0.4                  # ✅ Image capture/upload
+  share_plus: ^6.3.1                    # ✅ System share functionality
+  csv: ^5.0.2                           # ✅ For livestock/soil/crop rule parsing
+  qr_flutter: ^4.0.0                    # ✅ QR code for user/farmer profiles
+  intl: ^0.18.1                         # ✅ Date formatting, future i18n
 
   # 🔷 JSON Serialization
-  json_annotation: ^4.8.0
+  json_annotation: ^4.8.0               # ✅ Used with build_runner + json_serializable
 
   # 🔷 Firebase
-  firebase_core: ^2.31.0
-  cloud_firestore: ^4.15.0
+  firebase_core: ^2.31.0                # ✅ Firebase setup
+  cloud_firestore: ^4.15.0              # ✅ Investor profiles, diagnostics (cloud option)
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +69,6 @@ flutter:
     - assets/data/officials.json
     - assets/data/traders.json
 
-    # 🖼 General assets
+    # 🖼 General
     - assets/images/
     - assets/icons/
