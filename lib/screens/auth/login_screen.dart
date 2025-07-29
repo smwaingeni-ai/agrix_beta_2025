@@ -16,101 +16,221 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Row(
-        children: [
-          Image.asset('assets/images/agrix_logo.png', height: 32),
-          const SizedBox(width: 8),
-          const Text('AgriX Login'),
-        ],
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  bool _obscureText = true;
+
+  String selectedRole = 'Farmer';
+  String name = '';
+  String passcode = '';
+
+  final List<String> roles = [
+    'Farmer',
+    'AREX Officer',
+    'Government Official',
+    'Admin',
+    'Trader',
+    'Investor',
+  ];
+
+  void _validateLogin() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      final user = dummyUsers.firstWhere(
+        (u) =>
+            u.name.toLowerCase() == name.trim().toLowerCase() &&
+            u.passcode == passcode &&
+            u.role == selectedRole,
+        orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
+      );
+
+      if (user.id.isNotEmpty) {
+        _navigateToRoleScreen(user);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('❌ Invalid credentials')),
+        );
+      }
+    }
+  }
+
+  void _navigateToRoleScreen(UserModel user) {
+    final role = user.role;
+    if (role == 'Farmer') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LandingPage(farmer: FarmerProfile.fromUser(user)),
+        ),
+      );
+    } else {
+      final routeMap = {
+        'AREX Officer': '/officerDashboard',
+        'Government Official': '/officialDashboard',
+        'Admin': '/adminPanel',
+        'Trader': '/traderDashboard',
+        'Investor': '/investorDashboard',
+      };
+
+      final route = routeMap[role];
+      if (route != null) {
+        Navigator.pushReplacementNamed(context, route, arguments: user);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('⚠️ Unknown role. Contact admin.')),
+        );
+      }
+    }
+  }
+
+  Future<void> _loginWithBiometrics() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('⚠️ Biometrics not supported on Web')),
+      );
+      return;
+    }
+
+    final success = await BiometricAuthService.authenticate();
+    if (success) {
+      final user = dummyUsers.firstWhere(
+        (u) => u.role == 'Farmer',
+        orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
+      );
+
+      if (user.id.isNotEmpty) {
+        _navigateToRoleScreen(user);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('⚠️ No Farmer profile found')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❌ Biometric auth failed')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset('assets/images/agrix_logo.png', height: 32),
+            const SizedBox(width: 8),
+            const Text('AgriX Login'),
+          ],
+        ),
       ),
-    ),
-    body: Center(
-      child: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 450),
-          child: Card(
-            elevation: 2,
-            margin: const EdgeInsets.all(24),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      '🔐 Login to AgriX',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(labelText: 'Select Role'),
-                      value: selectedRole,
-                      items: roles
-                          .map((role) =>
-                              DropdownMenuItem(value: role, child: Text(role)))
-                          .toList(),
-                      onChanged: (value) => setState(() => selectedRole = value!),
-                    ),
-                    const SizedBox(height: 16),
-
-                    TextFormField(
-                      decoration: const InputDecoration(labelText: 'Name'),
-                      validator: (value) =>
-                          value == null || value.trim().isEmpty ? 'Required' : null,
-                      onSaved: (value) => name = value!.trim(),
-                    ),
-                    const SizedBox(height: 16),
-
-                    TextFormField(
-                      obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        labelText: 'Passcode',
-                        suffixIcon: IconButton(
-                          icon: Icon(_obscureText
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: () => setState(() => _obscureText = !_obscureText),
+      body: Center(
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: Card(
+              elevation: 2,
+              margin: const EdgeInsets.all(24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        '🔐 Login to AgriX',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? 'Required' : null,
-                      onSaved: (value) => passcode = value!,
-                    ),
+                      const SizedBox(height: 24),
 
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.login),
-                      label: const Text('Login'),
-                      onPressed: _validateLogin,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
+                      DropdownButtonFormField<String>(
+                        decoration:
+                            const InputDecoration(labelText: 'Select Role'),
+                        value: selectedRole,
+                        items: roles
+                            .map((role) => DropdownMenuItem(
+                                  value: role,
+                                  child: Text(role),
+                                ))
+                            .toList(),
+                        onChanged: (value) =>
+                            setState(() => selectedRole = value!),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton.icon(
-                      icon: const Icon(Icons.person_add),
-                      label: const Text('Create New Account'),
-                      onPressed: () => Navigator.pushNamed(context, '/register'),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: 'Name'),
+                        validator: (value) => value == null || value.isEmpty
+                            ? 'Required'
+                            : null,
+                        onSaved: (value) => name = value!.trim(),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        obscureText: _obscureText,
+                        decoration: InputDecoration(
+                          labelText: 'Passcode',
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () => setState(
+                                () => _obscureText = !_obscureText),
+                          ),
+                        ),
+                        validator: (value) =>
+                            value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                        onSaved: (value) => passcode = value!,
+                      ),
+
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.login),
+                        label: const Text('Login'),
+                        onPressed: _validateLogin,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      if (!kIsWeb && selectedRole == 'Farmer')
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.fingerprint),
+                          label: const Text('Login with Biometrics'),
+                          onPressed: _loginWithBiometrics,
+                        ),
+
+                      const SizedBox(height: 10),
+                      TextButton.icon(
+                        icon: const Icon(Icons.person_add),
+                        label: const Text('Create New Account'),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/register'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
