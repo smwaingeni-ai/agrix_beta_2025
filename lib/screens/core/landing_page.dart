@@ -1,3 +1,5 @@
+// lib/screens/core/landing_page.dart
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,12 +34,16 @@ class _LandingPageState extends State<LandingPage> {
   Future<void> _loadProfile() async {
     final loaded = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
     final user = await SessionService.loadActiveUser();
+
+    if (user != null) {
+      debugPrint('✅ Loaded user role: ${user.role}');
+    }
+
     if (mounted) {
       setState(() {
         _profile = loaded;
         _user = user;
       });
-      debugPrint("✅ Loaded role: ${user?.role}");
     }
   }
 
@@ -122,7 +128,8 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isFarmer = _user?.role.trim().toLowerCase().contains('farmer') ?? false;
+    final role = _user?.role.trim().toLowerCase() ?? '';
+    final isFarmer = role.contains('farmer');
 
     return Scaffold(
       appBar: AppBar(
