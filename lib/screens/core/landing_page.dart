@@ -1,3 +1,5 @@
+// lib/screens/core/landing_page.dart
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,7 @@ import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
 import 'auth_gate.dart';
-import 'package:agrix_beta_2025/models/user_model.dart'; // For role
+import 'package:agrix_beta_2025/models/user_model.dart';
 
 class LandingPage extends StatefulWidget {
   final FarmerProfile? farmer;
@@ -31,7 +33,7 @@ class _LandingPageState extends State<LandingPage> {
 
   Future<void> _loadProfile() async {
     final loaded = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
-    final user = await SessionService.loadActiveUser(); // Load logged-in user with role
+    final user = await SessionService.loadActiveUser();
     if (mounted) {
       setState(() {
         _profile = loaded;
@@ -214,12 +216,34 @@ class _LandingPageState extends State<LandingPage> {
                           title: Text(_profile!.fullName),
                           subtitle: Text('${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha'),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(icon: const Icon(Icons.share), onPressed: _shareProfile),
-                            IconButton(icon: const Icon(Icons.delete), color: Colors.red, onPressed: _deleteProfile),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          child: Wrap(
+                            spacing: 12,
+                            runSpacing: 8,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.edit),
+                                label: const Text('Edit Profile'),
+                                onPressed: () => Navigator.pushNamed(context, '/editFarmerProfile'),
+                              ),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.share),
+                                label: const Text('Share'),
+                                onPressed: _shareProfile,
+                              ),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.delete),
+                                label: const Text('Delete'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red.shade600,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: _deleteProfile,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -228,8 +252,7 @@ class _LandingPageState extends State<LandingPage> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('Create Farmer Profile'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/farmerProfile')
-                          .then((_) => _loadProfile());
+                      Navigator.pushNamed(context, '/farmerProfile').then((_) => _loadProfile());
                     },
                   ),
             const SizedBox(height: 16),
