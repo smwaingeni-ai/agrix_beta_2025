@@ -62,8 +62,7 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
       location: _locationController.text.trim(),
       contact: _contactController.text.trim(),
       preferredHorizons: _selectedHorizons
-          .map((label) => InvestmentHorizonExtension.fromLabel(label))
-          .whereType<InvestmentHorizon>()
+          .map((label) => InvestmentHorizonUtils.fromLabel(label))
           .toList(),
       interests: _selectedInterests,
       status: InvestorStatusExtension.fromString(_selectedStatus),
