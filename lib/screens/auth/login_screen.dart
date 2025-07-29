@@ -119,114 +119,133 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset('assets/images/agrix_logo.png', height: 32),
-            const SizedBox(width: 8),
-            const Text('AgriX Login'),
-          ],
-        ),
-      ),
       body: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 450),
-            child: Card(
-              elevation: 2,
-              margin: const EdgeInsets.all(24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        '🔐 Login to AgriX',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      DropdownButtonFormField<String>(
-                        decoration:
-                            const InputDecoration(labelText: 'Select Role'),
-                        value: selectedRole,
-                        items: roles
-                            .map((role) => DropdownMenuItem(
-                                  value: role,
-                                  child: Text(role),
-                                ))
-                            .toList(),
-                        onChanged: (value) =>
-                            setState(() => selectedRole = value!),
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        decoration: const InputDecoration(labelText: 'Name'),
-                        validator: (value) => value == null || value.isEmpty
-                            ? 'Required'
-                            : null,
-                        onSaved: (value) => name = value!.trim(),
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        obscureText: _obscureText,
-                        decoration: InputDecoration(
-                          labelText: 'Passcode',
-                          suffixIcon: IconButton(
-                            icon: Icon(_obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off),
-                            onPressed: () => setState(
-                                () => _obscureText = !_obscureText),
-                          ),
-                        ),
-                        validator: (value) =>
-                            value == null || value.isEmpty
-                                ? 'Required'
-                                : null,
-                        onSaved: (value) => passcode = value!,
-                      ),
-
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.login),
-                        label: const Text('Login'),
-                        onPressed: _validateLogin,
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      if (!kIsWeb && selectedRole == 'Farmer')
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.fingerprint),
-                          label: const Text('Login with Biometrics'),
-                          onPressed: _loginWithBiometrics,
-                        ),
-
-                      const SizedBox(height: 10),
-                      TextButton.icon(
-                        icon: const Icon(Icons.person_add),
-                        label: const Text('Create New Account'),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, '/register'),
-                      ),
-                    ],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo above the card
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: Image.asset(
+                    'assets/alogo.png',
+                    height: 80,
                   ),
                 ),
-              ),
+                Card(
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            '🔐 Login to AgriX',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          DropdownButtonFormField<String>(
+                            decoration: const InputDecoration(labelText: 'Select Role'),
+                            value: selectedRole,
+                            items: roles
+                                .map((role) => DropdownMenuItem(
+                                      value: role,
+                                      child: Text(role),
+                                    ))
+                                .toList(),
+                            onChanged: (value) =>
+                                setState(() => selectedRole = value!),
+                          ),
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            decoration:
+                                const InputDecoration(labelText: 'Name'),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                            onSaved: (value) => name = value!.trim(),
+                          ),
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            obscureText: _obscureText,
+                            decoration: InputDecoration(
+                              labelText: 'Passcode',
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscureText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off),
+                                onPressed: () => setState(
+                                    () => _obscureText = !_obscureText),
+                              ),
+                            ),
+                            validator: (value) =>
+                                value == null || value.isEmpty
+                                    ? 'Required'
+                                    : null,
+                            onSaved: (value) => passcode = value!,
+                          ),
+                          const SizedBox(height: 24),
+
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.login),
+                            label: const Text('Login'),
+                            onPressed: _validateLogin,
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(48),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          if (!kIsWeb && selectedRole == 'Farmer')
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.fingerprint),
+                              label: const Text('Login with Biometrics'),
+                              onPressed: _loginWithBiometrics,
+                            ),
+
+                          const SizedBox(height: 20),
+
+                          // New: Create Account | Forgot Password
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton.icon(
+                                icon: const Icon(Icons.person_add),
+                                label: const Text('Create New Account'),
+                                onPressed: () => Navigator.pushNamed(context, '/register'),
+                              ),
+                              const Text('|', style: TextStyle(color: Colors.grey)),
+                              TextButton(
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('🔧 Forgot Password coming soon')),
+                                  );
+                                },
+                                child: const Text('Forgot Password?'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
