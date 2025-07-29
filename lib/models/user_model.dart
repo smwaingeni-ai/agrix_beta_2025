@@ -19,7 +19,7 @@ class UserModel {
     this.phone,
   });
 
-  /// Returns an empty user model
+  /// Returns an empty/default user model
   factory UserModel.empty() => const UserModel(
         id: '',
         name: '',
@@ -44,7 +44,7 @@ class UserModel {
         phone: json['phone'],
       );
 
-  /// Converts to JSON map
+  /// Converts this model to JSON map
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
@@ -54,7 +54,7 @@ class UserModel {
         if (phone != null) 'phone': phone,
       };
 
-  /// Creates a user model from a FarmerProfile
+  /// Converts from a FarmerProfile model (during login)
   factory UserModel.fromFarmer(model.FarmerProfile profile) => UserModel(
         id: profile.idNumber,
         name: profile.fullName,
@@ -81,13 +81,16 @@ class UserModel {
         phone: phone ?? this.phone,
       );
 
-  /// Checks whether the model is valid
+  /// Checks if this model is valid
   bool isValid() => id.isNotEmpty && name.isNotEmpty;
 
-  /// Role check helpers
+  /// Role helpers
   bool isFarmer() => role.toLowerCase().contains('farmer');
   bool isOfficer() => role.toLowerCase().contains('officer');
   bool isInvestor() => role.toLowerCase().contains('investor');
+  bool isTrader() => role.toLowerCase().contains('trader');
+  bool isAdmin() => role.toLowerCase() == 'admin';
+  bool isOfficial() => role.toLowerCase().contains('official');
 
   @override
   String toString() =>
