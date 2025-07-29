@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
@@ -16,15 +17,20 @@ class SessionService {
   /// 🔐 Save session to secure storage and local file
   static Future<void> saveUserSession(UserModel user) async {
     try {
+      final rawJson = user.toRawJson();
+
       if (!kIsWeb && _secureStorage != null) {
-        await _secureStorage!.write(key: _userKey, value: user.toRawJson());
+        await _secureStorage!.write(key: _userKey, value: rawJson);
       }
 
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/session.json');
       await file.writeAsString(jsonEncode(user.toJson()));
 
-      print('✅ User session saved ${kIsWeb ? '' : 'to secure storage'} and session.json');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userKey, jsonEncode(user.toJson()));
+
+      print('✅ User session saved to file, prefs, and secure storage');
     } catch (e) {
       print('❌ Failed to save user session: $e');
     }
@@ -56,7 +62,22 @@ class SessionService {
     }
   }
 
-  /// 🧹 Clear session from secure storage and local file
+  /// 🆕 ✅ Load session from SharedPreferences (lightweight fallback)
+  static Future<UserModel?> loadActiveUser() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_userKey);
+      if (raw == null) return null;
+
+      final json = jsonDecode(raw);
+      return UserModel.fromJson(json);
+    } catch (e) {
+      print('❌ Failed to load active user from prefs: $e');
+      return null;
+    }
+  }
+
+  /// 🧹 Clear session from secure storage, file, and prefs
   static Future<void> clearSession() async {
     try {
       if (!kIsWeb && _secureStorage != null) {
@@ -69,6 +90,9 @@ class SessionService {
         await file.delete();
         print('🗑️ session.json deleted');
       }
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_userKey);
 
       print('🗑️ User session cleared');
     } catch (e) {
