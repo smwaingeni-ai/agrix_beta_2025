@@ -4,34 +4,15 @@ import 'package:agrix_beta_2025/models/investments/investor_status.dart';
 
 /// Represents an investor's profile in the AgriX investment ecosystem.
 class InvestorProfile {
-  /// Unique identifier for the investor
   final String id;
-
-  /// Full name of the investor
   final String name;
-
-  /// Phone number (standardized)
   final String contactNumber;
-
-  /// Alternate contact method (WhatsApp, Telegram, etc.)
   final String contact;
-
-  /// Email address of the investor
   final String email;
-
-  /// Location (Country/Region)
   final String location;
-
-  /// Preferred investment time horizons
   final List<InvestmentHorizon> preferredHorizons;
-
-  /// Current investment openness status
   final InvestorStatus status;
-
-  /// Areas of interest (crops, livestock, tech, etc.)
   final List<String> interests;
-
-  /// Date of registration
   final DateTime registeredAt;
 
   const InvestorProfile({
@@ -47,7 +28,7 @@ class InvestorProfile {
     required this.registeredAt,
   });
 
-  /// 🔹 Default empty profile (useful for form initialization)
+  /// 🔹 Default empty profile
   factory InvestorProfile.empty() => InvestorProfile(
         id: '',
         name: '',
@@ -75,7 +56,7 @@ class InvestorProfile {
         'registeredAt': registeredAt.toIso8601String(),
       };
 
-  /// 🔁 Create an instance from JSON map
+  /// 🔁 Create from JSON map
   factory InvestorProfile.fromJson(Map<String, dynamic> json) => InvestorProfile(
         id: json['id'] ?? '',
         name: json['name'] ?? '',
@@ -84,7 +65,7 @@ class InvestorProfile {
         email: json['email'] ?? '',
         location: json['location'] ?? '',
         preferredHorizons: (json['preferredHorizons'] as List<dynamic>? ?? [])
-            .map((e) => InvestmentHorizonExtension.fromString(e.toString()))
+            .map((e) => InvestmentHorizonUtils.fromString(e.toString()))
             .toList(),
         status: InvestorStatusExtension.fromName(json['status'] ?? ''),
         interests: List<String>.from(json['interests'] ?? []),
@@ -92,11 +73,9 @@ class InvestorProfile {
             DateTime.tryParse(json['registeredAt'] ?? '') ?? DateTime.now(),
       );
 
-  /// 🔄 Encode a list of InvestorProfiles into a JSON string
   static String encode(List<InvestorProfile> investors) =>
       jsonEncode(investors.map((i) => i.toJson()).toList());
 
-  /// 🔄 Decode a JSON string into a list of InvestorProfiles
   static List<InvestorProfile> decode(String jsonStr) =>
       (jsonDecode(jsonStr) as List<dynamic>)
           .map((i) => InvestorProfile.fromJson(i))
