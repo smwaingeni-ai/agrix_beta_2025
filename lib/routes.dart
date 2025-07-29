@@ -141,8 +141,8 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/program_tracking': (context) => const ProgramTrackingScreen(),
   '/program_form': (context) => const ProgramFormScreen(),
   '/program_detail': (context) {
-    final program = ModalRoute.of(context)!.settings.arguments as Program; // ✅ FIXED
-    return ProgramDetailScreen(program: program);
+  final program = ModalRoute.of(context)!.settings.arguments as ProgramLog;
+  return ProgramDetailScreen(program: program);
   },
 
   // 🌿 Sustainability
