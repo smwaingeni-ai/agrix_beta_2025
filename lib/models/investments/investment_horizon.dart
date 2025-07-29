@@ -43,3 +43,26 @@ enum InvestmentHorizon {
   static List<String> get allCodes =>
       InvestmentHorizon.values.map((e) => e.code).toList();
 }
+
+/// Utility for parsing external inputs into InvestmentHorizon safely
+class InvestmentHorizonUtils {
+  static InvestmentHorizon fromLabel(String label) {
+    switch (label.trim().toLowerCase()) {
+      case 'short-term':
+      case 'short term':
+        return InvestmentHorizon.shortTerm;
+      case 'mid-term':
+      case 'mid term':
+        return InvestmentHorizon.midTerm;
+      case 'long-term':
+      case 'long term':
+        return InvestmentHorizon.longTerm;
+      default:
+        return InvestmentHorizon.shortTerm;
+    }
+  }
+
+  static InvestmentHorizon fromAny(String value) {
+    return InvestmentHorizon.fromString(value);
+  }
+}
