@@ -24,10 +24,10 @@ class CropDiagnosisService {
           symptom: values[0],
           disease: values[1],
           treatment: values[2],
-          cropOrSpecies: values[3],
+          crop: values[3], // ✅ Corrected field name
           severity: values[4],
           likelihood: double.tryParse(values[5]) ?? 0.5,
-          imagePath: 'assets/images/crops/${values[6]}',
+          image: 'assets/images/crops/${values[6]}',
         );
       }
 
