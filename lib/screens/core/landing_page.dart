@@ -37,6 +37,7 @@ class _LandingPageState extends State<LandingPage> {
         _profile = loaded;
         _user = user;
       });
+      debugPrint("✅ Loaded role: ${user?.role}");
     }
   }
 
@@ -57,7 +58,6 @@ class _LandingPageState extends State<LandingPage> {
 
   void _shareProfile() {
     if (_profile == null) return;
-
     final data = '''
 👤 Name: ${_profile!.fullName}
 🆔 ID: ${_profile!.idNumber}
@@ -66,7 +66,6 @@ class _LandingPageState extends State<LandingPage> {
 📍 Region: ${_profile!.region ?? 'N/A'}
 🏛️ Subsidised: ${_profile!.subsidised ? 'Yes' : 'No'}
 ''';
-
     Share.share(data);
   }
 
@@ -123,7 +122,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isFarmer = _user?.role.toLowerCase().contains('farmer') ?? false;
+    final isFarmer = _user?.role.trim().toLowerCase().contains('farmer') ?? false;
 
     return Scaffold(
       appBar: AppBar(
