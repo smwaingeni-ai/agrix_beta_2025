@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-// ✅ Correct imports
+// ✅ Model & Enum Imports
 import 'package:agrix_beta_2025/models/officers/officer_task.dart';
+import 'package:agrix_beta_2025/models/core/enums/task_status.dart';
 import 'package:agrix_beta_2025/services/officers/officer_task_service.dart';
 
 class TaskEntryScreen extends StatefulWidget {
@@ -28,20 +29,22 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
 
   Future<void> _saveTask() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isSaving = true);
 
     final newTask = OfficerTask(
       id: const Uuid().v4(),
       title: _taskTitle.text.trim(),
       description: _description.text.trim(),
-      status: _status,
+      assignedOfficerId: 'officer_001', // 🔧 Replace with real session ID
+      assignedOfficerName: 'John Doe',  // 🔧 Replace with real officer name
+      region: 'Central Region',         // 🔧 Replace with dropdown/region selection
+      dueDate: DateTime.now().add(const Duration(days: 7)), // default 7 days
+      status: TaskStatusExtension.fromString(_status) ?? TaskStatus.pending,
       createdAt: DateTime.now(),
     );
 
     try {
-      // ✅ Static method call
-      await OfficerTaskService.saveTask(newTask);
+      await OfficerTaskService.saveTask(newTask); // ✅ Static call
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -50,7 +53,7 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context, true);
+        Navigator.pop(context, true); // Notify caller
       }
     } catch (e) {
       debugPrint("❌ Error saving task: $e");
@@ -70,9 +73,7 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('📝 Add Officer Task'),
-      ),
+      appBar: AppBar(title: const Text('📝 Add Officer Task')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -85,8 +86,9 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
                   labelText: 'Task Title *',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'Task title is required' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Task title is required'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
