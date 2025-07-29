@@ -8,6 +8,7 @@ import 'package:agrix_beta_2025/services/profile/farmer_profile_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
 import 'auth_gate.dart';
+import 'package:agrix_beta_2025/models/user_model.dart'; // For role
 
 class LandingPage extends StatefulWidget {
   final FarmerProfile? farmer;
@@ -20,6 +21,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   FarmerProfile? _profile;
+  UserModel? _user;
 
   @override
   void initState() {
@@ -29,7 +31,13 @@ class _LandingPageState extends State<LandingPage> {
 
   Future<void> _loadProfile() async {
     final loaded = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
-    if (mounted) setState(() => _profile = loaded);
+    final user = await SessionService.loadActiveUser(); // Load logged-in user with role
+    if (mounted) {
+      setState(() {
+        _profile = loaded;
+        _user = user;
+      });
+    }
   }
 
   Future<void> _deleteProfile() async {
@@ -83,29 +91,86 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final buttons = [
-      {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
-      {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
-      {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
-      {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-      {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
-      {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
-      {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
-      {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-      {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
-      {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
-      {'label': 'Market', 'route': '/market', 'icon': Icons.store},
-      {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
-      {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
-      {'label': 'Officer Tasks', 'route': '/officer/tasks', 'icon': Icons.task},
+  List<Map<String, dynamic>> _getButtonsForRole(String? role) {
+    final List<Map<String, dynamic>> common = [
       {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
       {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
       {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
-      {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
-      {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
     ];
+
+    switch (role) {
+      case 'Farmer':
+        return [
+          {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
+          {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
+          {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
+          {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
+          {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
+          {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
+          {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
+          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
+          {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
+          {'label': 'Market', 'route': '/market', 'icon': Icons.store},
+          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+          ...common,
+        ];
+      case 'Investor':
+        return [
+          {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
+          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+          ...common,
+        ];
+      case 'AREX Officer':
+        return [
+          {'label': 'Officer Tasks', 'route': '/officer/tasks', 'icon': Icons.task},
+          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
+          {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
+          ...common,
+        ];
+      case 'Trader':
+        return [
+          {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
+          {'label': 'Market', 'route': '/market', 'icon': Icons.store},
+          ...common,
+        ];
+      case 'Government Official':
+        return [
+          {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
+          {'label': 'Program Tracking', 'route': '/programTracking', 'icon': Icons.track_changes},
+          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
+          ...common,
+        ];
+      case 'Admin':
+        return [
+          {'label': 'Edit Profile', 'route': '/editFarmerProfile', 'icon': Icons.edit},
+          {'label': 'Loan Dashboard', 'route': '/loan', 'icon': Icons.account_balance},
+          {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
+          {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
+          {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
+          {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
+          {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
+          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.nature},
+          {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
+          {'label': 'Market', 'route': '/market', 'icon': Icons.store},
+          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+          {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
+          {'label': 'Officer Tasks', 'route': '/officer/tasks', 'icon': Icons.task},
+          {'label': 'Trader Dashboard', 'route': '/trader/dashboard', 'icon': Icons.dashboard},
+          {'label': 'Official Dashboard', 'route': '/official/dashboard', 'icon': Icons.admin_panel_settings},
+          ...common,
+        ];
+      default:
+        return common;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final role = _user?.role ?? 'Guest';
+    final buttons = _getButtonsForRole(role);
 
     return Scaffold(
       appBar: AppBar(
@@ -147,19 +212,13 @@ class _LandingPageState extends State<LandingPage> {
                           ),
                         ListTile(
                           title: Text(_profile!.fullName),
-                          subtitle: Text(
-                            '${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha',
-                          ),
+                          subtitle: Text('${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha'),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(icon: const Icon(Icons.share), onPressed: _shareProfile),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              color: Colors.red,
-                              onPressed: _deleteProfile,
-                            ),
+                            IconButton(icon: const Icon(Icons.delete), color: Colors.red, onPressed: _deleteProfile),
                           ],
                         ),
                       ],
