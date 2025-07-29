@@ -35,16 +35,16 @@ enum InvestmentHorizon {
     );
   }
 
-  /// 📋 All labels for dropdown display
+  /// 📋 All labels for dropdowns
   static List<String> get allLabels =>
       InvestmentHorizon.values.map((e) => e.label).toList();
 
-  /// 📋 All codes for backend/API use
+  /// 📋 All codes for backend
   static List<String> get allCodes =>
       InvestmentHorizon.values.map((e) => e.code).toList();
 }
 
-/// Utility for parsing external inputs into InvestmentHorizon safely
+/// ✅ Utility class for external label/string parsing
 class InvestmentHorizonUtils {
   static InvestmentHorizon fromLabel(String label) {
     switch (label.trim().toLowerCase()) {
@@ -62,7 +62,27 @@ class InvestmentHorizonUtils {
     }
   }
 
-  static InvestmentHorizon fromAny(String value) {
-    return InvestmentHorizon.fromString(value);
+  /// Handles any form (enum name, code, label, or hybrid)
+  static InvestmentHorizon fromString(String value) {
+    final normalized = value.toLowerCase().replaceAll('-', '').replaceAll(' ', '');
+    switch (normalized) {
+      case 'shortterm':
+        return InvestmentHorizon.shortTerm;
+      case 'midterm':
+        return InvestmentHorizon.midTerm;
+      case 'longterm':
+        return InvestmentHorizon.longTerm;
+      case 'st':
+        return InvestmentHorizon.shortTerm;
+      case 'mt':
+        return InvestmentHorizon.midTerm;
+      case 'lt':
+        return InvestmentHorizon.longTerm;
+      default:
+        return InvestmentHorizon.shortTerm;
+    }
   }
+
+  /// For compatibility
+  static InvestmentHorizon fromAny(String input) => fromString(input);
 }
