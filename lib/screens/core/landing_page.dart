@@ -1,5 +1,3 @@
-// lib/screens/core/landing_page.dart
-
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +123,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isFarmer = _user?.role == 'Farmer';
+    final isFarmer = _user?.role.toLowerCase().contains('farmer') ?? false;
 
     return Scaffold(
       appBar: AppBar(
