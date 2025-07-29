@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-// ✅ Model Import
+// ✅ Correct imports
 import 'package:agrix_beta_2025/models/officers/officer_task.dart';
 import 'package:agrix_beta_2025/services/officers/officer_task_service.dart';
 
@@ -40,7 +40,8 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
     );
 
     try {
-      await OfficerTaskService().saveTask(newTask);
+      // ✅ Static method call
+      await OfficerTaskService.saveTask(newTask);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +50,7 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context, true); // Notify caller to refresh
+        Navigator.pop(context, true);
       }
     } catch (e) {
       debugPrint("❌ Error saving task: $e");
