@@ -223,64 +223,27 @@ class _LandingPageState extends State<LandingPage> {
                           _buildSectionHeader('💳 Credit Tools'),
                           _buildModuleRow([
                             {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-                            {
-                              'label': 'Apply for Loan',
-                              'route': '/loanApplication',
-                              'icon': Icons.assignment
-                            },
-                            {
-                              'label': 'View Loans',
-                              'route': '/loan',
-                              'icon': Icons.account_balance
-                            },
+                            {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
+                            {'label': 'View Loans', 'route': '/loan', 'icon': Icons.account_balance},
                           ]),
                           _buildSectionHeader('🌾 Diagnostics'),
                           _buildModuleRow([
                             {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.eco},
-                            {
-                              'label': 'Livestock Diagnosis',
-                              'route': '/livestock',
-                              'icon': Icons.pets
-                            },
+                            {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
                           ]),
                           _buildSectionHeader('🎓 Training'),
                           _buildModuleRow([
-                            {
-                              'label': 'Training Log',
-                              'route': '/trainingLog',
-                              'icon': Icons.school
-                            },
-                            {
-                              'label': 'View Training',
-                              'route': '/training/view',
-                              'icon': Icons.menu_book
-                            },
+                            {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+                            {'label': 'View Training', 'route': '/training/view', 'icon': Icons.menu_book},
                           ]),
                           _buildSectionHeader('🛒 Trade & Market'),
                           _buildModuleRow([
                             {'label': 'Trade', 'route': '/market', 'icon': Icons.store},
-                            {
-                              'label': 'Marketplace',
-                              'route': '/market/listings',
-                              'icon': Icons.shopping_cart
-                            },
-                          ]),
-                          _buildSectionHeader('📘 Logs'),
-                          _buildModuleRow([
-                            {'label': 'Logbook', 'route': '/logbook', 'icon': Icons.book},
-                            {
-                              'label': 'Sustainability Log',
-                              'route': '/sustainabilityLog',
-                              'icon': Icons.nature
-                            },
+                            {'label': 'Marketplace', 'route': '/market/listings', 'icon': Icons.shopping_cart},
                           ]),
                           _buildSectionHeader('💬 General'),
                           _buildModuleRow([
-                            {
-                              'label': 'Notifications',
-                              'route': '/notifications',
-                              'icon': Icons.notifications
-                            },
+                            {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
                             {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
                             {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
                           ]),
