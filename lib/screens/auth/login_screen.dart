@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/agrix_logo.png', height: 32),
+            Image.asset('assets/alogo.png', height: 32),
             const SizedBox(width: 8),
             const Text('AgriX Login'),
           ],
