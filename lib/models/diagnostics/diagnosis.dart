@@ -21,7 +21,7 @@ class Diagnosis {
     this.image,
   });
 
-  /// ✅ Alternate constructor if `cropOrSpecies` is provided directly
+  /// ✅ Optional helper constructor if you're unsure whether value is crop or species
   factory Diagnosis.fromCropOrSpecies({
     required String symptom,
     required String disease,
@@ -30,13 +30,14 @@ class Diagnosis {
     required String severity,
     required double likelihood,
     required String imagePath,
+    bool isCrop = true,
   }) {
     return Diagnosis(
       symptom: symptom,
       disease: disease,
       treatment: treatment,
-      crop: cropOrSpecies, // Assume it's crop if unspecified
-      species: null,
+      crop: isCrop ? cropOrSpecies : null,
+      species: isCrop ? null : cropOrSpecies,
       severity: severity,
       likelihood: likelihood,
       image: imagePath,
@@ -57,7 +58,7 @@ class Diagnosis {
     );
   }
 
-  /// 🔁 Convert back to Map
+  /// 🔁 Convert to Map for storage or serialization
   Map<String, dynamic> toMap() {
     return {
       'symptom': symptom,
@@ -71,9 +72,9 @@ class Diagnosis {
     };
   }
 
-  /// 🧠 Unified access for display/logging
+  /// 🧠 Combined field for simplified UI access
   String get cropOrSpecies => crop ?? species ?? 'Unknown';
 
-  /// 🖼️ Safe image path
+  /// 🖼️ Fallback-safe image path
   String get imagePath => image ?? '';
 }
