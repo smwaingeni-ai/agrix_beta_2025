@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:agrix_beta_2025/models/tasks/task_model.dart';
-import 'package:agrix_beta_2025/services/officers/officer_task_service.dart'; // ✅ FIXED
+
+// ✅ Model Import
+import 'package:agrix_beta_2025/models/officers/officer_task.dart';
+import 'package:agrix_beta_2025/services/officers/officer_task_service.dart';
 
 class TaskEntryScreen extends StatefulWidget {
   const TaskEntryScreen({super.key});
@@ -38,7 +40,7 @@ class _TaskEntryScreenState extends State<TaskEntryScreen> {
     );
 
     try {
-      await OfficerTaskService().saveTask(newTask); // ✅ FIXED
+      await OfficerTaskService().saveTask(newTask);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
