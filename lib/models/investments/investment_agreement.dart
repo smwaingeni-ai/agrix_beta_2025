@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+/// 📄 Represents a formal agreement between an investor and a farmer.
 class InvestmentAgreement {
-  final String agreementId; // ✅ Primary ID
+  final String agreementId; // ✅ Primary identifier
   final String offerId;
   final String investorId;
   final String investorName;
@@ -11,8 +12,9 @@ class InvestmentAgreement {
   final String currency;
   final String terms;
   final DateTime agreementDate;
-  final String status; // e.g. Pending, Approved, Completed
-  final String? documentUrl;
+  final DateTime startDate; // ✅ Explicit start date
+  final String status; // e.g. Pending, Active, Completed
+  final String? documentUrl; // Optional: URL to PDF/contract image
 
   InvestmentAgreement({
     required this.agreementId,
@@ -22,19 +24,18 @@ class InvestmentAgreement {
     required this.farmerId,
     required this.farmerName,
     required this.amount,
-    this.currency = 'USD',
+    required this.currency,
     required this.terms,
     required this.agreementDate,
-    this.status = 'Pending',
+    required this.startDate,
+    required this.status,
     this.documentUrl,
   });
 
-  /// ✅ ID alias for consistency
+  /// Alias for ID (for consistency across model usage)
   String get id => agreementId;
 
-  /// ✅ Used in dashboards
-  DateTime get startDate => agreementDate;
-
+  /// Serialize to JSON
   Map<String, dynamic> toJson() => {
         'agreementId': agreementId,
         'offerId': offerId,
@@ -46,11 +47,13 @@ class InvestmentAgreement {
         'currency': currency,
         'terms': terms,
         'agreementDate': agreementDate.toIso8601String(),
+        'startDate': startDate.toIso8601String(),
         'status': status,
         'documentUrl': documentUrl,
       };
 
-  static InvestmentAgreement fromJson(Map<String, dynamic> json) {
+  /// Deserialize from JSON
+  factory InvestmentAgreement.fromJson(Map<String, dynamic> json) {
     return InvestmentAgreement(
       agreementId: json['agreementId'],
       offerId: json['offerId'],
@@ -62,6 +65,7 @@ class InvestmentAgreement {
       currency: json['currency'] ?? 'USD',
       terms: json['terms'],
       agreementDate: DateTime.tryParse(json['agreementDate'] ?? '') ?? DateTime.now(),
+      startDate: DateTime.tryParse(json['startDate'] ?? '') ?? DateTime.now(),
       status: json['status'] ?? 'Pending',
       documentUrl: json['documentUrl'],
     );
@@ -69,6 +73,6 @@ class InvestmentAgreement {
 
   @override
   String toString() {
-    return 'Agreement [$agreementId]: $investorName agreed to invest $amount $currency with $farmerName on ${agreementDate.toLocal().toString().split(' ').first}. Status: $status';
+    return 'Agreement [$agreementId]: $investorName invested $amount $currency with $farmerName starting ${startDate.toLocal().toString().split(' ').first}. Status: $status';
   }
 }
