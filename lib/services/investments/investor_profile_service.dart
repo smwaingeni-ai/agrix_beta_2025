@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
+import 'package:agrix_beta_2025/models/investments/investor_status.dart';
 
 class InvestorProfileService {
   static const String _storageKey = 'investor_profiles';
@@ -61,5 +62,24 @@ class InvestorProfileService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
     print('🧹 InvestorProfileService: All profiles cleared');
+  }
+
+  /// ✅ Temporary hardcoded fallback (or default) lookup
+  Future<InvestorProfile?> getInvestorById(String id) async {
+    await Future.delayed(const Duration(milliseconds: 300)); // Simulated latency
+    final mock = InvestorProfile(
+      id: 'investor123',
+      name: 'Jane Doe',
+      email: 'jane@example.com',
+      phone: '+123456789',
+      interestAreas: ['Crops', 'Livestock'],
+      status: InvestorStatus.open,
+      registeredAt: DateTime.now(),
+      contact: 'WhatsApp',
+      location: 'Kenya',
+    );
+
+    if (id == mock.id) return mock;
+    return await findById(id); // fallback to local store
   }
 }
