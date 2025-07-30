@@ -9,6 +9,13 @@ class InvestmentOffer {
   final String contact;
   final DateTime createdAt;
 
+  // ✅ New fields
+  final String listingId;
+  final String investorName;
+  final double interestRate;
+  final bool isAccepted;
+  final DateTime timestamp;
+
   const InvestmentOffer({
     required this.id,
     required this.investorId,
@@ -17,6 +24,11 @@ class InvestmentOffer {
     required this.term,
     required this.contact,
     required this.createdAt,
+    required this.listingId,
+    required this.investorName,
+    required this.interestRate,
+    required this.isAccepted,
+    required this.timestamp,
   });
 
   factory InvestmentOffer.fromJson(Map<String, dynamic> json) {
@@ -28,6 +40,11 @@ class InvestmentOffer {
       term: json['term'] ?? '',
       contact: json['contact'] ?? '',
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      listingId: json['listingId'] ?? '',
+      investorName: json['investorName'] ?? '',
+      interestRate: (json['interestRate'] as num?)?.toDouble() ?? 0.0,
+      isAccepted: json['isAccepted'] ?? false,
+      timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
     );
   }
 
@@ -39,5 +56,10 @@ class InvestmentOffer {
         'term': term,
         'contact': contact,
         'createdAt': createdAt.toIso8601String(),
+        'listingId': listingId,
+        'investorName': investorName,
+        'interestRate': interestRate,
+        'isAccepted': isAccepted,
+        'timestamp': timestamp.toIso8601String(),
       };
 }
