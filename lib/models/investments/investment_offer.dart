@@ -1,69 +1,53 @@
 class InvestmentOffer {
-  final String id;
-  final String investorId;
-  final String title;
-  final double amount;
-  final String term;
-  final String contact;
-  final DateTime createdAt;
   final String listingId;
-  final String investorName;
-  final double interestRate;
-  final bool isAccepted;
-  final DateTime timestamp;
+  final String title;
+  final String description; // ✅ Add this line
+  final String type;
+  final double amount;
+  final List<String> parties;
+  final String contact;
+  final String status;
+  final DateTime postedAt;
   final String currency;
-  final int durationMonths; // ✅ Required field
 
   const InvestmentOffer({
-    required this.id,
-    required this.investorId,
-    required this.title,
-    required this.amount,
-    required this.term,
-    required this.contact,
-    required this.createdAt,
     required this.listingId,
-    required this.investorName,
-    required this.interestRate,
-    required this.isAccepted,
-    required this.timestamp,
+    required this.title,
+    required this.description, // ✅ Ensure it's here
+    required this.type,
+    required this.amount,
+    required this.parties,
+    required this.contact,
+    required this.status,
+    required this.postedAt,
     required this.currency,
-    required this.durationMonths,
   });
 
   factory InvestmentOffer.fromJson(Map<String, dynamic> json) {
     return InvestmentOffer(
-      id: json['id'],
-      investorId: json['investorId'],
-      title: json['title'],
-      amount: (json['amount'] as num).toDouble(),
-      term: json['term'],
-      contact: json['contact'],
-      createdAt: DateTime.parse(json['createdAt']),
       listingId: json['listingId'],
-      investorName: json['investorName'],
-      interestRate: (json['interestRate'] as num).toDouble(),
-      isAccepted: json['isAccepted'] ?? false,
-      timestamp: DateTime.parse(json['timestamp']),
+      title: json['title'],
+      description: json['description'], // ✅ Also parse here
+      type: json['type'],
+      amount: (json['amount'] as num).toDouble(),
+      parties: List<String>.from(json['parties']),
+      contact: json['contact'],
+      status: json['status'],
+      postedAt: DateTime.parse(json['postedAt']),
       currency: json['currency'],
-      durationMonths: json['durationMonths'] ?? 0, // ✅ Defensive default
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'investorId': investorId,
-        'title': title,
-        'amount': amount,
-        'term': term,
-        'contact': contact,
-        'createdAt': createdAt.toIso8601String(),
         'listingId': listingId,
-        'investorName': investorName,
-        'interestRate': interestRate,
-        'isAccepted': isAccepted,
-        'timestamp': timestamp.toIso8601String(),
+        'title': title,
+        'description': description, // ✅ Also serialize
+        'type': type,
+        'amount': amount,
+        'parties': parties,
+        'contact': contact,
+        'status': status,
+        'postedAt': postedAt.toIso8601String(),
         'currency': currency,
-        'durationMonths': durationMonths,
       };
 }
