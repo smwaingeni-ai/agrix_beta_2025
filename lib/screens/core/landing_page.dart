@@ -108,17 +108,85 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  List<Widget> _getModules() {
     final role = (_user?.role ?? '').trim().toLowerCase();
 
-    // Ensure farmer modules always show if role is missing or contains 'farmer'
     final isFarmer = role.contains('farmer') || role.isEmpty;
     final isTrader = role.contains('trader');
     final isOfficer = role.contains('officer') || role.contains('arex');
     final isOfficial = role.contains('official') || role.contains('government');
     final isInvestor = role.contains('investor');
 
+    if (isFarmer) {
+      return [
+        _buildSectionHeader('Farmer Modules'),
+        _buildModuleRow([
+          {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
+          {'label': 'Loans', 'route': '/loan', 'icon': Icons.attach_money},
+          {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
+          {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.grass},
+          {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
+          {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
+          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+          {'label': 'Market', 'route': '/market', 'icon': Icons.shopping_cart},
+          {'label': 'Trade', 'route': '/market/trade', 'icon': Icons.store},
+          {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+          {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
+        ]),
+      ];
+    } else if (isTrader) {
+      return [
+        _buildSectionHeader('Trader Modules'),
+        _buildModuleRow([
+          {'label': 'View Market Listings', 'route': '/market', 'icon': Icons.storefront},
+          {'label': 'Post New Product', 'route': '/market/trade', 'icon': Icons.add_box},
+          {'label': 'Transaction Log', 'route': '/transaction', 'icon': Icons.receipt_long},
+          {'label': 'Inquiries & Chat', 'route': '/chat', 'icon': Icons.chat},
+        ]),
+      ];
+    } else if (isInvestor) {
+      return [
+        _buildSectionHeader('Investor Dashboard'),
+        _buildModuleRow([
+          {'label': 'Register Offer', 'route': '/investmentOffer', 'icon': Icons.add_box},
+          {'label': 'Offers Posted', 'route': '/investmentOffers', 'icon': Icons.business},
+          {'label': 'Agreements', 'route': '/investmentAgreements', 'icon': Icons.assignment_turned_in},
+          {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
+        ]),
+      ];
+    } else if (isOfficer) {
+      return [
+        _buildSectionHeader('AREX Officer Tasks'),
+        _buildModuleRow([
+          {'label': 'Assigned Tasks', 'route': '/officer/tasks', 'icon': Icons.task_alt},
+          {'label': 'Assessments', 'route': '/officer/assessments', 'icon': Icons.check_circle_outline},
+          {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+          {'label': 'Programs', 'route': '/programs', 'icon': Icons.work},
+          {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.eco},
+        ]),
+      ];
+    } else if (isOfficial) {
+      return [
+        _buildSectionHeader('Government Dashboard'),
+        _buildModuleRow([
+          {'label': 'Subsidy Tracker', 'route': '/subsidy', 'icon': Icons.attach_money},
+          {'label': 'Regional Reports', 'route': '/reports', 'icon': Icons.bar_chart},
+          {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
+        ]),
+      ];
+    } else {
+      return [
+        _buildSectionHeader('General Modules'),
+        _buildModuleRow([
+          {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
+          {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
+        ]),
+      ];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('AgriX Home'),
@@ -190,7 +258,7 @@ class _LandingPageState extends State<LandingPage> {
                   )
                 : ElevatedButton.icon(
                     icon: const Icon(Icons.person_add),
-                    label: const Text('Create Farmer Profile'),
+                    label: const Text('Create Profile'),
                     onPressed: () => Navigator.pushNamed(context, '/farmerProfile').then((_) => _loadProfile()),
                   ),
             const SizedBox(height: 12),
@@ -198,62 +266,7 @@ class _LandingPageState extends State<LandingPage> {
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (isFarmer) ...[
-                      _buildSectionHeader('Farmer Modules'),
-                      _buildModuleRow([
-                        {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-                        {'label': 'Loans', 'route': '/loan', 'icon': Icons.attach_money},
-                        {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
-                        {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.grass},
-                        {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
-                        {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
-                        {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-                        {'label': 'Market', 'route': '/market', 'icon': Icons.shopping_cart},
-                        {'label': 'Trade', 'route': '/market/trade', 'icon': Icons.store},
-                        {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
-                        {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
-                      ]),
-                    ] else if (isTrader) ...[
-                      _buildSectionHeader('Trader Modules'),
-                      _buildModuleRow([
-                        {'label': 'View Market Listings', 'route': '/market', 'icon': Icons.storefront},
-                        {'label': 'Post New Product', 'route': '/market/trade', 'icon': Icons.add_box},
-                        {'label': 'Transaction Log', 'route': '/transaction', 'icon': Icons.receipt_long},
-                        {'label': 'Inquiries & Chat', 'route': '/chat', 'icon': Icons.chat},
-                      ]),
-                    ] else if (isInvestor) ...[
-                      _buildSectionHeader('Investor Dashboard'),
-                      _buildModuleRow([
-                        {'label': 'Register Offer', 'route': '/investmentOffer', 'icon': Icons.add_box},
-                        {'label': 'Offers Posted', 'route': '/investmentOffers', 'icon': Icons.business},
-                        {'label': 'Agreements', 'route': '/investmentAgreements', 'icon': Icons.assignment_turned_in},
-                        {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
-                      ]),
-                    ] else if (isOfficer) ...[
-                      _buildSectionHeader('AREX Officer Tasks'),
-                      _buildModuleRow([
-                        {'label': 'Assigned Tasks', 'route': '/officer/tasks', 'icon': Icons.task_alt},
-                        {'label': 'Assessments', 'route': '/officer/assessments', 'icon': Icons.check_circle_outline},
-                        {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-                        {'label': 'Programs', 'route': '/programs', 'icon': Icons.work},
-                        {'label': 'Sustainability Log', 'route': '/sustainabilityLog', 'icon': Icons.eco},
-                      ]),
-                    ] else if (isOfficial) ...[
-                      _buildSectionHeader('Government Dashboard'),
-                      _buildModuleRow([
-                        {'label': 'Subsidy Tracker', 'route': '/subsidy', 'icon': Icons.attach_money},
-                        {'label': 'Regional Reports', 'route': '/reports', 'icon': Icons.bar_chart},
-                        {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
-                      ]),
-                    ] else ...[
-                      _buildSectionHeader('General Modules'),
-                      _buildModuleRow([
-                        {'label': 'Help', 'route': '/help', 'icon': Icons.help_outline},
-                        {'label': 'Chat', 'route': '/chat', 'icon': Icons.chat},
-                      ]),
-                    ],
-                  ],
+                  children: _getModules(),
                 ),
               ),
             ),
