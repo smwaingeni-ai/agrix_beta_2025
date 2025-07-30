@@ -12,7 +12,7 @@ class InvestmentAgreement {
   final String terms;
   final DateTime agreementDate;
   final String status; // e.g. Pending, Approved, Rejected
-  final String? documentUrl; // Optional: link to attached contract PDF or image
+  final String? documentUrl;
 
   InvestmentAgreement({
     required this.agreementId,
@@ -28,6 +28,9 @@ class InvestmentAgreement {
     this.status = 'Pending',
     this.documentUrl,
   });
+
+  /// ✅ Alias for dashboard compatibility
+  DateTime get startDate => agreementDate;
 
   Map<String, dynamic> toJson() => {
         'agreementId': agreementId,
