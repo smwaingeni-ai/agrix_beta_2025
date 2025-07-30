@@ -20,8 +20,8 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
   InvestorProfile? _profile;
   List<InvestmentOffer> _myOffers = [];
   List<InvestmentAgreement> _myAgreements = [];
-
   bool _isLoading = true;
+
   final _currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
 
   @override
@@ -33,8 +33,8 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
   Future<void> _loadInvestorData() async {
     try {
       final profile = await InvestorProfileService().getInvestorById(widget.investorId);
-      final offers = await InvestmentOfferService().getOffersByInvestorId(widget.investorId);
-      final agreements = await InvestmentOfferService().getAgreementsByInvestorId(widget.investorId);
+      final offers = await InvestmentOfferService.getOffersByInvestorId(widget.investorId);
+      final agreements = await InvestmentOfferService.getAgreementsByInvestorId(widget.investorId);
 
       setState(() {
         _profile = profile;
@@ -114,7 +114,7 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
       _DashboardTile(
         label: 'Create Investment Offer',
         icon: Icons.post_add,
-        route: '/investments/create',
+        route: '/investment/offer',
       ),
       _DashboardTile(
         label: 'Browse Farmers',
@@ -124,7 +124,7 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
       _DashboardTile(
         label: 'My Investment Log',
         icon: Icons.history,
-        route: '/investment_history',
+        route: '/investment/offers',
       ),
       _DashboardTile(
         label: 'Contracts',
