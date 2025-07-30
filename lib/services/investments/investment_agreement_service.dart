@@ -1,5 +1,3 @@
-// lib/services/investments/investment_agreement_service.dart
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -27,7 +25,7 @@ class InvestmentAgreementService {
     existing.add(agreement);
     final jsonList = existing.map((a) => a.toJson()).toList();
     await file.writeAsString(jsonEncode(jsonList), flush: true);
-    print('✅ Agreement saved: ${agreement.id}');
+    print('✅ Agreement saved: ${agreement.agreementId}');
   }
 
   /// 📥 Load all saved agreements
