@@ -41,6 +41,7 @@ import 'package:agrix_beta_2025/screens/investments/investor_list_screen.dart';
 import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 import 'package:agrix_beta_2025/screens/investments/investment_offer_screen.dart';
 import 'package:agrix_beta_2025/screens/investments/investment_offers_screen.dart';
+import 'package:agrix_beta_2025/screens/investments/investor_dashboard_screen.dart';
 
 // 🤝 Contracts
 import 'package:agrix_beta_2025/screens/contracts/contract_list_screen.dart';
@@ -60,7 +61,7 @@ import 'package:agrix_beta_2025/screens/official/official_dashboard.dart';
 import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
 import 'package:agrix_beta_2025/screens/programs/program_form_screen.dart';
 import 'package:agrix_beta_2025/screens/programs/program_detail_screen.dart';
-import 'package:agrix_beta_2025/models/programs/program.dart'; // ✅ Correct model
+import 'package:agrix_beta_2025/models/programs/program.dart';
 
 // 🌿 Sustainability
 import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
@@ -71,35 +72,38 @@ import 'package:agrix_beta_2025/screens/training/training_log_screen.dart';
 // 🛍️ Trader
 import 'package:agrix_beta_2025/screens/trader/trader_dashboard.dart';
 
+// 💼 Admin
+import 'package:agrix_beta_2025/screens/admin/admin_panel.dart';
+
 // 💬 Help & Chat
 import 'package:agrix_beta_2025/screens/chat_help/chat_screen.dart';
 import 'package:agrix_beta_2025/screens/chat_help/help_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
-  // 🧽 Core
+  // 🔐 Auth
   '/': (context) => const LandingPage(),
   '/authGate': (context) => const AuthGate(),
-  '/sync': (context) => const SyncScreen(),
-  '/notifications': (context) => const NotificationsScreen(),
-
-  // 🔐 Auth
   '/login': (context) => const LoginScreen(),
   '/register': (context) => const RegisterUserScreen(),
 
-  // 🧑‍🌾 Profile
+  // 🔁 Sync & Notifications
+  '/sync': (context) => const SyncScreen(),
+  '/notifications': (context) => const NotificationsScreen(),
+
+  // 👤 Profile
   '/farmerProfile': (context) => const FarmerProfileScreen(),
   '/editFarmerProfile': (context) => const EditFarmerProfileScreen(userId: 'default', name: 'default'),
   '/creditScore': (context) => const CreditScoreScreen(),
 
-  // 💰 Loans
+  // 💸 Loans
   '/loan': (context) => const LoanScreen(),
   '/loanApplication': (context) => const LoanApplicationScreen(),
   '/loanList': (context) => const LoanListScreen(),
 
-  // 📒 Logs
+  // 📘 Logs
   '/logbook': (context) => const LogbookScreen(),
 
-  // 📊 Diagnostics
+  // 🌱 Diagnostics
   '/upload': (context) => const UploadScreen(),
   '/crops': (context) => const CropsScreen(),
   '/livestock': (context) => const LivestockScreen(),
@@ -113,12 +117,17 @@ final Map<String, WidgetBuilder> appRoutes = {
     return MarketDetailScreen(marketItem: item);
   },
   '/market/invite': (context) => const MarketInviteScreen(),
+  '/market/trade': (context) => const MarketScreen(),
 
   // 📈 Investments
   '/investors': (context) => const InvestorListScreen(),
   '/investors/register': (context) => const InvestorRegistrationScreen(),
   '/investment/offer': (context) => const InvestmentOfferScreen(),
   '/investment/offers': (context) => const InvestmentOffersScreen(),
+  '/investor/dashboard': (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as String;
+    return InvestorDashboardScreen(investorId: args);
+  },
 
   // 🤝 Contracts
   '/contracts/list': (context) => const ContractListScreen(),
@@ -128,31 +137,33 @@ final Map<String, WidgetBuilder> appRoutes = {
     return ContractDetailScreen(contract: offer);
   },
 
-  // 🧑‍🏫 Officers
-  '/officer/tasks': (context) => const ArexOfficerDashboard(), // ✅ Replaced problematic OfficerTasksScreen
+  // 🧑‍🏫 AREX Officer
+  '/officer/dashboard': (context) => const ArexOfficerDashboard(),
   '/task_entry': (context) => const TaskEntryScreen(),
   '/field_assessment': (context) => const FieldAssessmentScreen(),
-  '/officer/dashboard': (context) => const ArexOfficerDashboard(),
 
-  // 🏦 Officials
+  // 🏦 Government Official
   '/official/dashboard': (context) => const OfficialDashboard(),
 
   // 📋 Programs
   '/program_tracking': (context) => const ProgramTrackingScreen(),
   '/program_form': (context) => const ProgramFormScreen(),
   '/program_detail': (context) {
-  final program = ModalRoute.of(context)!.settings.arguments as ProgramLog;
-  return ProgramDetailScreen(program: program);
+    final program = ModalRoute.of(context)!.settings.arguments as ProgramLog;
+    return ProgramDetailScreen(program: program);
   },
 
   // 🌿 Sustainability
   '/sustainabilityLog': (context) => const SustainabilityLogScreen(),
 
-  // 🧐 Training
+  // 🧠 Training
   '/trainingLog': (context) => const TrainingLogScreen(),
 
-  // 🛍️ Trader
+  // 🛒 Trader
   '/trader/dashboard': (context) => const TraderDashboard(),
+
+  // 🛠 Admin
+  '/adminPanel': (context) => const AdminPanel(),
 
   // 💬 Help & Chat
   '/chat': (context) => const ChatScreen(),
