@@ -201,66 +201,72 @@ class _LandingPageState extends State<LandingPage> {
           children: [
             Image.asset('assets/alogo.png', height: 100),
             const SizedBox(height: 12),
-            _profile != null
-                ? Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.green.shade100,
-                            backgroundImage: (!kIsWeb && _profile!.photoPath != null && File(_profile!.photoPath!).existsSync())
-                                ? FileImage(File(_profile!.photoPath!))
-                                : null,
-                            child: (_profile!.photoPath == null || !File(_profile!.photoPath!).existsSync())
-                                ? const Icon(Icons.person, size: 50, color: Colors.grey)
-                                : null,
-                          ),
-                        ),
-                        ListTile(
-                          title: Text(_profile!.fullName),
-                          subtitle: Text('${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          child: Wrap(
-                            spacing: 12,
-                            runSpacing: 8,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.edit),
-                                label: const Text('Edit Profile'),
-                                onPressed: () => Navigator.pushNamed(context, '/editFarmerProfile'),
-                              ),
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.share),
-                                label: const Text('Share'),
-                                onPressed: _shareProfile,
-                              ),
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.delete),
-                                label: const Text('Delete'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red.shade600,
-                                  foregroundColor: Colors.white,
-                                ),
-                                onPressed: _deleteProfile,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+
+            if (_profile != null)
+              Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.green.shade100,
+                        backgroundImage: (!kIsWeb &&
+                                _profile!.photoPath != null &&
+                                File(_profile!.photoPath!).existsSync())
+                            ? FileImage(File(_profile!.photoPath!))
+                            : null,
+                        child: (_profile!.photoPath == null || !File(_profile!.photoPath!).existsSync())
+                            ? const Icon(Icons.person, size: 50, color: Colors.grey)
+                            : null,
+                      ),
                     ),
-                  )
-                : ElevatedButton.icon(
-                    icon: const Icon(Icons.person_add),
-                    label: const Text('Create Profile'),
-                    onPressed: () => Navigator.pushNamed(context, '/farmerProfile').then((_) => _loadProfile()),
-                  ),
+                    ListTile(
+                      title: Text(_profile!.fullName),
+                      subtitle: Text('${_profile!.region ?? "N/A"} • ${_profile!.farmSizeHectares ?? "N/A"} ha'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Wrap(
+                        spacing: 12,
+                        runSpacing: 8,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.edit),
+                            label: const Text('Edit Profile'),
+                            onPressed: () => Navigator.pushNamed(context, '/editFarmerProfile'),
+                          ),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.share),
+                            label: const Text('Share'),
+                            onPressed: _shareProfile,
+                          ),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.delete),
+                            label: const Text('Delete'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: _deleteProfile,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            if (_profile == null)
+              ElevatedButton.icon(
+                icon: const Icon(Icons.person_add),
+                label: const Text('Create Profile'),
+                onPressed: () => Navigator.pushNamed(context, '/farmerProfile').then((_) => _loadProfile()),
+              ),
+
             const SizedBox(height: 12),
             Expanded(
               child: SingleChildScrollView(
