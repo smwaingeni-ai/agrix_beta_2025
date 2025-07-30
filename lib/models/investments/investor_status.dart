@@ -5,9 +5,9 @@ enum InvestorStatus {
   indifferent,
 }
 
-/// Extension providing human-readable labels and robust utility methods.
+/// Extension providing human-readable labels, parsing helpers, and UI utilities for [InvestorStatus].
 extension InvestorStatusExtension on InvestorStatus {
-  /// ✅ Human-friendly label for display in UI
+  /// ✅ Human-friendly label for display in UI.
   String get label {
     switch (this) {
       case InvestorStatus.open:
@@ -19,10 +19,10 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
-  /// ✅ Compact string for storage, API, or local DB
+  /// ✅ Compact string code (same as enum name) used in storage, APIs, or local DB.
   String get code => name;
 
-  /// 🔁 Parse from code (enum name string)
+  /// 🔁 Parse from code (e.g., 'open', 'notOpen').
   static InvestorStatus fromCode(String code) {
     return InvestorStatus.values.firstWhere(
       (e) => e.name.toLowerCase() == code.trim().toLowerCase(),
@@ -30,7 +30,7 @@ extension InvestorStatusExtension on InvestorStatus {
     );
   }
 
-  /// 🔁 Parse from label (human-readable string)
+  /// 🔁 Parse from label (e.g., 'Open', 'Not Open', 'Indifferent').
   static InvestorStatus fromLabel(String label) {
     final normalized = label.trim().toLowerCase();
     switch (normalized) {
@@ -46,7 +46,7 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
-  /// 🔁 General-purpose parser (handles both label and code)
+  /// 🔁 General-purpose parser (handles either code or label).
   static InvestorStatus fromString(String value) {
     final result = fromLabel(value);
     if (result != InvestorStatus.indifferent || value.toLowerCase() == 'indifferent') {
@@ -55,14 +55,14 @@ extension InvestorStatusExtension on InvestorStatus {
     return fromCode(value);
   }
 
-  /// ✅ Legacy-friendly alias
+  /// ✅ Alias to support older naming (`fromName`).
   static InvestorStatus fromName(String value) => fromString(value);
 
-  /// 📋 All status labels (for dropdowns/chips)
+  /// 📋 All status labels for use in dropdowns or chips.
   static List<String> get allLabels =>
       InvestorStatus.values.map((e) => e.label).toList();
 
-  /// 📋 All enum codes (for DB/API)
+  /// 📋 All enum codes for internal use (storage, backend).
   static List<String> get allCodes =>
       InvestorStatus.values.map((e) => e.code).toList();
 }
