@@ -1,43 +1,43 @@
-/// Enum representing an investor's willingness to engage in investment opportunities.
-enum InvestorStatus {
-  open,
-  notOpen,
-  indifferent,
-}
+import 'dart:convert';
 
-/// Extension providing human-readable labels and robust utility methods.
-extension InvestorStatusExtension on InvestorStatus {
-  /// Get a display-friendly label
-  String get label {
-    switch (this) {
-      case InvestorStatus.open:
-        return 'Open';
-      case InvestorStatus.notOpen:
-        return 'Not Open';
-      case InvestorStatus.indifferent:
-        return 'Indifferent';
-    }
-  }
+class InvestmentOffer {
+  final String id;
+  final String investorId;
+  final String title;
+  final double amount;
+  final String term;
+  final String contact;
+  final DateTime createdAt;
 
-  /// Parse from string (name or label)
-  static InvestorStatus fromString(String value) {
-    switch (value.trim().toLowerCase()) {
-      case 'open':
-        return InvestorStatus.open;
-      case 'not open':
-      case 'notopen':
-        return InvestorStatus.notOpen;
-      case 'indifferent':
-      default:
-        return InvestorStatus.indifferent;
-    }
-  }
+  const InvestmentOffer({
+    required this.id,
+    required this.investorId,
+    required this.title,
+    required this.amount,
+    required this.term,
+    required this.contact,
+    required this.createdAt,
+  });
 
-  /// Parse from enum name string
-  static InvestorStatus fromName(String name) {
-    return InvestorStatus.values.firstWhere(
-      (e) => e.name.toLowerCase() == name.toLowerCase(),
-      orElse: () => InvestorStatus.indifferent,
+  factory InvestmentOffer.fromJson(Map<String, dynamic> json) {
+    return InvestmentOffer(
+      id: json['id'] ?? '',
+      investorId: json['investorId'] ?? '',
+      title: json['title'] ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      term: json['term'] ?? '',
+      contact: json['contact'] ?? '',
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'investorId': investorId,
+        'title': title,
+        'amount': amount,
+        'term': term,
+        'contact': contact,
+        'createdAt': createdAt.toIso8601String(),
+      };
 }
