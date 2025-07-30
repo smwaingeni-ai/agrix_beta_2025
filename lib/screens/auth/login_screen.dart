@@ -5,7 +5,7 @@ import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
-// Dummy users for testing – replace with real auth backend
+// Dummy users for testing
 final List<UserModel> dummyUsers = [
   UserModel(id: '1', name: 'John', role: 'farmer', passcode: '1234'),
   UserModel(id: '2', name: 'Alice', role: 'trader', passcode: '5678'),
@@ -29,8 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final List<String> roles = [
     'farmer',
-    'arex Officer',
-    'government Official',
+    'arex officer',
+    'government official',
     'admin',
     'trader',
     'investor',
@@ -42,9 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final user = dummyUsers.firstWhere(
         (u) =>
-            u.name.toLowerCase() == name.trim().toLowerCase() &&
+            u.name.trim().toLowerCase() == name.trim().toLowerCase() &&
             u.passcode == passcode &&
-            u.role == selectedRole,
+            u.role.trim().toLowerCase() == selectedRole.trim().toLowerCase(),
         orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
       );
 
@@ -59,8 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToRoleScreen(UserModel user) {
-    final role = user.role;
-    if (role == 'Farmer') {
+    final role = user.role.trim().toLowerCase(); // ✅ Normalize role
+
+    if (role == 'farmer') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -69,11 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       final routeMap = {
-        'AREX Officer': '/officerDashboard',
-        'Government Official': '/officialDashboard',
-        'Admin': '/adminPanel',
-        'Trader': '/traderDashboard',
-        'Investor': '/investorDashboard',
+        'arex officer': '/officer/dashboard',
+        'government official': '/official/dashboard',
+        'admin': '/adminPanel',
+        'trader': '/trader/dashboard',
+        'investor': '/investors',
       };
 
       final route = routeMap[role];
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final success = await BiometricAuthService.authenticate();
     if (success) {
       final user = dummyUsers.firstWhere(
-        (u) => u.role == 'Farmer',
+        (u) => u.role.trim().toLowerCase() == 'farmer',
         orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
       );
 
@@ -126,13 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo above the card
                 Padding(
                   padding: const EdgeInsets.only(bottom: 24.0),
-                  child: Image.asset(
-                    'assets/alogo.png',
-                    height: 80,
-                  ),
+                  child: Image.asset('assets/alogo.png', height: 80),
                 ),
                 Card(
                   elevation: 2,
@@ -148,15 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            '🔐 Login to AgriX',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          const Text('🔐 Login to AgriX',
+                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 24),
-
                           DropdownButtonFormField<String>(
                             decoration: const InputDecoration(labelText: 'Select Role'),
                             value: selectedRole,
@@ -166,61 +157,42 @@ class _LoginScreenState extends State<LoginScreen> {
                                       child: Text(role),
                                     ))
                                 .toList(),
-                            onChanged: (value) =>
-                                setState(() => selectedRole = value!),
+                            onChanged: (value) => setState(() => selectedRole = value!),
                           ),
                           const SizedBox(height: 16),
-
                           TextFormField(
-                            decoration:
-                                const InputDecoration(labelText: 'Name'),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Required'
-                                : null,
+                            decoration: const InputDecoration(labelText: 'Name'),
+                            validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                             onSaved: (value) => name = value!.trim(),
                           ),
                           const SizedBox(height: 16),
-
                           TextFormField(
                             obscureText: _obscureText,
                             decoration: InputDecoration(
                               labelText: 'Passcode',
                               suffixIcon: IconButton(
-                                icon: Icon(_obscureText
-                                    ? Icons.visibility
-                                    : Icons.visibility_off),
-                                onPressed: () => setState(
-                                    () => _obscureText = !_obscureText),
+                                icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+                                onPressed: () => setState(() => _obscureText = !_obscureText),
                               ),
                             ),
-                            validator: (value) =>
-                                value == null || value.isEmpty
-                                    ? 'Required'
-                                    : null,
+                            validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                             onSaved: (value) => passcode = value!,
                           ),
                           const SizedBox(height: 24),
-
                           ElevatedButton.icon(
                             icon: const Icon(Icons.login),
                             label: const Text('Login'),
                             onPressed: _validateLogin,
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(48),
-                            ),
+                            style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                           ),
                           const SizedBox(height: 10),
-
-                          if (!kIsWeb && selectedRole == 'Farmer')
+                          if (!kIsWeb && selectedRole == 'farmer')
                             ElevatedButton.icon(
                               icon: const Icon(Icons.fingerprint),
                               label: const Text('Login with Biometrics'),
                               onPressed: _loginWithBiometrics,
                             ),
-
                           const SizedBox(height: 20),
-
-                          // New: Create Account | Forgot Password
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -233,7 +205,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextButton(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('🔧 Forgot Password coming soon')),
+                                    const SnackBar(
+                                        content: Text('🔧 Forgot Password coming soon')),
                                   );
                                 },
                                 child: const Text('Forgot Password?'),
