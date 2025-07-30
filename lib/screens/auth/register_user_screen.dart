@@ -6,9 +6,9 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
-import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart'; // ✅ For Farmer
-import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart'; // ✅ For Investor
-import 'package:agrix_beta_2025/screens/auth/qr_preview_screen.dart'; // ✅ Fixed: for other roles
+import 'package:agrix_beta_2025/screens/profile/edit_farmer_profile_screen.dart';
+import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
+import 'package:agrix_beta_2025/screens/auth/qr_preview_screen.dart';
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({super.key});
@@ -20,8 +20,7 @@ class RegisterUserScreen extends StatefulWidget {
 class _RegisterUserScreenState extends State<RegisterUserScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Fields
-  String role = 'Farmer';
+  String role = 'farmer';
   String name = '';
   String passcode = '';
   String phone = '';
@@ -35,11 +34,11 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
   String farmType = '';
 
   final List<String> roles = [
-    'Farmer',
-    'Investor',
-    'AREX Officer',
-    'Government Official',
-    'Admin',
+    'farmer',
+    'investor',
+    'arex officer',
+    'government official',
+    'admin',
   ];
 
   Future<void> _registerUser() async {
@@ -49,26 +48,27 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     final userId = DateTime.now().millisecondsSinceEpoch.toString();
     final user = UserModel(
       id: userId,
-      role: role,
+      role: role.trim().toLowerCase(),
       name: name,
       passcode: passcode,
+      phone: phone,
     );
 
     await _saveUserToFile(user);
 
     if (!mounted) return;
-    if (role == 'Investor') {
+    if (role == 'investor') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => InvestorRegistrationScreen(userId: userId, name: name),
         ),
       );
-    } else if (role == 'Farmer') {
+    } else if (role == 'farmer') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => EditFarmerProfileScreen(userId: userId, name: name), // ✅ Fixed
+          builder: (_) => EditFarmerProfileScreen(userId: userId, name: name),
         ),
       );
     } else {
@@ -161,7 +161,12 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Role'),
                 value: role,
-                items: roles.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                items: roles
+                    .map((r) => DropdownMenuItem(
+                          value: r,
+                          child: Text(r[0].toUpperCase() + r.substring(1)),
+                        ))
+                    .toList(),
                 onChanged: (val) => setState(() => role = val!),
               ),
               _buildTextField(
@@ -169,7 +174,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
                 onSaved: (val) => name = val ?? '',
                 validator: true,
               ),
-              if (role == 'Farmer') ..._buildFarmerFields(),
+              if (role == 'farmer') ..._buildFarmerFields(),
               _buildTextField(
                 label: 'Passcode',
                 obscure: true,
