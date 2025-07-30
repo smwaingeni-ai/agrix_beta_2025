@@ -15,11 +15,11 @@ class InvestmentAgreementForm extends StatefulWidget {
 class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _farmerIdController = TextEditingController();
-  final _farmerNameController = TextEditingController();
+  final _offerIdController = TextEditingController();
   final _investorIdController = TextEditingController();
   final _investorNameController = TextEditingController();
-  final _offerIdController = TextEditingController();
+  final _farmerIdController = TextEditingController();
+  final _farmerNameController = TextEditingController();
   final _amountController = TextEditingController();
   final _currencyController = TextEditingController(text: 'USD');
   final _termsController = TextEditingController();
@@ -43,7 +43,7 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate() || _agreementDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❗ Fill all fields and pick a date.')),
+        const SnackBar(content: Text('❗ Fill all fields and select a date.')),
       );
       return;
     }
@@ -59,6 +59,7 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
       currency: _currencyController.text.trim(),
       terms: _termsController.text.trim(),
       agreementDate: _agreementDate!,
+      startDate: _agreementDate!, // ✅ Ensure this aligns with model
       status: _status,
       documentUrl: null,
     );
@@ -130,7 +131,7 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
               _buildTextField(controller: _farmerNameController, label: 'Farmer Name'),
               _buildTextField(
                 controller: _amountController,
-                label: 'Amount (USD)',
+                label: 'Amount',
                 keyboardType: TextInputType.number,
               ),
               _buildTextField(controller: _currencyController, label: 'Currency'),
