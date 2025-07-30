@@ -36,34 +36,57 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
-  void _viewLogs() {
-    Navigator.pushNamed(context, '/admin/logs');
-  }
-
-  void _manageUsers() {
-    Navigator.pushNamed(context, '/admin/users');
-  }
-
-  void _configureModules() {
-    Navigator.pushNamed(context, '/admin/modules');
-  }
+  void _viewLogs() => Navigator.pushNamed(context, '/admin/logs');
+  void _manageUsers() => Navigator.pushNamed(context, '/admin/users');
+  void _configureModules() => Navigator.pushNamed(context, '/admin/modules');
 
   Widget _buildTile(String label, IconData icon, int value, Color color) {
     return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 36, color: color),
-            const SizedBox(height: 12),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            Text('$value', style: const TextStyle(fontSize: 20)),
+            const SizedBox(height: 10),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 4),
+            Text('$value', style: const TextStyle(fontSize: 18)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAdminActions() {
+    return Column(
+      children: [
+        ElevatedButton.icon(
+          onPressed: _manageUsers,
+          icon: const Icon(Icons.supervised_user_circle),
+          label: const Text('Manage Users'),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton.icon(
+          onPressed: _configureModules,
+          icon: const Icon(Icons.settings_applications),
+          label: const Text('Module Configurations'),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton.icon(
+          onPressed: _viewLogs,
+          icon: const Icon(Icons.list_alt),
+          label: const Text('System Logs'),
+        ),
+        const SizedBox(height: 30),
+        const Text(
+          '🛡️ Monitor platform-wide performance, manage users and modules, and ensure system health through logs and sync tools.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: Colors.black87),
+        ),
+      ],
     );
   }
 
@@ -73,21 +96,22 @@ class _AdminPanelState extends State<AdminPanel> {
       appBar: AppBar(
         title: const Text('🛠️ Admin Control Panel'),
         centerTitle: true,
+        backgroundColor: Colors.green.shade900,
         actions: [
           IconButton(
             icon: const Icon(Icons.sync),
+            tooltip: 'Run Sync',
             onPressed: _runSync,
-            tooltip: 'Run System Sync',
           ),
           IconButton(
             icon: const Icon(Icons.cleaning_services),
-            onPressed: _clearCache,
             tooltip: 'Clear Cache',
+            onPressed: _clearCache,
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: FutureBuilder<SystemStats>(
           future: futureStats,
           builder: (context, snapshot) {
@@ -95,16 +119,20 @@ class _AdminPanelState extends State<AdminPanel> {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (snapshot.hasData) {
-              final stats = snapshot.data!;
-              return Column(
+            } else if (!snapshot.hasData) {
+              return const Center(child: Text('No statistics available.'));
+            }
+
+            final stats = snapshot.data!;
+            return SingleChildScrollView(
+              child: Column(
                 children: [
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       _buildTile('Total Users', Icons.people, stats.totalUsers, Colors.blue),
                       _buildTile('Active Farmers', Icons.agriculture, stats.activeFarmers, Colors.green),
@@ -113,28 +141,10 @@ class _AdminPanelState extends State<AdminPanel> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: _manageUsers,
-                    icon: const Icon(Icons.supervised_user_circle),
-                    label: const Text('Manage Users'),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: _configureModules,
-                    icon: const Icon(Icons.settings_applications),
-                    label: const Text('Module Configurations'),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: _viewLogs,
-                    icon: const Icon(Icons.list_alt),
-                    label: const Text('System Logs'),
-                  ),
+                  _buildAdminActions(),
                 ],
-              );
-            } else {
-              return const Center(child: Text('No stats available.'));
-            }
+              ),
+            );
           },
         ),
       ),
