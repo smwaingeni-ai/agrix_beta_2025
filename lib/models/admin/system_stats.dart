@@ -1,43 +1,29 @@
 class SystemStats {
-  final int totalFarmers;
-  final int totalInvestors;
-  final int totalContracts;
-  final int totalTasks;
-  final int totalPrograms;
-  final int totalLogs;
-  final DateTime lastSync;
+  final int totalUsers;
+  final int activeFarmers;
+  final int marketItems;
+  final int pendingLoans;
 
-  SystemStats({
-    required this.totalFarmers,
-    required this.totalInvestors,
-    required this.totalContracts,
-    required this.totalTasks,
-    required this.totalPrograms,
-    required this.totalLogs,
-    required this.lastSync,
+  const SystemStats({
+    required this.totalUsers,
+    required this.activeFarmers,
+    required this.marketItems,
+    required this.pendingLoans,
   });
 
   factory SystemStats.fromJson(Map<String, dynamic> json) {
     return SystemStats(
-      totalFarmers: json['totalFarmers'] ?? 0,
-      totalInvestors: json['totalInvestors'] ?? 0,
-      totalContracts: json['totalContracts'] ?? 0,
-      totalTasks: json['totalTasks'] ?? 0,
-      totalPrograms: json['totalPrograms'] ?? 0,
-      totalLogs: json['totalLogs'] ?? 0,
-      lastSync: DateTime.tryParse(json['lastSync'] ?? '') ?? DateTime.now(),
+      totalUsers: json['totalUsers'] ?? 0,
+      activeFarmers: json['activeFarmers'] ?? 0,
+      marketItems: json['marketItems'] ?? 0,
+      pendingLoans: json['pendingLoans'] ?? 0,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'totalFarmers': totalFarmers,
-      'totalInvestors': totalInvestors,
-      'totalContracts': totalContracts,
-      'totalTasks': totalTasks,
-      'totalPrograms': totalPrograms,
-      'totalLogs': totalLogs,
-      'lastSync': lastSync.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'totalUsers': totalUsers,
+        'activeFarmers': activeFarmers,
+        'marketItems': marketItems,
+        'pendingLoans': pendingLoans,
+      };
 }
