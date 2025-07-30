@@ -63,20 +63,28 @@ class SessionService {
   }
 
   /// 🆕 ✅ Load session from SharedPreferences (lightweight fallback)
-  static Future<UserModel?> loadActiveUser() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_userKey);
-      if (raw == null) return null;
+static Future<UserModel?> loadActiveUser() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_userKey);
+    if (raw == null) return null;
 
-      final json = jsonDecode(raw);
-      return UserModel.fromJson(json);
-    } catch (e) {
-      print('❌ Failed to load active user from prefs: $e');
-      return null;
+    final json = jsonDecode(raw);
+
+    // Normalize the role value (e.g. farmer, Farmer, FARMER)
+    if (json['role'] is String) {
+      json['role'] = (json['role'] as String).trim().toLowerCase();
     }
-  }
 
+    final user = UserModel.fromJson(json);
+    debugPrint('✅ Loaded user role: ${user.role}'); // 👈 DEBUG LOG
+
+    return user;
+  } catch (e) {
+    print('❌ Failed to load active user from prefs: $e');
+    return null;
+  }
+}
   /// 🧹 Clear session from secure storage, file, and prefs
   static Future<void> clearSession() async {
     try {
