@@ -125,6 +125,9 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     final role = _user?.role.trim().toLowerCase() ?? '';
     final isFarmer = role.contains('farmer');
+    final isInvestor = role.contains('investor');
+    final isOfficer = role.contains('arex') || role.contains('officer');
+    final isOfficial = role.contains('official') || role.contains('government');
 
     return Scaffold(
       appBar: AppBar(
@@ -214,31 +217,54 @@ class _LandingPageState extends State<LandingPage> {
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: isFarmer
-                      ? [
-                          _buildSectionHeader('Farmer Modules'),
-                          _buildModuleRow([
-                            {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
-                            {'label': 'Loans', 'route': '/loan', 'icon': Icons.attach_money},
-                            {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
-                            {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.grass},
-                            {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
-                            {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
-                            {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
-                            {'label': 'Market', 'route': '/market', 'icon': Icons.shopping_cart},
-                            {'label': 'Trade', 'route': '/market/trade', 'icon': Icons.store},
-                            {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
-                          ]),
-                        ]
-                      : [
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'No role-specific layout yet for this role.',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
+                  children: [
+                    if (isFarmer) ...[
+                      _buildSectionHeader('Farmer Modules'),
+                      _buildModuleRow([
+                        {'label': 'Credit Score', 'route': '/creditScore', 'icon': Icons.score},
+                        {'label': 'Loans', 'route': '/loan', 'icon': Icons.attach_money},
+                        {'label': 'Apply for Loan', 'route': '/loanApplication', 'icon': Icons.assignment},
+                        {'label': 'Crop Diagnosis', 'route': '/crops', 'icon': Icons.grass},
+                        {'label': 'Soil Advisor', 'route': '/soil', 'icon': Icons.terrain},
+                        {'label': 'Livestock Diagnosis', 'route': '/livestock', 'icon': Icons.pets},
+                        {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+                        {'label': 'Market', 'route': '/market', 'icon': Icons.shopping_cart},
+                        {'label': 'Trade', 'route': '/market/trade', 'icon': Icons.store},
+                        {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+                      ]),
+                    ] else if (isInvestor) ...[
+                      _buildSectionHeader('Investor Dashboard'),
+                      _buildModuleRow([
+                        {'label': 'Register Offer', 'route': '/investmentOffer', 'icon': Icons.add_box},
+                        {'label': 'Offers Posted', 'route': '/investmentOffers', 'icon': Icons.business},
+                        {'label': 'Agreements', 'route': '/investmentAgreements', 'icon': Icons.assignment_turned_in},
+                        {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
+                      ]),
+                    ] else if (isOfficer) ...[
+                      _buildSectionHeader('AREX Officer Tasks'),
+                      _buildModuleRow([
+                        {'label': 'Assigned Tasks', 'route': '/officer/tasks', 'icon': Icons.task_alt},
+                        {'label': 'Assessments', 'route': '/officer/assessments', 'icon': Icons.check_circle_outline},
+                        {'label': 'Training Log', 'route': '/trainingLog', 'icon': Icons.school},
+                        {'label': 'Programs', 'route': '/programs', 'icon': Icons.work},
+                      ]),
+                    ] else if (isOfficial) ...[
+                      _buildSectionHeader('Government Dashboard'),
+                      _buildModuleRow([
+                        {'label': 'Subsidy Tracker', 'route': '/subsidy', 'icon': Icons.attach_money},
+                        {'label': 'Regional Reports', 'route': '/reports', 'icon': Icons.bar_chart},
+                        {'label': 'Notifications', 'route': '/notifications', 'icon': Icons.notifications},
+                      ]),
+                    ] else ...[
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'No role-specific layout yet for this role.',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
