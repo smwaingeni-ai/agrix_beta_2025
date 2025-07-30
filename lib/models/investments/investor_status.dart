@@ -46,7 +46,7 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
-  /// 🔁 General-purpose string parser (handles both label and code)
+  /// 🔁 General-purpose parser (handles both label and code)
   static InvestorStatus fromString(String value) {
     final result = fromLabel(value);
     if (result != InvestorStatus.indifferent || value.toLowerCase() == 'indifferent') {
