@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 class InvestmentOffer {
-  final String id;
+  final String id;               // General offer ID
+  final String listingId;        // ✅ New: Used to link to listing
+  final String investorId;       // ✅ New: Used to filter offers by user
+
   final String title;
   final String description;
   final String type;
@@ -12,7 +15,7 @@ class InvestmentOffer {
   final DateTime postedAt;
   final String currency;
 
-  // Additional fields used across the app
+  // Additional metadata
   final String investorName;
   final double interestRate;
   final String term;
@@ -22,6 +25,8 @@ class InvestmentOffer {
 
   const InvestmentOffer({
     required this.id,
+    required this.listingId,       // ✅ Required now
+    required this.investorId,      // ✅ Required now
     required this.title,
     required this.description,
     required this.type,
@@ -41,6 +46,8 @@ class InvestmentOffer {
 
   factory InvestmentOffer.fromJson(Map<String, dynamic> json) => InvestmentOffer(
         id: json['id'],
+        listingId: json['listingId'],        // ✅ Added
+        investorId: json['investorId'],      // ✅ Added
         title: json['title'],
         description: json['description'],
         type: json['type'],
@@ -60,6 +67,8 @@ class InvestmentOffer {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'listingId': listingId,           // ✅ Added
+        'investorId': investorId,         // ✅ Added
         'title': title,
         'description': description,
         'type': type,
