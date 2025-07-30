@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class InvestmentAgreement {
-  final String agreementId;
+  final String agreementId; // ✅ used as ID
   final String offerId;
   final String investorId;
   final String investorName;
@@ -29,7 +29,10 @@ class InvestmentAgreement {
     this.documentUrl,
   });
 
-  /// ✅ Alias for dashboard compatibility
+  /// ✅ ID alias for consistency
+  String get id => agreementId;
+
+  /// ✅ Used in dashboards
   DateTime get startDate => agreementDate;
 
   Map<String, dynamic> toJson() => {
