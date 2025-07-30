@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
 import 'package:agrix_beta_2025/services/market/market_service.dart';
@@ -47,10 +46,12 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
 
     _formKey.currentState!.save();
     final now = DateTime.now();
+    final id = const Uuid().v4();
 
     final offer = InvestmentOffer(
-      id: const Uuid().v4(),
-      listingId: 'listing_${now.millisecondsSinceEpoch}',
+      id: id,
+      listingId: 'listing_$id',
+      investorId: _investorIdController.text.trim(),
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
       type: _typeController.text.trim(),
@@ -60,6 +61,12 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
       status: 'Open',
       postedAt: now,
       currency: 'USD',
+      investorName: _investorNameController.text.trim(),
+      interestRate: _interestRate,
+      term: _selectedHorizon!.label,
+      isAccepted: false,
+      timestamp: now,
+      createdAt: now,
     );
 
     try {
