@@ -5,11 +5,14 @@ import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
-// Dummy users for testing
+// ✅ Dummy users for demo/testing (normalize all to lowercase)
 final List<UserModel> dummyUsers = [
   UserModel(id: '1', name: 'John', role: 'farmer', passcode: '1234'),
   UserModel(id: '2', name: 'Alice', role: 'trader', passcode: '5678'),
-  UserModel(id: '3', name: 'AdminUser', role: 'admin', passcode: 'admin'),
+  UserModel(id: '3', name: 'ZimAREX', role: 'arex officer', passcode: '4321'),
+  UserModel(id: '4', name: 'MinAgri', role: 'government official', passcode: 'gov123'),
+  UserModel(id: '5', name: 'AdminUser', role: 'admin', passcode: 'admin'),
+  UserModel(id: '6', name: 'InvestX', role: 'investor', passcode: 'inv567'),
 ];
 
 class LoginScreen extends StatefulWidget {
@@ -40,11 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      final normalizedName = name.trim().toLowerCase();
+      final normalizedRole = selectedRole.trim().toLowerCase();
+
       final user = dummyUsers.firstWhere(
         (u) =>
-            u.name.trim().toLowerCase() == name.trim().toLowerCase() &&
+            u.name.trim().toLowerCase() == normalizedName &&
             u.passcode == passcode &&
-            u.role.trim().toLowerCase() == selectedRole.trim().toLowerCase(),
+            u.role.trim().toLowerCase() == normalizedRole,
         orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
       );
 
@@ -59,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToRoleScreen(UserModel user) {
-    final role = user.role.trim().toLowerCase(); // ✅ Normalize role
+    final role = user.role.trim().toLowerCase();
 
     if (role == 'farmer') {
       Navigator.pushReplacement(
@@ -154,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             items: roles
                                 .map((role) => DropdownMenuItem(
                                       value: role,
-                                      child: Text(role),
+                                      child: Text(role[0].toUpperCase() + role.substring(1)),
                                     ))
                                 .toList(),
                             onChanged: (value) => setState(() => selectedRole = value!),
