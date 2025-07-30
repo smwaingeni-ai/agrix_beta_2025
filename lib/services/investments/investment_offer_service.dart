@@ -65,7 +65,8 @@ class InvestmentOfferService {
   /// 🔹 Load offers filtered by party ID (investor or farmer)
   Future<List<InvestmentOffer>> loadOffersByParty(String partyId) async {
     try {
-      final snapshot = await _collection.where('parties', arrayContains: partyId).get();
+      final snapshot =
+          await _collection.where('parties', arrayContains: partyId).get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
@@ -90,13 +91,13 @@ class InvestmentOfferService {
         term: '12 months',
         contact: 'WhatsApp',
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
-        listingId: 'listing1',              // ✅ Required
+        listingId: 'listing1',
         investorName: 'Jane Doe',
         interestRate: 7.5,
         isAccepted: false,
         timestamp: DateTime.now(),
         currency: 'USD',
-        durationMonths: 12,                // ✅ Required
+        durationMonths: 12,
       ),
       InvestmentOffer(
         id: 'offer2',
@@ -122,22 +123,34 @@ class InvestmentOfferService {
     await Future.delayed(const Duration(milliseconds: 300)); // Simulate DB
     return [
       InvestmentAgreement(
-        id: 'agreement1',
+        agreementId: 'agreement1',
+        offerId: 'offer1',
         investorId: investorId,
+        investorName: 'Jane Doe',
+        farmerId: 'farmer1',
         farmerName: 'Farmer A',
         amount: 3000,
         currency: 'USD',
+        terms: 'Annual profit share',
+        agreementDate: DateTime.now().subtract(const Duration(days: 30)),
         startDate: DateTime.now().subtract(const Duration(days: 30)),
         status: 'In Progress',
+        documentUrl: null,
       ),
       InvestmentAgreement(
-        id: 'agreement2',
+        agreementId: 'agreement2',
+        offerId: 'offer2',
         investorId: investorId,
+        investorName: 'Jane Doe',
+        farmerId: 'farmer2',
         farmerName: 'Farmer B',
         amount: 4500,
         currency: 'USD',
+        terms: 'Fixed return, paid quarterly',
+        agreementDate: DateTime.now().subtract(const Duration(days: 45)),
         startDate: DateTime.now().subtract(const Duration(days: 45)),
         status: 'Completed',
+        documentUrl: null,
       ),
     ];
   }
