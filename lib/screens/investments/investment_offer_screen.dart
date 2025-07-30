@@ -27,19 +27,18 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
     final now = DateTime.now();
     final offer = InvestmentOffer(
       id: now.millisecondsSinceEpoch.toString(),
-      listingId: 'listing_${now.millisecondsSinceEpoch}',
+      listingId: 'listing_${now.millisecondsSinceEpoch}', // ✅ required
       investorId: _investorId,
       investorName: _investorName,
       amount: _amount,
       currency: 'USD',
-      durationMonths: _selectedHorizon!.months, // ✅ Added to fix the error
+      durationMonths: _selectedHorizon!.months,
       term: _selectedHorizon!.code,
       interestRate: _interestRate,
-      message: '',
-      offerDate: now,
-      timestamp: now,
-      isAccepted: false,
       contact: _contact,
+      isAccepted: false,
+      timestamp: now,
+      createdAt: now,
     );
 
     try {
