@@ -28,13 +28,9 @@ class InvestorProfile {
     required this.registeredAt,
   });
 
-  /// Alias for name
+  /// ✅ Computed aliases for UI compatibility
   String get fullName => name;
-
-  /// For dashboard compatibility
   String get phone => contactNumber;
-
-  /// For UI chip display
   List<String> get interestAreas => interests;
 
   /// 🔹 Default empty profile
@@ -82,6 +78,7 @@ class InvestorProfile {
             DateTime.tryParse(json['registeredAt'] ?? '') ?? DateTime.now(),
       );
 
+  /// 🔁 Encode/decode helpers
   static String encode(List<InvestorProfile> investors) =>
       jsonEncode(investors.map((i) => i.toJson()).toList());
 
