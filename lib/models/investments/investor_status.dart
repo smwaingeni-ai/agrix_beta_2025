@@ -1,11 +1,11 @@
-/// Enum indicating investor status
+/// Enum indicating investor's investment openness
 enum InvestorStatus {
   open,
   notOpen,
   indifferent,
 }
 
-/// ✅ Extension to expose .label, .code, and parsing
+/// ✅ Extension providing label, code, and parsing
 extension InvestorStatusExtension on InvestorStatus {
   String get label {
     switch (this) {
@@ -20,10 +20,21 @@ extension InvestorStatusExtension on InvestorStatus {
 
   String get code => toString().split('.').last;
 
-  static InvestorStatus fromCode(String code) {
-    return InvestorStatus.values.firstWhere(
-      (e) => e.toString().split('.').last == code,
-      orElse: () => InvestorStatus.indifferent,
-    );
+  /// ✅ Match from status string (for decoding)
+  static InvestorStatus fromString(String status) {
+    switch (status.toLowerCase()) {
+      case 'open':
+        return InvestorStatus.open;
+      case 'notopen':
+      case 'not open':
+        return InvestorStatus.notOpen;
+      case 'indifferent':
+        return InvestorStatus.indifferent;
+      default:
+        return InvestorStatus.indifferent;
+    }
   }
+
+  /// ✅ Alias for compatibility
+  static InvestorStatus fromName(String status) => fromString(status);
 }
