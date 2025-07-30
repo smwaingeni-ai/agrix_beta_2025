@@ -10,8 +10,7 @@ import 'package:agrix_beta_2025/services/investments/investment_offer_service.da
 class InvestorDashboardScreen extends StatefulWidget {
   final String investorId;
 
-  const InvestorDashboardScreen({Key? key, required this.investorId})
-      : super(key: key);
+  const InvestorDashboardScreen({Key? key, required this.investorId}) : super(key: key);
 
   @override
   State<InvestorDashboardScreen> createState() => _InvestorDashboardScreenState();
@@ -23,6 +22,7 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
   List<InvestmentAgreement> _myAgreements = [];
 
   bool _isLoading = true;
+  final _currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
 
   @override
   void initState() {
@@ -43,17 +43,19 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('❌ Error loading dashboard: $e');
+      debugPrint('❌ Error loading investor dashboard: $e');
       setState(() => _isLoading = false);
     }
   }
 
-  final _currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('📊 Investor Dashboard')),
+      appBar: AppBar(
+        title: const Text('💰 Investor Dashboard'),
+        centerTitle: true,
+        backgroundColor: Colors.green.shade800,
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _profile == null
@@ -67,6 +69,8 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildProfileCard(),
+                        const SizedBox(height: 24),
+                        _buildActionTiles(context),
                         const SizedBox(height: 24),
                         _buildOffersSection(),
                         const SizedBox(height: 24),
@@ -87,7 +91,7 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('👤 Your Profile',
+            const Text('👤 Profile Details',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Divider(),
             Text('Name: ${_profile!.fullName}'),
@@ -105,11 +109,64 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
     );
   }
 
+  Widget _buildActionTiles(BuildContext context) {
+    final List<_DashboardTile> tiles = [
+      _DashboardTile(
+        label: 'Create Investment Offer',
+        icon: Icons.post_add,
+        route: '/investments/create',
+      ),
+      _DashboardTile(
+        label: 'Browse Farmers',
+        icon: Icons.people,
+        route: '/farmer_directory',
+      ),
+      _DashboardTile(
+        label: 'My Investment Log',
+        icon: Icons.history,
+        route: '/investment_history',
+      ),
+      _DashboardTile(
+        label: 'Contracts',
+        icon: Icons.assignment_turned_in,
+        route: '/contracts/list',
+      ),
+    ];
+
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: tiles
+          .map((tile) => SizedBox(
+                width: 160,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, tile.route),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.green[800],
+                    padding: const EdgeInsets.all(16),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(tile.icon, size: 28),
+                      const SizedBox(height: 8),
+                      Text(tile.label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13)),
+                    ],
+                  ),
+                ),
+              ))
+          .toList(),
+    );
+  }
+
   Widget _buildOffersSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('💼 Investment Offers',
+        const Text('💼 My Investment Offers',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const Divider(),
         if (_myOffers.isEmpty)
@@ -119,9 +176,7 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
                 margin: const EdgeInsets.symmetric(vertical: 6),
                 child: ListTile(
                   title: Text(offer.title),
-                  subtitle: Text(
-                    '${_currency.format(offer.amount)} • ${offer.term} • ${offer.contact}',
-                  ),
+                  subtitle: Text('${_currency.format(offer.amount)} • ${offer.term} • ${offer.contact}'),
                   trailing: Text(DateFormat.yMMMd().format(offer.createdAt)),
                 ),
               )),
@@ -133,7 +188,7 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('📃 Investment Agreements',
+        const Text('📃 My Agreements',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const Divider(),
         if (_myAgreements.isEmpty)
@@ -157,4 +212,16 @@ class _InvestorDashboardScreenState extends State<InvestorDashboardScreen> {
       ],
     );
   }
+}
+
+class _DashboardTile {
+  final String label;
+  final IconData icon;
+  final String route;
+
+  const _DashboardTile({
+    required this.label,
+    required this.icon,
+    required this.route,
+  });
 }
