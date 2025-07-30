@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
-import 'package:agrix_beta_2025/services/investments/cloud_investor_service.dart';
-import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 import 'package:agrix_beta_2025/models/investments/investor_status.dart';
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
+import 'package:agrix_beta_2025/services/investments/cloud_investor_service.dart';
+import 'package:agrix_beta_2025/screens/investments/investor_registration_screen.dart';
 
 class InvestorListScreen extends StatefulWidget {
   const InvestorListScreen({super.key});
@@ -34,7 +34,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
     });
 
     try {
-      final data = await CloudInvestorService().loadInvestors(); // ✅ FIXED
+      final data = await CloudInvestorService().loadInvestors();
       setState(() {
         _allInvestors = data;
         _applySearch();
@@ -63,14 +63,13 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
   }
 
   Future<void> _launchContact(String method, String contact) async {
-    String url = switch (method) {
-      'Call' => 'tel:$contact',
-      'Message' => 'sms:$contact',
-      'Email' => 'mailto:$contact',
-      _ => ''
+    final uri = switch (method) {
+      'Call' => Uri.tryParse('tel:$contact'),
+      'Message' => Uri.tryParse('sms:$contact'),
+      'Email' => Uri.tryParse('mailto:$contact'),
+      _ => null,
     };
 
-    final uri = Uri.tryParse(url);
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
@@ -83,6 +82,10 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
   }
 
   Widget _buildInvestorCard(InvestorProfile investor) {
+    final fallbackContact = investor.contact.isNotEmpty
+        ? investor.contact
+        : investor.contactNumber;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: 2,
@@ -115,7 +118,7 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
         trailing: PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert),
           tooltip: 'Contact Options',
-          onSelected: (value) => _launchContact(value, investor.contact),
+          onSelected: (value) => _launchContact(value, fallbackContact),
           itemBuilder: (context) => const [
             PopupMenuItem(value: 'Call', child: Text('Call')),
             PopupMenuItem(value: 'Message', child: Text('Message')),
@@ -127,7 +130,9 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
   }
 
   Widget _buildBody() {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     if (_error) {
       return Center(
@@ -197,16 +202,14 @@ class _InvestorListScreenState extends State<InvestorListScreen> {
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Add New Investor',
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const InvestorRegistrationScreen(),
-            ),
+            MaterialPageRoute(builder: (_) => const InvestorRegistrationScreen()),
           );
           if (result == true) _loadInvestors();
         },
-        tooltip: 'Add New Investor',
         child: const Icon(Icons.person_add),
       ),
     );
