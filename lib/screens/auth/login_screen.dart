@@ -28,12 +28,12 @@ class _LoginScreenState extends State<LoginScreen> {
   String passcode = '';
 
   final List<String> roles = [
-    'Farmer',
-    'AREX Officer',
-    'Government Official',
-    'Admin',
-    'Trader',
-    'Investor',
+    'farmer',
+    'arex Officer',
+    'government Official',
+    'admin',
+    'trader',
+    'investor',
   ];
 
   void _validateLogin() {
