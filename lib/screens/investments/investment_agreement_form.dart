@@ -15,51 +15,52 @@ class InvestmentAgreementForm extends StatefulWidget {
 class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
   final _formKey = GlobalKey<FormState>();
 
+  final _farmerIdController = TextEditingController();
   final _farmerNameController = TextEditingController();
+  final _investorIdController = TextEditingController();
   final _investorNameController = TextEditingController();
+  final _offerIdController = TextEditingController();
   final _amountController = TextEditingController();
-  final _currencyController = TextEditingController();
+  final _currencyController = TextEditingController(text: 'USD');
   final _termsController = TextEditingController();
 
-  DateTime? _startDate;
-  DateTime? _endDate;
+  DateTime? _agreementDate;
   String _status = 'Pending';
 
-  Future<void> _selectDate(BuildContext context, bool isStart) async {
+  Future<void> _selectAgreementDate(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: isStart
-          ? (_startDate ?? DateTime.now())
-          : (_endDate ?? DateTime.now().add(const Duration(days: 30))),
+      initialDate: _agreementDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
 
     if (picked != null) {
-      setState(() {
-        isStart ? _startDate = picked : _endDate = picked;
-      });
+      setState(() => _agreementDate = picked);
     }
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate() || _startDate == null || _endDate == null) {
+    if (!_formKey.currentState!.validate() || _agreementDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('❗ Fill all fields and pick dates.')),
+        const SnackBar(content: Text('❗ Fill all fields and pick a date.')),
       );
       return;
     }
 
     final agreement = InvestmentAgreement(
       agreementId: const Uuid().v4(),
-      farmerName: _farmerNameController.text.trim(),
+      offerId: _offerIdController.text.trim(),
+      investorId: _investorIdController.text.trim(),
       investorName: _investorNameController.text.trim(),
-      amount: double.parse(_amountController.text.trim()),
+      farmerId: _farmerIdController.text.trim(),
+      farmerName: _farmerNameController.text.trim(),
+      amount: double.tryParse(_amountController.text.trim()) ?? 0.0,
       currency: _currencyController.text.trim(),
       terms: _termsController.text.trim(),
-      startDate: _startDate!,
-      endDate: _endDate!,
+      agreementDate: _agreementDate!,
       status: _status,
+      documentUrl: null,
     );
 
     await InvestmentAgreementService().saveAgreement(agreement);
@@ -95,20 +96,17 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
     );
   }
 
-  Widget _buildDateRow(String label, DateTime? date, bool isStart) {
+  Widget _buildDateRow(String label, DateTime? date) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Text('$label: ',
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(
-            date != null ? DateFormat.yMMMd().format(date) : 'Not selected',
-          ),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(date != null ? DateFormat.yMMMd().format(date) : 'Not selected'),
           const SizedBox(width: 10),
           IconButton(
             icon: const Icon(Icons.calendar_today),
-            onPressed: () => _selectDate(context, isStart),
+            onPressed: () => _selectAgreementDate(context),
           ),
         ],
       ),
@@ -125,11 +123,14 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
           key: _formKey,
           child: ListView(
             children: [
-              _buildTextField(controller: _farmerNameController, label: 'Farmer Name'),
+              _buildTextField(controller: _offerIdController, label: 'Offer ID'),
+              _buildTextField(controller: _investorIdController, label: 'Investor ID'),
               _buildTextField(controller: _investorNameController, label: 'Investor Name'),
+              _buildTextField(controller: _farmerIdController, label: 'Farmer ID'),
+              _buildTextField(controller: _farmerNameController, label: 'Farmer Name'),
               _buildTextField(
                 controller: _amountController,
-                label: 'Amount',
+                label: 'Amount (USD)',
                 keyboardType: TextInputType.number,
               ),
               _buildTextField(controller: _currencyController, label: 'Currency'),
@@ -138,8 +139,7 @@ class _InvestmentAgreementFormState extends State<InvestmentAgreementForm> {
                 label: 'Terms & Conditions',
                 maxLines: 4,
               ),
-              _buildDateRow('Start Date', _startDate, true),
-              _buildDateRow('End Date', _endDate, false),
+              _buildDateRow('Agreement Date', _agreementDate),
               DropdownButtonFormField<String>(
                 value: _status,
                 items: ['Pending', 'Active', 'Completed']
