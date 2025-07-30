@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
 import 'package:agrix_beta_2025/services/market/market_service.dart';
 
@@ -13,7 +14,7 @@ class InvestmentOffersScreen extends StatefulWidget {
 class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
   List<InvestmentOffer> _offers = [];
   bool _loading = true;
-  final _currencyFormatter = NumberFormat.currency(symbol: '\$');
+  final _currencyFormatter = NumberFormat.simpleCurrency(name: 'USD');
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
         _offers = [];
         _loading = false;
       });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('❌ Failed to load investment offers')),
@@ -70,7 +72,7 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
               ),
             ),
             Text(
-              '🕒 Posted: ${offer.timestamp.toLocal().toString().split('.').first}',
+              '🕒 Posted: ${DateFormat.yMMMd().add_jm().format(offer.timestamp)}',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 10),
@@ -98,6 +100,7 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
       appBar: AppBar(
         title: const Text('💼 Investment Offers'),
         centerTitle: true,
+        backgroundColor: Colors.green.shade800,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -108,8 +111,7 @@ class _InvestmentOffersScreenState extends State<InvestmentOffersScreen> {
                   child: ListView.builder(
                     itemCount: _offers.length,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemBuilder: (context, index) =>
-                        _buildOfferCard(_offers[index]),
+                    itemBuilder: (context, index) => _buildOfferCard(_offers[index]),
                   ),
                 ),
     );
