@@ -33,7 +33,7 @@ class _LandingPageState extends State<LandingPage> {
     final loaded = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
     final user = await SessionService.loadActiveUser();
 
-    debugPrint("✅ Loaded user role: ${user?.role}");
+    debugPrint("✅ Raw role loaded: ${user?.role}");
 
     if (mounted) {
       setState(() {
@@ -123,7 +123,10 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final role = _user?.role.trim().toLowerCase() ?? '';
+    final rawRole = _user?.role ?? '';
+    final role = rawRole.toLowerCase().replaceAll(' ', '');
+    debugPrint("✅ Cleaned role: $role");
+
     final isFarmer = role.contains('farmer');
     final isInvestor = role.contains('investor');
     final isOfficer = role.contains('arex') || role.contains('officer');
