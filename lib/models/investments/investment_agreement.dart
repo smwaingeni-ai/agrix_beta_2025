@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class InvestmentAgreement {
-  final String agreementId; // ✅ used as ID
+  final String agreementId; // ✅ Primary ID
   final String offerId;
   final String investorId;
   final String investorName;
@@ -11,7 +11,7 @@ class InvestmentAgreement {
   final String currency;
   final String terms;
   final DateTime agreementDate;
-  final String status; // e.g. Pending, Approved, Rejected
+  final String status; // e.g. Pending, Approved, Completed
   final String? documentUrl;
 
   InvestmentAgreement({
@@ -61,7 +61,7 @@ class InvestmentAgreement {
       amount: (json['amount'] as num).toDouble(),
       currency: json['currency'] ?? 'USD',
       terms: json['terms'],
-      agreementDate: DateTime.parse(json['agreementDate']),
+      agreementDate: DateTime.tryParse(json['agreementDate'] ?? '') ?? DateTime.now(),
       status: json['status'] ?? 'Pending',
       documentUrl: json['documentUrl'],
     );
