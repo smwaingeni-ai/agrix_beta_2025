@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
+import 'package:agrix_beta_2025/models/investments/investment_agreement.dart';
 
 class InvestmentOfferService {
   final CollectionReference _collection =
@@ -78,5 +79,37 @@ class InvestmentOfferService {
       print(stack);
       return [];
     }
+  }
+
+  /// ✅ TEMP: Get mock offers for investor
+  static Future<List<InvestmentOffer>> getOffersByInvestorId(String investorId) async {
+    await Future.delayed(const Duration(milliseconds: 300)); // Simulate DB
+    return [
+      InvestmentOffer(
+        id: 'offer1',
+        investorId: investorId,
+        title: 'Wheat Fund',
+        amount: 3000,
+        term: '12 months',
+        contact: 'WhatsApp',
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      )
+    ];
+  }
+
+  /// ✅ TEMP: Get mock agreements for investor
+  static Future<List<InvestmentAgreement>> getAgreementsByInvestorId(String investorId) async {
+    await Future.delayed(const Duration(milliseconds: 300)); // Simulate DB
+    return [
+      InvestmentAgreement(
+        id: 'agreement1',
+        investorId: investorId,
+        farmerName: 'Farmer A',
+        amount: 3000,
+        currency: 'USD',
+        startDate: DateTime.now().subtract(const Duration(days: 30)),
+        status: 'In Progress',
+      )
+    ];
   }
 }
