@@ -52,10 +52,6 @@ import 'package:agrix_beta_2025/models/contracts/contract_offer.dart';
 // 🧑‍🏫 Officers
 import 'package:agrix_beta_2025/screens/officers/task_entry_screen.dart';
 import 'package:agrix_beta_2025/screens/officers/field_assessment_screen.dart';
-import 'package:agrix_beta_2025/screens/officers/arex_officer_dashboard.dart';
-
-// 🏦 Officials
-import 'package:agrix_beta_2025/screens/official/official_dashboard.dart';
 
 // 📋 Programs
 import 'package:agrix_beta_2025/screens/programs/program_tracking_screen.dart';
@@ -66,13 +62,10 @@ import 'package:agrix_beta_2025/models/programs/program.dart';
 // 🌿 Sustainability
 import 'package:agrix_beta_2025/screens/sustainability/sustainability_log_screen.dart';
 
-// 🧐 Training
+// 🧠 Training
 import 'package:agrix_beta_2025/screens/training/training_log_screen.dart';
 
-// 🛍️ Trader
-import 'package:agrix_beta_2025/screens/trader/trader_dashboard.dart';
-
-// 💼 Admin
+// 🛠 Admin
 import 'package:agrix_beta_2025/screens/admin/admin_panel.dart';
 
 // 💬 Help & Chat
@@ -80,8 +73,8 @@ import 'package:agrix_beta_2025/screens/chat_help/chat_screen.dart';
 import 'package:agrix_beta_2025/screens/chat_help/help_screen.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
-  // 🔐 Auth
-  '/': (context) => const LandingPage(),
+  // 🚪 Entry & Auth
+  '/': (context) => const LandingPage(), // ✅ All roles start here
   '/authGate': (context) => const AuthGate(),
   '/login': (context) => const LoginScreen(),
   '/register': (context) => const RegisterUserScreen(),
@@ -103,7 +96,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   // 📘 Logs
   '/logbook': (context) => const LogbookScreen(),
 
-  // 🌱 Diagnostics
+  // 🌾 Diagnostics
   '/upload': (context) => const UploadScreen(),
   '/crops': (context) => const CropsScreen(),
   '/livestock': (context) => const LivestockScreen(),
@@ -122,12 +115,9 @@ final Map<String, WidgetBuilder> appRoutes = {
   // 📈 Investments
   '/investors': (context) => const InvestorListScreen(),
   '/investors/register': (context) => const InvestorRegistrationScreen(),
-  '/investment/offer': (context) => const InvestmentOfferScreen(),
-  '/investment/offers': (context) => const InvestmentOffersScreen(),
-  '/investor/dashboard': (context) {
-    final args = ModalRoute.of(context)!.settings.arguments as String;
-    return InvestorDashboardScreen(investorId: args);
-  },
+  '/investmentOffer': (context) => const InvestmentOfferScreen(),
+  '/investmentOffers': (context) => const InvestmentOffersScreen(),
+  '/investmentAgreements': (context) => const InvestorDashboardScreen(investorId: 'dummy'),
 
   // 🤝 Contracts
   '/contracts/list': (context) => const ContractListScreen(),
@@ -138,15 +128,11 @@ final Map<String, WidgetBuilder> appRoutes = {
   },
 
   // 🧑‍🏫 AREX Officer
-  '/officer/dashboard': (context) => const ArexOfficerDashboard(),
-  '/task_entry': (context) => const TaskEntryScreen(),
-  '/field_assessment': (context) => const FieldAssessmentScreen(),
-
-  // 🏦 Government Official
-  '/official/dashboard': (context) => const OfficialDashboard(),
+  '/officer/tasks': (context) => const TaskEntryScreen(),
+  '/officer/assessments': (context) => const FieldAssessmentScreen(),
 
   // 📋 Programs
-  '/program_tracking': (context) => const ProgramTrackingScreen(),
+  '/programs': (context) => const ProgramTrackingScreen(),
   '/program_form': (context) => const ProgramFormScreen(),
   '/program_detail': (context) {
     final program = ModalRoute.of(context)!.settings.arguments as ProgramLog;
@@ -159,13 +145,10 @@ final Map<String, WidgetBuilder> appRoutes = {
   // 🧠 Training
   '/trainingLog': (context) => const TrainingLogScreen(),
 
-  // 🛒 Trader
-  '/trader/dashboard': (context) => const TraderDashboard(),
-
   // 🛠 Admin
   '/adminPanel': (context) => const AdminPanel(),
 
-  // 💬 Help & Chat
+  // 💬 Chat & Help
   '/chat': (context) => const ChatScreen(),
   '/help': (context) => const HelpScreen(),
 };
