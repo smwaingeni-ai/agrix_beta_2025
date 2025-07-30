@@ -28,6 +28,15 @@ class InvestorProfile {
     required this.registeredAt,
   });
 
+  /// Alias for name
+  String get fullName => name;
+
+  /// For dashboard compatibility
+  String get phone => contactNumber;
+
+  /// For UI chip display
+  List<String> get interestAreas => interests;
+
   /// 🔹 Default empty profile
   factory InvestorProfile.empty() => InvestorProfile(
         id: '',
