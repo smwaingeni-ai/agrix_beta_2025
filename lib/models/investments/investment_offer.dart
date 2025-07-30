@@ -1,32 +1,32 @@
 import 'package:flutter/foundation.dart';
 
+/// 📄 Represents an investment offer made by an investor.
 class InvestmentOffer {
-  final String id;               // General offer ID
-  final String listingId;        // ✅ New: Used to link to listing
-  final String investorId;       // ✅ New: Used to filter offers by user
+  final String id;               // 🔑 Unique ID for the offer
+  final String listingId;        // 🔗 ID referencing the target listing (farm/project)
+  final String investorId;       // 👤 The investor making the offer
 
-  final String title;
-  final String description;
-  final String type;
-  final double amount;
-  final List<String> parties;
-  final String contact;
-  final String status;
-  final DateTime postedAt;
-  final String currency;
+  final String title;            // 📌 Offer title
+  final String description;      // 📝 Description of investment
+  final String type;             // 🧩 e.g. Crop, Livestock, Technology
+  final double amount;           // 💵 Investment amount
+  final List<String> parties;    // 👥 Related parties (investor, farmer)
+  final String contact;          // ☎️ Preferred contact method
+  final String status;           // ⏳ Open, Accepted, Declined
+  final DateTime postedAt;       // 🗓️ Original listing post date
+  final String currency;         // 💱 e.g. USD
 
-  // Additional metadata
-  final String investorName;
-  final double interestRate;
-  final String term;
-  final bool isAccepted;
-  final DateTime timestamp;
-  final DateTime createdAt;
+  final String investorName;     // 🧾 Display name
+  final double interestRate;     // 📈 Expected return %
+  final String term;             // ⌛ Duration label
+  final bool isAccepted;         // ✅ Status flag
+  final DateTime timestamp;      // 🕒 Offer submission time
+  final DateTime createdAt;      // 🧾 Database record time
 
   const InvestmentOffer({
     required this.id,
-    required this.listingId,       // ✅ Required now
-    required this.investorId,      // ✅ Required now
+    required this.listingId,
+    required this.investorId,
     required this.title,
     required this.description,
     required this.type,
@@ -44,31 +44,33 @@ class InvestmentOffer {
     required this.createdAt,
   });
 
+  /// 🔁 Factory for creating an instance from JSON.
   factory InvestmentOffer.fromJson(Map<String, dynamic> json) => InvestmentOffer(
-        id: json['id'],
-        listingId: json['listingId'],        // ✅ Added
-        investorId: json['investorId'],      // ✅ Added
-        title: json['title'],
-        description: json['description'],
-        type: json['type'],
-        amount: (json['amount'] as num).toDouble(),
+        id: json['id'] ?? '',
+        listingId: json['listingId'] ?? '',
+        investorId: json['investorId'] ?? '',
+        title: json['title'] ?? '',
+        description: json['description'] ?? '',
+        type: json['type'] ?? '',
+        amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
         parties: List<String>.from(json['parties'] ?? []),
-        contact: json['contact'],
-        status: json['status'],
-        postedAt: DateTime.parse(json['postedAt']),
-        currency: json['currency'],
-        investorName: json['investorName'],
-        interestRate: (json['interestRate'] as num).toDouble(),
-        term: json['term'],
+        contact: json['contact'] ?? '',
+        status: json['status'] ?? 'Open',
+        postedAt: DateTime.tryParse(json['postedAt'] ?? '') ?? DateTime.now(),
+        currency: json['currency'] ?? 'USD',
+        investorName: json['investorName'] ?? '',
+        interestRate: (json['interestRate'] as num?)?.toDouble() ?? 0.0,
+        term: json['term'] ?? '',
         isAccepted: json['isAccepted'] ?? false,
-        timestamp: DateTime.parse(json['timestamp']),
-        createdAt: DateTime.parse(json['createdAt']),
+        timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
+        createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       );
 
+  /// 🔁 Convert instance to JSON map.
   Map<String, dynamic> toJson() => {
         'id': id,
-        'listingId': listingId,           // ✅ Added
-        'investorId': investorId,         // ✅ Added
+        'listingId': listingId,
+        'investorId': investorId,
         'title': title,
         'description': description,
         'type': type,
