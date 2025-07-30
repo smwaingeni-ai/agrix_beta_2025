@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
 
-  String selectedRole = 'Farmer';
+  String selectedRole = 'farmer';
   String name = '';
   String passcode = '';
 
