@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-/// 📄 Represents a formal agreement between an investor and a farmer.
+/// 📄 Represents a formal investment agreement between an investor and a farmer.
 class InvestmentAgreement {
-  final String agreementId; // ✅ Primary identifier
-  final String offerId;
+  final String agreementId;     // ✅ Unique identifier
+  final String offerId;         // ✅ ID of linked offer
   final String investorId;
   final String investorName;
   final String farmerId;
@@ -12,9 +12,9 @@ class InvestmentAgreement {
   final String currency;
   final String terms;
   final DateTime agreementDate;
-  final DateTime startDate; // ✅ Explicit start date
-  final String status; // e.g. Pending, Active, Completed
-  final String? documentUrl; // Optional: PDF/image link
+  final DateTime startDate;
+  final String status;          // e.g. Pending, Active, Completed
+  final String? documentUrl;    // Optional: contract PDF/image link
 
   const InvestmentAgreement({
     required this.agreementId,
@@ -32,13 +32,13 @@ class InvestmentAgreement {
     this.documentUrl,
   });
 
-  /// ✅ ID alias for shared model compatibility
+  /// 🔁 ID alias (used for lists, dashboard comparisons, etc.)
   String get id => agreementId;
 
-  /// ✅ Fallback for legacy display logic
+  /// 🔁 For reporting UI: fallback display label
   DateTime get signedDate => agreementDate;
 
-  /// 🔁 Serialize to JSON
+  /// ✅ Convert to JSON for storage
   Map<String, dynamic> toJson() => {
         'agreementId': agreementId,
         'offerId': offerId,
@@ -55,7 +55,7 @@ class InvestmentAgreement {
         'documentUrl': documentUrl,
       };
 
-  /// 🔁 Deserialize from JSON
+  /// 🔁 Construct from JSON safely
   factory InvestmentAgreement.fromJson(Map<String, dynamic> json) {
     return InvestmentAgreement(
       agreementId: json['agreementId'] ?? '',
@@ -76,7 +76,7 @@ class InvestmentAgreement {
 
   @override
   String toString() {
-    return 'Agreement [$agreementId]: $investorName invested $amount $currency with $farmerName '
-        'starting ${startDate.toLocal().toString().split(' ').first}. Status: $status';
+    return 'Agreement [$agreementId]: $investorName invested $amount $currency '
+        'with $farmerName on ${startDate.toLocal().toString().split(' ').first}. Status: $status';
   }
 }
