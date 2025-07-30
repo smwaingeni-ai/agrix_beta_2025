@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class InvestmentOffer {
   final String id;
   final String investorId;
@@ -8,14 +6,13 @@ class InvestmentOffer {
   final String term;
   final String contact;
   final DateTime createdAt;
-
-  // ✅ Extended fields
   final String listingId;
   final String investorName;
   final double interestRate;
   final bool isAccepted;
   final DateTime timestamp;
-  final String currency; // ✅ NEW FIELD
+  final String currency;
+  final int durationMonths; // ✅ Required field
 
   const InvestmentOffer({
     required this.id,
@@ -30,25 +27,26 @@ class InvestmentOffer {
     required this.interestRate,
     required this.isAccepted,
     required this.timestamp,
-    required this.currency, // ✅ Add to constructor
+    required this.currency,
+    required this.durationMonths,
   });
 
   factory InvestmentOffer.fromJson(Map<String, dynamic> json) {
-    final now = DateTime.now();
     return InvestmentOffer(
-      id: json['id'] ?? '',
-      investorId: json['investorId'] ?? '',
-      title: json['title'] ?? '',
-      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
-      term: json['term'] ?? '',
-      contact: json['contact'] ?? '',
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? now,
-      listingId: json['listingId'] ?? '',
-      investorName: json['investorName'] ?? '',
-      interestRate: (json['interestRate'] as num?)?.toDouble() ?? 0.0,
+      id: json['id'],
+      investorId: json['investorId'],
+      title: json['title'],
+      amount: (json['amount'] as num).toDouble(),
+      term: json['term'],
+      contact: json['contact'],
+      createdAt: DateTime.parse(json['createdAt']),
+      listingId: json['listingId'],
+      investorName: json['investorName'],
+      interestRate: (json['interestRate'] as num).toDouble(),
       isAccepted: json['isAccepted'] ?? false,
-      timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? now,
-      currency: json['currency'] ?? 'USD', // ✅ Default fallback
+      timestamp: DateTime.parse(json['timestamp']),
+      currency: json['currency'],
+      durationMonths: json['durationMonths'] ?? 0, // ✅ Defensive default
     );
   }
 
@@ -65,46 +63,7 @@ class InvestmentOffer {
         'interestRate': interestRate,
         'isAccepted': isAccepted,
         'timestamp': timestamp.toIso8601String(),
-        'currency': currency, // ✅ Add to JSON
+        'currency': currency,
+        'durationMonths': durationMonths,
       };
-
-  @override
-  String toString() {
-    return 'InvestmentOffer(id: $id, investor: $investorName, amount: $amount $currency, accepted: $isAccepted)';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is InvestmentOffer &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          investorId == other.investorId &&
-          title == other.title &&
-          amount == other.amount &&
-          term == other.term &&
-          contact == other.contact &&
-          createdAt == other.createdAt &&
-          listingId == other.listingId &&
-          investorName == other.investorName &&
-          interestRate == other.interestRate &&
-          isAccepted == other.isAccepted &&
-          timestamp == other.timestamp &&
-          currency == other.currency;
-
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      investorId.hashCode ^
-      title.hashCode ^
-      amount.hashCode ^
-      term.hashCode ^
-      contact.hashCode ^
-      createdAt.hashCode ^
-      listingId.hashCode ^
-      investorName.hashCode ^
-      interestRate.hashCode ^
-      isAccepted.hashCode ^
-      timestamp.hashCode ^
-      currency.hashCode;
 }
