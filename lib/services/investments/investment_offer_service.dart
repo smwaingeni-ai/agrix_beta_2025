@@ -9,9 +9,7 @@ class InvestmentOfferService {
   /// 🔹 Save or update an investment offer in Firestore
   Future<void> saveOffer(InvestmentOffer offer) async {
     try {
-      await _collection
-          .doc(offer.id)
-          .set(offer.toJson(), SetOptions(merge: true));
+      await _collection.doc(offer.id).set(offer.toJson(), SetOptions(merge: true));
       print('✅ Investment offer saved: ${offer.id}');
     } catch (e, stack) {
       print('❌ Error saving offer: $e');
@@ -93,7 +91,14 @@ class InvestmentOfferService {
         term: '12 months',
         contact: 'WhatsApp',
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      )
+        listingId: 'listing1',
+        investorName: 'Jane Doe',
+        interestRate: 7.5,
+        isAccepted: false,
+        timestamp: DateTime.now(),
+        currency: 'USD',
+        durationMonths: 12, // ✅ Now included
+      ),
     ];
   }
 
@@ -109,7 +114,7 @@ class InvestmentOfferService {
         currency: 'USD',
         startDate: DateTime.now().subtract(const Duration(days: 30)),
         status: 'In Progress',
-      )
+      ),
     ];
   }
 }
