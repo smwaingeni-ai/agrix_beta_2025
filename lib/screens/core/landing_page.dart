@@ -110,8 +110,10 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final role = _user?.role.trim().toLowerCase() ?? '';
-    final isFarmer = role.contains('farmer');
+    final role = (_user?.role ?? '').trim().toLowerCase();
+
+    // Ensure farmer modules always show if role is missing or contains 'farmer'
+    final isFarmer = role.contains('farmer') || role.isEmpty;
     final isTrader = role.contains('trader');
     final isOfficer = role.contains('officer') || role.contains('arex');
     final isOfficial = role.contains('official') || role.contains('government');
@@ -210,6 +212,7 @@ class _LandingPageState extends State<LandingPage> {
                         {'label': 'Market', 'route': '/market', 'icon': Icons.shopping_cart},
                         {'label': 'Trade', 'route': '/market/trade', 'icon': Icons.store},
                         {'label': 'Contracts', 'route': '/contracts/list', 'icon': Icons.assignment_turned_in},
+                        {'label': 'Investors', 'route': '/investors', 'icon': Icons.people},
                       ]),
                     ] else if (isTrader) ...[
                       _buildSectionHeader('Trader Modules'),
