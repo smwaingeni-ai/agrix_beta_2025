@@ -7,9 +7,9 @@ import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
 // Dummy users for testing – replace with real auth backend
 final List<UserModel> dummyUsers = [
-  UserModel(id: '1', name: 'John', role: 'Farmer', passcode: '1234'),
-  UserModel(id: '2', name: 'Alice', role: 'Trader', passcode: '5678'),
-  UserModel(id: '3', name: 'AdminUser', role: 'Admin', passcode: 'admin'),
+  UserModel(id: '1', name: 'John', role: 'farmer', passcode: '1234'),
+  UserModel(id: '2', name: 'Alice', role: 'trader', passcode: '5678'),
+  UserModel(id: '3', name: 'AdminUser', role: 'admin', passcode: 'admin'),
 ];
 
 class LoginScreen extends StatefulWidget {
