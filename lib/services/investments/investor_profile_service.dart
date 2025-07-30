@@ -64,22 +64,11 @@ class InvestorProfileService {
     print('🧹 InvestorProfileService: All profiles cleared');
   }
 
-  /// ✅ Temporary hardcoded fallback (or default) lookup
+  /// ✅ Actual implementation of getInvestorById (non-mock)
   Future<InvestorProfile?> getInvestorById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 300)); // Simulated latency
-    final mock = InvestorProfile(
-      id: 'investor123',
-      name: 'Jane Doe',
-      email: 'jane@example.com',
-      phone: '+123456789',
-      interestAreas: ['Crops', 'Livestock'],
-      status: InvestorStatus.open,
-      registeredAt: DateTime.now(),
-      contact: 'WhatsApp',
-      location: 'Kenya',
-    );
-
-    if (id == mock.id) return mock;
-    return await findById(id); // fallback to local store
+    final all = await loadProfiles();
+    return all.firstWhere((inv) => inv.id == id, orElse: () => InvestorProfile.empty()).id.isEmpty
+        ? null
+        : all.firstWhere((inv) => inv.id == id);
   }
 }
