@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:agrix_beta_2025/models/investments/investment_horizon.dart';
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
 import 'package:agrix_beta_2025/services/market/market_service.dart';
@@ -13,32 +15,51 @@ class InvestmentOfferScreen extends StatefulWidget {
 class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String _investorId = '';
-  String _investorName = '';
-  String _contact = '';
+  final _investorIdController = TextEditingController();
+  final _investorNameController = TextEditingController();
+  final _contactController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _typeController = TextEditingController(text: 'General');
+
   double _amount = 0.0;
   double _interestRate = 0.0;
   InvestmentHorizon? _selectedHorizon;
 
-  Future<void> _submitOffer() async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
+  @override
+  void dispose() {
+    _investorIdController.dispose();
+    _investorNameController.dispose();
+    _contactController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _typeController.dispose();
+    super.dispose();
+  }
 
+  Future<void> _submitOffer() async {
+    if (!_formKey.currentState!.validate() || _selectedHorizon == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❗ Please fill all required fields.')),
+      );
+      return;
+    }
+
+    _formKey.currentState!.save();
     final now = DateTime.now();
+
     final offer = InvestmentOffer(
-      id: now.millisecondsSinceEpoch.toString(),
-      listingId: 'listing_${now.millisecondsSinceEpoch}', // ✅ required
-      investorId: _investorId,
-      investorName: _investorName,
+      id: const Uuid().v4(),
+      listingId: 'listing_${now.millisecondsSinceEpoch}',
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      type: _typeController.text.trim(),
       amount: _amount,
+      parties: [_investorIdController.text.trim()],
+      contact: _contactController.text.trim(),
+      status: 'Open',
+      postedAt: now,
       currency: 'USD',
-      durationMonths: _selectedHorizon!.months,
-      term: _selectedHorizon!.code,
-      interestRate: _interestRate,
-      contact: _contact,
-      isAccepted: false,
-      timestamp: now,
-      createdAt: now,
     );
 
     try {
@@ -71,27 +92,19 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
           key: _formKey,
           child: Column(
             children: [
-              _buildTextField(
-                label: 'Investor ID',
-                onSaved: (val) => _investorId = val!.trim(),
-              ),
-              _buildTextField(
-                label: 'Investor Name',
-                onSaved: (val) => _investorName = val!.trim(),
-              ),
-              _buildTextField(
-                label: 'Contact Info',
-                onSaved: (val) => _contact = val!.trim(),
-              ),
+              _buildTextField(controller: _investorIdController, label: 'Investor ID'),
+              _buildTextField(controller: _investorNameController, label: 'Investor Name'),
+              _buildTextField(controller: _contactController, label: 'Contact Info'),
+              _buildTextField(controller: _titleController, label: 'Offer Title'),
+              _buildTextField(controller: _descriptionController, label: 'Description', maxLines: 3),
+              _buildTextField(controller: _typeController, label: 'Type (Crop, Livestock, etc.)'),
               _buildTextField(
                 label: 'Amount (USD)',
                 keyboardType: TextInputType.number,
                 onSaved: (val) => _amount = double.tryParse(val ?? '0') ?? 0.0,
                 validator: (val) {
                   final parsed = double.tryParse(val ?? '');
-                  return (parsed == null || parsed <= 0)
-                      ? 'Enter a valid amount'
-                      : null;
+                  return (parsed == null || parsed <= 0) ? 'Enter a valid amount' : null;
                 },
               ),
               _buildTextField(
@@ -100,11 +113,10 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
                 onSaved: (val) => _interestRate = double.tryParse(val ?? '0') ?? 0.0,
                 validator: (val) {
                   final parsed = double.tryParse(val ?? '');
-                  return (parsed == null || parsed < 0)
-                      ? 'Enter a valid interest rate'
-                      : null;
+                  return (parsed == null || parsed < 0) ? 'Enter a valid interest rate' : null;
                 },
               ),
+              const SizedBox(height: 12),
               DropdownButtonFormField<InvestmentHorizon>(
                 value: _selectedHorizon,
                 decoration: const InputDecoration(
@@ -118,17 +130,16 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
                   );
                 }).toList(),
                 onChanged: (value) => setState(() => _selectedHorizon = value),
-                validator: (value) =>
-                    value == null ? 'Please select a term' : null,
+                validator: (value) => value == null ? 'Please select a term' : null,
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.send),
-                  label: const Text('Submit Offer'),
-                  onPressed: _submitOffer,
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.send),
+                label: const Text('Submit Offer'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 ),
+                onPressed: _submitOffer,
               ),
             ],
           ),
@@ -138,22 +149,25 @@ class _InvestmentOfferScreenState extends State<InvestmentOfferScreen> {
   }
 
   Widget _buildTextField({
+    TextEditingController? controller,
     required String label,
-    required FormFieldSetter<String> onSaved,
     TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    FormFieldSetter<String>? onSaved,
     FormFieldValidator<String>? validator,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
+        controller: controller,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
         ),
         keyboardType: keyboardType,
-        validator: validator ??
-            (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+        maxLines: maxLines,
         onSaved: onSaved,
+        validator: validator ?? (val) => val == null || val.trim().isEmpty ? 'Required' : null,
       ),
     );
   }
