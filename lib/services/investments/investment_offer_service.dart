@@ -65,8 +65,7 @@ class InvestmentOfferService {
   /// 🔹 Load offers filtered by party ID (investor or farmer)
   Future<List<InvestmentOffer>> loadOffersByParty(String partyId) async {
     try {
-      final snapshot =
-          await _collection.where('parties', arrayContains: partyId).get();
+      final snapshot = await _collection.where('parties', arrayContains: partyId).get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
@@ -79,7 +78,7 @@ class InvestmentOfferService {
     }
   }
 
-  /// ✅ TEMP: Get mock offers for investor
+  /// ✅ TEMP: Get mock offers for investor (demo/testing only)
   static Future<List<InvestmentOffer>> getOffersByInvestorId(String investorId) async {
     await Future.delayed(const Duration(milliseconds: 300)); // Simulate DB
     return [
@@ -91,18 +90,34 @@ class InvestmentOfferService {
         term: '12 months',
         contact: 'WhatsApp',
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
-        listingId: 'listing1',
+        listingId: 'listing1',              // ✅ Required
         investorName: 'Jane Doe',
         interestRate: 7.5,
         isAccepted: false,
         timestamp: DateTime.now(),
         currency: 'USD',
-        durationMonths: 12, // ✅ Now included
+        durationMonths: 12,                // ✅ Required
+      ),
+      InvestmentOffer(
+        id: 'offer2',
+        investorId: investorId,
+        title: 'Maize Capital',
+        amount: 5000,
+        term: '6 months',
+        contact: 'Email',
+        createdAt: DateTime.now().subtract(const Duration(days: 7)),
+        listingId: 'listing2',
+        investorName: 'Jane Doe',
+        interestRate: 6.2,
+        isAccepted: true,
+        timestamp: DateTime.now().subtract(const Duration(days: 2)),
+        currency: 'USD',
+        durationMonths: 6,
       ),
     ];
   }
 
-  /// ✅ TEMP: Get mock agreements for investor
+  /// ✅ TEMP: Get mock agreements for investor (demo/testing only)
   static Future<List<InvestmentAgreement>> getAgreementsByInvestorId(String investorId) async {
     await Future.delayed(const Duration(milliseconds: 300)); // Simulate DB
     return [
@@ -114,6 +129,15 @@ class InvestmentOfferService {
         currency: 'USD',
         startDate: DateTime.now().subtract(const Duration(days: 30)),
         status: 'In Progress',
+      ),
+      InvestmentAgreement(
+        id: 'agreement2',
+        investorId: investorId,
+        farmerName: 'Farmer B',
+        amount: 4500,
+        currency: 'USD',
+        startDate: DateTime.now().subtract(const Duration(days: 45)),
+        status: 'Completed',
       ),
     ];
   }
