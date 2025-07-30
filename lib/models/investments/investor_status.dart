@@ -1,12 +1,13 @@
-/// Enum indicating investor's investment openness
+/// Enum defining investor openness status
 enum InvestorStatus {
   open,
   notOpen,
   indifferent,
 }
 
-/// ✅ Extension providing label, code, and parsing
+/// ✅ Extension enabling .label, .fromString, .fromName
 extension InvestorStatusExtension on InvestorStatus {
+  /// Human-readable UI label
   String get label {
     switch (this) {
       case InvestorStatus.open:
@@ -18,11 +19,12 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
+  /// Lowercase string code
   String get code => toString().split('.').last;
 
-  /// ✅ Match from status string (for decoding)
-  static InvestorStatus fromString(String status) {
-    switch (status.toLowerCase()) {
+  /// Decode from string (used in registration, profile JSON, etc.)
+  static InvestorStatus fromString(String input) {
+    switch (input.toLowerCase()) {
       case 'open':
         return InvestorStatus.open;
       case 'notopen':
@@ -35,6 +37,6 @@ extension InvestorStatusExtension on InvestorStatus {
     }
   }
 
-  /// ✅ Alias for compatibility
-  static InvestorStatus fromName(String status) => fromString(status);
+  /// Alias for fromString()
+  static InvestorStatus fromName(String name) => fromString(name);
 }
