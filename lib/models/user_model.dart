@@ -23,7 +23,7 @@ class UserModel {
   factory UserModel.empty() => const UserModel(
         id: '',
         name: '',
-        role: 'Farmer',
+        role: 'farmer',
         passcode: '',
       );
 
@@ -38,7 +38,7 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json['id'] ?? '',
         name: json['name'] ?? '',
-        role: json['role'] ?? 'Farmer',
+        role: (json['role'] ?? 'farmer').toString().trim().toLowerCase(),
         passcode: json['passcode'] ?? '',
         email: json['email'],
         phone: json['phone'],
@@ -54,11 +54,11 @@ class UserModel {
         if (phone != null) 'phone': phone,
       };
 
-  /// Converts from a FarmerProfile model (during login)
+  /// Converts from a FarmerProfile model (during login or profile mapping)
   factory UserModel.fromFarmer(model.FarmerProfile profile) => UserModel(
         id: profile.idNumber,
         name: profile.fullName,
-        role: profile.subsidised ? 'Subsidised Farmer' : 'Farmer',
+        role: profile.subsidised ? 'subsidised farmer' : 'farmer',
         passcode: '',
         phone: profile.contact,
       );
@@ -75,7 +75,7 @@ class UserModel {
       UserModel(
         id: id ?? this.id,
         name: name ?? this.name,
-        role: role ?? this.role,
+        role: role?.trim().toLowerCase() ?? this.role,
         passcode: passcode ?? this.passcode,
         email: email ?? this.email,
         phone: phone ?? this.phone,
@@ -84,13 +84,13 @@ class UserModel {
   /// Checks if this model is valid
   bool isValid() => id.isNotEmpty && name.isNotEmpty;
 
-  /// Role helpers
-  bool isFarmer() => role.toLowerCase().contains('farmer');
-  bool isOfficer() => role.toLowerCase().contains('officer');
-  bool isInvestor() => role.toLowerCase().contains('investor');
-  bool isTrader() => role.toLowerCase().contains('trader');
-  bool isAdmin() => role.toLowerCase() == 'admin';
-  bool isOfficial() => role.toLowerCase().contains('official');
+  /// Role match helpers — all normalized (lowercase, trimmed)
+  bool isFarmer() => role.contains('farmer');
+  bool isOfficer() => role.contains('officer');
+  bool isOfficial() => role.contains('official');
+  bool isInvestor() => role.contains('investor');
+  bool isTrader() => role.contains('trader');
+  bool isAdmin() => role == 'admin';
 
   @override
   String toString() =>
