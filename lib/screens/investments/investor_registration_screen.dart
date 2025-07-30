@@ -59,19 +59,18 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       contactNumber: _phoneController.text.trim(),
-      location: _locationController.text.trim(),
       contact: _contactController.text.trim(),
+      location: _locationController.text.trim(),
+      status: InvestorStatusExtension.fromString(_selectedStatus),
+      interests: _selectedInterests,
       preferredHorizons: _selectedHorizons
           .map((label) => InvestmentHorizonUtils.fromLabel(label))
           .toList(),
-      interests: _selectedInterests,
-      status: InvestorStatusExtension.fromString(_selectedStatus),
       registeredAt: DateTime.now(),
     );
 
     try {
-      await CloudInvestorService().saveInvestor(investor); // ✅ FIXED
-
+      await CloudInvestorService().saveInvestor(investor);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Investor Registered Successfully!')),
@@ -86,6 +85,28 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
         );
       }
     }
+  }
+
+  Widget _buildTextInput({
+    required TextEditingController controller,
+    required String label,
+    String? helper,
+    TextInputType inputType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: inputType,
+        decoration: InputDecoration(
+          labelText: label,
+          helperText: helper,
+          border: const OutlineInputBorder(),
+        ),
+        validator: validator ?? (value) => value == null || value.trim().isEmpty ? 'Required' : null,
+      ),
+    );
   }
 
   Widget _buildChipSelector({
@@ -132,28 +153,10 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
     );
   }
 
-  Widget _buildTextInput({
-    required TextEditingController controller,
-    required String label,
-    String? helper,
-    TextInputType inputType = TextInputType.text,
-    String? Function(String?)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(labelText: label, helperText: helper),
-        keyboardType: inputType,
-        validator: validator ?? (value) => value == null || value.isEmpty ? 'Required' : null,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Investor Registration')),
+      appBar: AppBar(title: const Text('📋 Investor Registration')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -176,7 +179,7 @@ class _InvestorRegistrationScreenState extends State<InvestorRegistrationScreen>
               _buildTextInput(
                 controller: _contactController,
                 label: 'Preferred Contact Method',
-                helper: 'e.g. WhatsApp, Email, Call',
+                helper: 'e.g. WhatsApp, Email, Phone',
               ),
               _buildChipSelector(
                 title: "Investment Horizons",
