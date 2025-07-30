@@ -14,9 +14,9 @@ class InvestmentAgreement {
   final DateTime agreementDate;
   final DateTime startDate; // ✅ Explicit start date
   final String status; // e.g. Pending, Active, Completed
-  final String? documentUrl; // Optional: URL to PDF/contract image
+  final String? documentUrl; // Optional: PDF/image link
 
-  InvestmentAgreement({
+  const InvestmentAgreement({
     required this.agreementId,
     required this.offerId,
     required this.investorId,
@@ -32,10 +32,13 @@ class InvestmentAgreement {
     this.documentUrl,
   });
 
-  /// Alias for ID (for consistency across model usage)
+  /// ✅ ID alias for shared model compatibility
   String get id => agreementId;
 
-  /// Serialize to JSON
+  /// ✅ Fallback for legacy display logic
+  DateTime get signedDate => agreementDate;
+
+  /// 🔁 Serialize to JSON
   Map<String, dynamic> toJson() => {
         'agreementId': agreementId,
         'offerId': offerId,
@@ -52,18 +55,18 @@ class InvestmentAgreement {
         'documentUrl': documentUrl,
       };
 
-  /// Deserialize from JSON
+  /// 🔁 Deserialize from JSON
   factory InvestmentAgreement.fromJson(Map<String, dynamic> json) {
     return InvestmentAgreement(
-      agreementId: json['agreementId'],
-      offerId: json['offerId'],
-      investorId: json['investorId'],
-      investorName: json['investorName'],
-      farmerId: json['farmerId'],
-      farmerName: json['farmerName'],
-      amount: (json['amount'] as num).toDouble(),
+      agreementId: json['agreementId'] ?? '',
+      offerId: json['offerId'] ?? '',
+      investorId: json['investorId'] ?? '',
+      investorName: json['investorName'] ?? '',
+      farmerId: json['farmerId'] ?? '',
+      farmerName: json['farmerName'] ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       currency: json['currency'] ?? 'USD',
-      terms: json['terms'],
+      terms: json['terms'] ?? '',
       agreementDate: DateTime.tryParse(json['agreementDate'] ?? '') ?? DateTime.now(),
       startDate: DateTime.tryParse(json['startDate'] ?? '') ?? DateTime.now(),
       status: json['status'] ?? 'Pending',
@@ -73,6 +76,7 @@ class InvestmentAgreement {
 
   @override
   String toString() {
-    return 'Agreement [$agreementId]: $investorName invested $amount $currency with $farmerName starting ${startDate.toLocal().toString().split(' ').first}. Status: $status';
+    return 'Agreement [$agreementId]: $investorName invested $amount $currency with $farmerName '
+        'starting ${startDate.toLocal().toString().split(' ').first}. Status: $status';
   }
 }
