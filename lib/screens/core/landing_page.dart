@@ -33,7 +33,7 @@ class _LandingPageState extends State<LandingPage> {
     final loaded = widget.farmer ?? await FarmerProfileService.loadActiveProfile();
     final user = await SessionService.loadActiveUser();
 
-    debugPrint("✅ Raw role loaded: ${user?.role}");
+    debugPrint("✅ Loaded user role: '${user?.role}'");
 
     if (mounted) {
       setState(() {
@@ -123,14 +123,13 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final rawRole = _user?.role ?? '';
-    final role = rawRole.toLowerCase().replaceAll(' ', '');
-    debugPrint("✅ Cleaned role: $role");
+    final rawRole = _user?.role?.trim().toLowerCase() ?? '';
+    debugPrint("🧠 Role check: '$rawRole'");
 
-    final isFarmer = role.contains('farmer');
-    final isInvestor = role.contains('investor');
-    final isOfficer = role.contains('arex') || role.contains('officer');
-    final isOfficial = role.contains('official') || role.contains('government');
+    final isFarmer = rawRole == 'farmer';
+    final isInvestor = rawRole == 'investor';
+    final isOfficer = rawRole.contains('officer') || rawRole.contains('arex');
+    final isOfficial = rawRole.contains('official') || rawRole.contains('government');
 
     return Scaffold(
       appBar: AppBar(
