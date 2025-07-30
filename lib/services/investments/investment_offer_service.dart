@@ -65,9 +65,7 @@ class InvestmentOfferService {
   /// 🔹 Load offers filtered by party ID (investor or farmer)
   Future<List<InvestmentOffer>> loadOffersByParty(String partyId) async {
     try {
-      final snapshot =
-          await _collection.where('parties', arrayContains: partyId).get();
-
+      final snapshot = await _collection.where('parties', arrayContains: partyId).get();
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         return InvestmentOffer.fromJson(data);
@@ -138,7 +136,7 @@ class InvestmentOfferService {
         documentUrl: null,
       ),
       InvestmentAgreement(
-        agreementId: 'agreement2',
+        agreementId: 'agreement2', // ✅ FIXED from 'id'
         offerId: 'offer2',
         investorId: investorId,
         investorName: 'Jane Doe',
