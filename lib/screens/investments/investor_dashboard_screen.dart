@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:agrix_beta_2025/models/investments/investor_status.dart';
 import 'package:agrix_beta_2025/models/investments/investor_profile.dart';
 import 'package:agrix_beta_2025/models/investments/investment_offer.dart';
 import 'package:agrix_beta_2025/models/investments/investment_agreement.dart';
