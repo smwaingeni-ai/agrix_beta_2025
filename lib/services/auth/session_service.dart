@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
@@ -12,14 +13,18 @@ class SessionService {
   static final FlutterSecureStorage? _secureStorage =
       !kIsWeb ? const FlutterSecureStorage() : null;
 
-  /// ✅ Save user session for all roles (Farmer, Trader, AREX, Official, Investor)
+  /// ✅ Save active user (across all roles) into SharedPreferences, SecureStorage, and file
   static Future<void> saveActiveUser(UserModel user) async {
     try {
       final prefs = await SharedPreferences.getInstance();
+
       final raw = jsonEncode({
         'id': user.id,
-        'email': user.email,
+        'name': user.name,
         'role': user.role,
+        'passcode': user.passcode,
+        'email': user.email,
+        'phone': user.phone,
       });
 
       await prefs.setString(_userKey, raw);
@@ -32,19 +37,19 @@ class SessionService {
       final file = File('${dir.path}/session.json');
       await file.writeAsString(raw);
 
-      debugPrint('✅ Active user saved (role: ${user.role})');
+      debugPrint('✅ Active user saved (name: ${user.name}, role: ${user.role})');
     } catch (e) {
       debugPrint('❌ Failed to save active user: $e');
     }
   }
 
-  /// ✅ Lightweight login check (used at launch)
+  /// ✅ Lightweight login check
   static Future<bool> isUserLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(_userKey);
   }
 
-  /// ✅ Load active user from SharedPreferences (used in dashboards)
+  /// ✅ Load from SharedPreferences
   static Future<UserModel?> loadActiveUser() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -52,18 +57,14 @@ class SessionService {
       if (raw == null) return null;
 
       final json = jsonDecode(raw);
-      return UserModel(
-        id: json['id'],
-        email: json['email'],
-        role: (json['role'] as String).trim().toLowerCase(),
-      );
+      return UserModel.fromJson(json);
     } catch (e) {
       debugPrint('❌ Failed to load active user: $e');
       return null;
     }
   }
 
-  /// ✅ Fallback to file if not found in prefs (cross-platform)
+  /// ✅ Load from SharedPreferences or local file (cross-platform fallback)
   static Future<UserModel?> getActiveUser() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -79,18 +80,14 @@ class SessionService {
       if (jsonStr == null || jsonStr.isEmpty) return null;
 
       final json = jsonDecode(jsonStr);
-      return UserModel(
-        id: json['id'],
-        email: json['email'],
-        role: (json['role'] as String).trim().toLowerCase(),
-      );
+      return UserModel.fromJson(json);
     } catch (e) {
       debugPrint('❌ getActiveUser() failed: $e');
       return null;
     }
   }
 
-  /// 🧹 Clear session from all layers
+  /// 🧹 Clear all session layers
   static Future<void> clearSession() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -111,7 +108,7 @@ class SessionService {
     }
   }
 
-  /// 🔐 Optional biometric-secure session validation
+  /// 🔐 Validate session using biometrics (only if available and file exists)
   static Future<bool> checkSession() async {
     try {
       final file = File('${(await getApplicationDocumentsDirectory()).path}/session.json');
