@@ -127,7 +127,7 @@ flutter pub get
 
 ```bash
 # For Web
-flutter run -d chrome
+flutter run -d web-server or /chrome
 
 # For Android
 flutter run -d android
