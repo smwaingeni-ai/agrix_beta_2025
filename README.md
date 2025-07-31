@@ -78,8 +78,30 @@ Edit
 ## 🔧 Setup & Run Locally
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/agrix_beta_2025.git
+git clone https://github.com/smwaingeni-ai/agrix_beta_2025.git
 cd agrix_beta_2025
 flutter pub get
 flutter run -d chrome     # For web
 flutter run -d android    # For real device (biometric enabled)
+
+**👥 Team**
+Simba Mwaingeni – Architecture, AI Models, Credit Risk, Developer Lead
+
+AgriX Beta 2025 Team – Africa Deep Tech Challenge Participants
+
+🏆 Submission
+Challenge: Africa Deep Tech Challenge 2025
+
+Track: AgriTech, AI, Public Impact
+
+Status: Final Beta Version – Submitted July 31, 2025
+
+Repo: GitHub Repository
+
+📄 License
+MIT License © 2025 AgriX Africa Team
+
+📬 Contact
+📧 simba.mwaingeni@protonmail.com
+🔗 LinkedIn
+🔗 GitHub
