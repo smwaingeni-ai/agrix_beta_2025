@@ -4,6 +4,7 @@ import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
+import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
 // ✅ Dummy users for demo/testing (normalize all to lowercase)
 final List<UserModel> dummyUsers = [
@@ -39,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     'investor',
   ];
 
-  void _validateLogin() {
+  void _validateLogin() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -55,7 +56,15 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user.id.isNotEmpty) {
-        _navigateToRoleScreen(user);
+        await SessionService.saveActiveUser(user); // ✅ Save for all users
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => roleIsFarmer(user.role)
+                ? LandingPage(farmer: FarmerProfile.fromUser(user))
+                : const LandingPage(), // ✅ Universal LandingPage
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('❌ Invalid credentials')),
@@ -64,35 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _navigateToRoleScreen(UserModel user) {
-    final role = user.role.trim().toLowerCase();
-
-    if (role == 'farmer') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => LandingPage(farmer: FarmerProfile.fromUser(user)),
-        ),
-      );
-    } else {
-      final routeMap = {
-        'arex officer': '/officer/dashboard',
-        'government official': '/official/dashboard',
-        'admin': '/adminPanel',
-        'trader': '/trader/dashboard',
-        'investor': '/investors',
-      };
-
-      final route = routeMap[role];
-      if (route != null) {
-        Navigator.pushReplacementNamed(context, route, arguments: user);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚠️ Unknown role. Contact admin.')),
-        );
-      }
-    }
-  }
+  bool roleIsFarmer(String role) =>
+      role.trim().toLowerCase() == 'farmer';
 
   Future<void> _loginWithBiometrics() async {
     if (kIsWeb) {
@@ -105,12 +87,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final success = await BiometricAuthService.authenticate();
     if (success) {
       final user = dummyUsers.firstWhere(
-        (u) => u.role.trim().toLowerCase() == 'farmer',
+        (u) => roleIsFarmer(u.role),
         orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
       );
 
       if (user.id.isNotEmpty) {
-        _navigateToRoleScreen(user);
+        await SessionService.saveActiveUser(user); // ✅ Save biometric login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LandingPage(farmer: FarmerProfile.fromUser(user)),
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('⚠️ No Farmer profile found')),
