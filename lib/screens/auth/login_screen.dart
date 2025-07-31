@@ -1,19 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/models/farmer_profile.dart';
 import 'package:agrix_beta_2025/screens/core/landing_page.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 import 'package:agrix_beta_2025/services/auth/session_service.dart';
 
-// ✅ Dummy users for demo/testing (normalize all to lowercase)
+/// ✅ Dummy login users — replace with real auth when backend is available.
 final List<UserModel> dummyUsers = [
-  UserModel(id: '1', name: 'John', role: 'farmer', passcode: '1234'),
-  UserModel(id: '2', name: 'Alice', role: 'trader', passcode: '5678'),
-  UserModel(id: '3', name: 'ZimAREX', role: 'arex officer', passcode: '4321'),
-  UserModel(id: '4', name: 'MinAgri', role: 'government official', passcode: 'gov123'),
-  UserModel(id: '5', name: 'AdminUser', role: 'admin', passcode: 'admin'),
-  UserModel(id: '6', name: 'InvestX', role: 'investor', passcode: 'inv567'),
+  UserModel(id: '1', name: 'John', role: 'farmer', passcode: '1234', phone: '1234567890'),
+  UserModel(id: '2', name: 'Alice', role: 'trader', passcode: '5678', phone: '9988776655'),
+  UserModel(id: '3', name: 'ZimAREX', role: 'arex officer', passcode: '4321', phone: '2223334444'),
+  UserModel(id: '4', name: 'MinAgri', role: 'government official', passcode: 'gov123', phone: '1110009999'),
+  UserModel(id: '5', name: 'AdminUser', role: 'admin', passcode: 'admin', phone: 'admin'),
+  UserModel(id: '6', name: 'InvestX', role: 'investor', passcode: 'inv567', phone: 'invest123'),
 ];
 
 class LoginScreen extends StatefulWidget {
@@ -52,17 +54,17 @@ class _LoginScreenState extends State<LoginScreen> {
             u.name.trim().toLowerCase() == normalizedName &&
             u.passcode == passcode &&
             u.role.trim().toLowerCase() == normalizedRole,
-        orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
+        orElse: () => UserModel.empty(),
       );
 
-      if (user.id.isNotEmpty) {
-        await SessionService.saveActiveUser(user); // ✅ Save for all users
+      if (user.isValid()) {
+        await SessionService.saveActiveUser(user);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => roleIsFarmer(user.role)
+            builder: (_) => user.isFarmer()
                 ? LandingPage(farmer: FarmerProfile.fromUser(user))
-                : const LandingPage(), // ✅ Universal LandingPage
+                : const LandingPage(),
           ),
         );
       } else {
@@ -72,9 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-
-  bool roleIsFarmer(String role) =>
-      role.trim().toLowerCase() == 'farmer';
 
   Future<void> _loginWithBiometrics() async {
     if (kIsWeb) {
@@ -87,12 +86,12 @@ class _LoginScreenState extends State<LoginScreen> {
     final success = await BiometricAuthService.authenticate();
     if (success) {
       final user = dummyUsers.firstWhere(
-        (u) => roleIsFarmer(u.role),
-        orElse: () => UserModel(id: '', name: '', role: '', passcode: ''),
+        (u) => u.isFarmer(),
+        orElse: () => UserModel.empty(),
       );
 
-      if (user.id.isNotEmpty) {
-        await SessionService.saveActiveUser(user); // ✅ Save biometric login
+      if (user.isValid()) {
+        await SessionService.saveActiveUser(user);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -199,8 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextButton(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('🔧 Forgot Password coming soon')),
+                                    const SnackBar(content: Text('🔧 Forgot Password coming soon')),
                                   );
                                 },
                                 child: const Text('Forgot Password?'),
