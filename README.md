@@ -102,9 +102,9 @@ lib/
 
 ## 📬 Contact
 
-- 📧 Email: simba.mwaingeni@protonmail.com  
-- 🔗 [GitHub](https://github.com/YOUR_USERNAME)  
-- 🔗 [LinkedIn](https://linkedin.com/in/YOUR_PROFILE)  
+- 📧 Email: smwaingeni.ai@gmail.com  
+- 🔗 [GitHub](https://github.com/smwaingeni-ai)  
+- 🔗 [LinkedIn](https://zw.linkedin.com/in/simba-mwaingeni)  
 
 ---
 
@@ -113,7 +113,7 @@ lib/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/agrix_beta_2025.git
+git clone https://github.com/smwaingeni-ai/agrix_beta_2025.git
 cd agrix_beta_2025
 ```
 
@@ -134,6 +134,4 @@ flutter run -d android
 ```
 
 ---
-
-> ✅ Place this `README.md` file at the **root** of your project folder:  
-> `agrix_beta_2025/README.md`
+2025
