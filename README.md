@@ -82,7 +82,7 @@ lib/
 
 ## 🧪 Screenshots
 
-> Include images or point to `/assets/screenshots/` if applicable.
+> Include images or point to `/assets/screenshots/`.
 
 ---
 
