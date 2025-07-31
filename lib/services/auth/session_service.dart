@@ -1,5 +1,3 @@
-// lib/services/auth/session_service.dart
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -10,135 +8,123 @@ import 'package:agrix_beta_2025/models/user_model.dart';
 import 'package:agrix_beta_2025/services/auth/biometric_auth_service.dart';
 
 class SessionService {
-  static const _userKey = 'agrix_active_user';
+  static const _userKey = 'active_user';
   static final FlutterSecureStorage? _secureStorage =
       !kIsWeb ? const FlutterSecureStorage() : null;
 
-  /// 🔐 Save session to secure storage and local file
-  static Future<void> saveUserSession(UserModel user) async {
+  /// ✅ Save user session for all roles (Farmer, Trader, etc.)
+  static Future<void> saveActiveUser(UserModel user) async {
     try {
-      final rawJson = user.toRawJson();
+      final prefs = await SharedPreferences.getInstance();
+      final raw = jsonEncode({
+        'id': user.id,
+        'email': user.email,
+        'role': user.role,
+      });
+
+      await prefs.setString(_userKey, raw);
 
       if (!kIsWeb && _secureStorage != null) {
-        await _secureStorage!.write(key: _userKey, value: rawJson);
+        await _secureStorage!.write(key: _userKey, value: raw);
       }
 
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/session.json');
-      await file.writeAsString(jsonEncode(user.toJson()));
+      await file.writeAsString(raw);
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_userKey, jsonEncode(user.toJson()));
-
-      print('✅ User session saved to file, prefs, and secure storage');
+      debugPrint('✅ Active user saved (role: ${user.role})');
     } catch (e) {
-      print('❌ Failed to save user session: $e');
+      debugPrint('❌ Failed to save active user: $e');
     }
   }
 
-  /// 📥 Load session from secure storage or local file
-  static Future<UserModel?> getActiveUser() async {
+  /// ✅ Lightweight login check (used at launch)
+  static Future<bool> isUserLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(_userKey);
+  }
+
+  /// ✅ Load active user from prefs (universal for all roles)
+  static Future<UserModel?> loadActiveUser() async {
     try {
-      String? jsonStr;
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_userKey);
+      if (raw == null) return null;
 
-      if (!kIsWeb && _secureStorage != null) {
-        jsonStr = await _secureStorage!.read(key: _userKey);
-      }
-
-      if (jsonStr == null || jsonStr.trim().isEmpty) {
-        final dir = await getApplicationDocumentsDirectory();
-        final file = File('${dir.path}/session.json');
-        if (!await file.exists()) return null;
-
-        jsonStr = await file.readAsString();
-      }
-
-      return jsonStr.trim().isNotEmpty
-          ? UserModel.fromRawJson(jsonStr)
-          : null;
+      final json = jsonDecode(raw);
+      return UserModel(
+        id: json['id'],
+        email: json['email'],
+        role: (json['role'] as String).trim().toLowerCase(),
+      );
     } catch (e) {
-      print('❌ Failed to load user session: $e');
+      debugPrint('❌ Failed to load active user: $e');
       return null;
     }
   }
 
-  /// 🆕 ✅ Load session from SharedPreferences (lightweight fallback)
-static Future<UserModel?> loadActiveUser() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_userKey);
-    if (raw == null) return null;
+  /// ✅ Full fallback (web & file) load
+  static Future<UserModel?> getActiveUser() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? jsonStr = prefs.getString(_userKey);
 
-    final json = jsonDecode(raw);
+      if ((jsonStr == null || jsonStr.isEmpty) && !kIsWeb) {
+        final file = File('${(await getApplicationDocumentsDirectory()).path}/session.json');
+        if (await file.exists()) {
+          jsonStr = await file.readAsString();
+        }
+      }
 
-    // Normalize the role value (e.g. farmer, Farmer, FARMER)
-    if (json['role'] is String) {
-      json['role'] = (json['role'] as String).trim().toLowerCase();
+      if (jsonStr == null || jsonStr.isEmpty) return null;
+
+      final json = jsonDecode(jsonStr);
+      return UserModel(
+        id: json['id'],
+        email: json['email'],
+        role: (json['role'] as String).trim().toLowerCase(),
+      );
+    } catch (e) {
+      debugPrint('❌ getActiveUser() failed: $e');
+      return null;
     }
-
-    final user = UserModel.fromJson(json);
-    debugPrint('✅ Loaded user role: ${user.role}'); // 👈 DEBUG LOG
-
-    return user;
-  } catch (e) {
-    print('❌ Failed to load active user from prefs: $e');
-    return null;
   }
-}
-  /// 🧹 Clear session from secure storage, file, and prefs
+
+  /// 🧹 Clear session from all storage
   static Future<void> clearSession() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_userKey);
+
       if (!kIsWeb && _secureStorage != null) {
         await _secureStorage!.delete(key: _userKey);
       }
 
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/session.json');
+      final file = File('${(await getApplicationDocumentsDirectory()).path}/session.json');
       if (await file.exists()) {
         await file.delete();
-        print('🗑️ session.json deleted');
       }
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_userKey);
-
-      print('🗑️ User session cleared');
+      debugPrint('🧹 Session cleared for all roles');
     } catch (e) {
-      print('❌ Error clearing session: $e');
+      debugPrint('❌ Error clearing session: $e');
     }
   }
 
-  /// ✅ Biometric + session validation for secure app entry
+  /// 🔐 Biometric-secure session checker
   static Future<bool> checkSession() async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/session.json');
+      final file = File('${(await getApplicationDocumentsDirectory()).path}/session.json');
+      if (!await file.exists()) return false;
 
-      if (!await file.exists()) {
-        print('❌ session.json does not exist');
-        return false;
-      }
-
-      final contents = await file.readAsString();
-      if (contents.trim().isEmpty) {
-        print('⚠️ session.json is empty');
-        return false;
-      }
+      final content = await file.readAsString();
+      if (content.trim().isEmpty) return false;
 
       final isBioValid = await BiometricAuthService.authenticate();
-      print(isBioValid
-          ? '✅ Session and biometrics validated'
-          : '❌ Biometric auth failed');
       return isBioValid;
     } catch (e) {
-      print('❌ Error validating session: $e');
+      debugPrint('❌ Biometric session check failed: $e');
       return false;
     }
-  }
-
-  /// 🌐 Web-friendly login status check (file-based only)
-  static Future<bool> isUserLoggedIn() async {
-    final user = await getActiveUser();
-    return user != null && user.id.trim().isNotEmpty;
   }
 }
