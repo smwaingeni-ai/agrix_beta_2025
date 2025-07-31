@@ -1,20 +1,23 @@
 # 🌱 AgriX Beta 2025 – AI-Powered Agricultural Assistant
 
-**AgriX Beta 2025** is an offline-first, AI-powered mobile and web application that empowers African farmers, traders, agricultural officers, investors, and government stakeholders. Built for the **Africa Deep Tech Challenge 2025**, it delivers scalable, intelligent agricultural services to underserved rural communities.
+AgriX Beta 2025 is an **offline-first**, AI-powered mobile and web application that empowers African **farmers**, **traders**, **agricultural officers**, **investors**, and **government stakeholders**.
+
+Built for the **Africa Deep Tech Challenge 2025**, it delivers scalable, intelligent agricultural services to underserved rural communities.
 
 ---
 
 ## 🌍 Why AgriX?
 
-- 🛰️ Rural farmers often lack reliable internet or access to expert advice
-- 📱 Officers and government need scalable tools for monitoring and support
-- 💰 Investors lack verified farmer data to make smart investment decisions
+- 🛰️ Rural farmers often lack reliable internet or access to expert advice  
+- 📱 Officers and governments need scalable tools for monitoring and support  
+- 💰 Investors lack verified farmer data to make smart investment decisions  
 
-AgriX bridges this gap using:
-- ✅ **Offline AI Models** (Crop, Soil, Livestock)
-- ✅ **Role-Based Dashboards**
-- ✅ **QR-Verified Identities**
-- ✅ **Modular Design** for Farmers, Traders, Officers, and Investors
+**AgriX bridges this gap using:**
+
+- ✅ Offline AI Models (Crop, Soil, Livestock)
+- ✅ Role-Based Dashboards
+- ✅ QR-Verified Identities
+- ✅ Modular Design for Farmers, Traders, Officers, and Investors
 
 ---
 
@@ -24,84 +27,113 @@ AgriX bridges this gap using:
 - 📷 Image-based diagnosis (crops, livestock)
 - 🧪 Soil health & treatment advice
 - 📊 Credit scoring & loan applications
-- 🛒 Market & trading
+- 🛒 Marketplace for trading goods
 - 📚 Training & sustainability logs
 
 ### 🧑🏾‍🌾 AREX Officers
-- ✅ Assign & log tasks
-- 🧾 Assessments & field visits
-- 📈 Program impact tracking
-- 📚 Training & sustainability monitoring
+- ✅ Assign and log farmer support tasks
+- 🧾 Conduct field assessments and visits
+- 📈 Track training programs and impact
+- 📚 Sustainability and compliance monitoring
 
 ### 💸 Investors
-- 📝 Post investment offers
-- 🤝 Create & sign digital investment agreements
-- 📃 Monitor agreement status
+- 📝 Register and post investment offers
+- 🤝 Create & digitally sign investment agreements
+- 📃 Track investments and agreement statuses
 
 ### 🛍️ Traders
-- 📦 List products, crops, livestock
-- 🔄 Barter, buy, and communicate with farmers
+- 📦 List and manage product, crop, or livestock offers
+- 🔄 Barter, buy, or sell directly with farmers
+- 🗨️ Communicate via built-in chat
 
-### 🏛️ Government
-- 💵 Subsidy tracking
-- 📊 Regional reports
-- 🔔 Notification delivery
+### 🏛️ Government Officials
+- 💵 Monitor and track subsidies
+- 📊 Analyze regional reports
+- 🔔 Deliver policy updates and alerts
 
 ---
 
-## 🤖 AI + Technology Highlights
+## 🤖 AI & Technology Highlights
 
-- 🧠 TensorFlow Lite (TFLite) for **offline** ML models
-- 📷 ImagePicker for uploading diagnosis images
-- 🔐 Biometric authentication & secure storage
-- 📱 Flutter Web + Mobile responsive
-- 🧭 Local JSON + SharedPreferences + Firebase optional integration
+- 🧠 TensorFlow Lite (TFLite) for offline AI diagnosis models
+- 📷 ImagePicker for crop/livestock/soil uploads
+- 🔐 Biometric authentication and secure session handling
+- 📱 Flutter-based web + mobile deployment
+- 💾 SharedPreferences + Local JSON + optional Firebase support
+
+---
+
+## 📁 Project Folder Structure
+
+```
+lib/
+├── models/              # Data models (users, profiles, contracts, etc.)
+├── screens/             # UI screens grouped by module (auth, core, market, AI, etc.)
+├── services/            # Logic for data handling, auth, storage
+├── assets/
+│   ├── images/          # Crops, livestock, soil samples
+│   ├── tflite/          # Offline ML models
+│   └── data/            # JSON rules and mappings
+├── main.dart            # App entry point
+└── routes.dart          # Navigation config
+```
 
 ---
 
 ## 🧪 Screenshots
 
-*(Add screenshots to `assets/screenshots/` and link below)*
+> Include images or point to `/assets/screenshots/` if applicable.
 
-📁 assets/
-└── screenshots/
-├── home_farm.png
-├── investor_dashboard.png
-└── diagnosis_result.png
+---
 
-yaml
-Copy
-Edit
+## 🧑‍💻 Contributors
+
+- **Simba Mwaingeni** – Architecture, AI Models, Credit Scoring, Full-Stack  
+- **AgriX Beta 2025 Team** – Africa Deep Tech Challenge participants
+
+---
+
+## 📄 License
+
+**MIT License**  
+© 2025 AgriX Africa Team
+
+---
+
+## 📬 Contact
+
+- 📧 Email: simba.mwaingeni@protonmail.com  
+- 🔗 [GitHub](https://github.com/YOUR_USERNAME)  
+- 🔗 [LinkedIn](https://linkedin.com/in/YOUR_PROFILE)  
 
 ---
 
 ## 🔧 Setup & Run Locally
 
+### 1. Clone the repository
+
 ```bash
-git clone https://github.com/smwaingeni-ai/agrix_beta_2025.git
+git clone https://github.com/YOUR_USERNAME/agrix_beta_2025.git
 cd agrix_beta_2025
+```
+
+### 2. Install dependencies
+
+```bash
 flutter pub get
-flutter run -d chrome     # For web
-flutter run -d android    # For real device (biometric enabled)
+```
 
-**👥 Team**
-Simba Mwaingeni – Architecture, AI Models, Credit Risk, Developer Lead
+### 3. Run the application
 
-AgriX Beta 2025 Team – Africa Deep Tech Challenge Participants
+```bash
+# For Web
+flutter run -d chrome
 
-🏆 Submission
-Challenge: Africa Deep Tech Challenge 2025
+# For Android
+flutter run -d android
+```
 
-Track: AgriTech, AI, Public Impact
+---
 
-Status: Final Beta Version – Submitted July 31, 2025
-
-Repo: GitHub Repository
-
-📄 License
-MIT License © 2025 AgriX Africa Team
-
-📬 Contact
-📧 simba.mwaingeni@protonmail.com
-🔗 LinkedIn
-🔗 GitHub
+> ✅ Place this `README.md` file at the **root** of your project folder:  
+> `agrix_beta_2025/README.md`
