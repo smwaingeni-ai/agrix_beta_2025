@@ -83,6 +83,17 @@ lib/
 ## 🧪 Screenshots
 
 > Include images or point to `/assets/screenshots/`.
+- contracts.png
+- trade.png
+- market_landing.png
+- training_log.png
+- soil_advisor.png
+- livestock_diagnosis.png
+- crop_diagnosis.png
+- apply_for_loan.png
+- loan_landing_page.png
+- farmer_landing page.png
+- login_screen.png
 
 ---
 
