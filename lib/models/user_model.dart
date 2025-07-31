@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:agrix_beta_2025/models/farmer_profile.dart' as model;
 
-/// ✅ Represents any user in the AgriX system.
+/// ✅ Represents any user in the AgriX system (Farmer, AREX, Trader, Investor, etc.)
 class UserModel {
-  final String id;            // required
-  final String name;          // required
-  final String role;          // required
-  final String passcode;      // required
+  final String id;
+  final String name;
+  final String role;
+  final String passcode;
   final String? email;
   final String? phone;
 
@@ -19,7 +19,7 @@ class UserModel {
     this.phone,
   });
 
-  /// 🔄 Default fallback user
+  /// 🆓 Fallback empty user
   factory UserModel.empty() => const UserModel(
         id: '',
         name: '',
@@ -27,14 +27,14 @@ class UserModel {
         passcode: '',
       );
 
-  /// 🔄 From raw string (e.g. secure storage)
+  /// 🔁 Deserialize from raw string
   factory UserModel.fromRawJson(String str) =>
       UserModel.fromJson(json.decode(str));
 
-  /// 🔄 To raw string (e.g. for secure storage)
+  /// 🔁 Serialize to raw string
   String toRawJson() => json.encode(toJson());
 
-  /// 🔄 From decoded JSON map
+  /// 🔁 Deserialize from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json['id'] ?? '',
         name: json['name'] ?? '',
@@ -44,7 +44,7 @@ class UserModel {
         phone: json['phone'],
       );
 
-  /// 🔄 To JSON for saving into prefs or file
+  /// 🔁 Serialize to JSON
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
@@ -54,7 +54,7 @@ class UserModel {
         if (phone != null) 'phone': phone,
       };
 
-  /// ✅ Convert from FarmerProfile model
+  /// ✅ Construct from FarmerProfile
   factory UserModel.fromFarmer(model.FarmerProfile profile) => UserModel(
         id: profile.idNumber,
         name: profile.fullName,
@@ -64,7 +64,7 @@ class UserModel {
         email: null,
       );
 
-  /// 🛠️ Create updated instance
+  /// 🧱 Immutable update
   UserModel copyWith({
     String? id,
     String? name,
@@ -82,7 +82,7 @@ class UserModel {
         phone: phone ?? this.phone,
       );
 
-  /// ✅ Role utilities
+  /// ✅ Role checks
   bool isFarmer() => role.contains('farmer');
   bool isOfficer() => role.contains('officer') || role.contains('arex');
   bool isOfficial() => role.contains('official') || role.contains('government');
@@ -90,10 +90,10 @@ class UserModel {
   bool isTrader() => role.contains('trader');
   bool isAdmin() => role.trim().toLowerCase() == 'admin';
 
-  /// ✅ Validation
+  /// ✅ Basic integrity check
   bool isValid() => id.trim().isNotEmpty && name.trim().isNotEmpty;
 
-  /// 🧪 Debug
+  /// 🧪 Debugging
   @override
   String toString() =>
       'UserModel(id: $id, name: $name, role: $role, passcode: $passcode, email: $email, phone: $phone)';
