@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user.isValid()) {
-        await SessionService.saveActiveUser(user);
+        await SessionService.saveActiveUser(user); // ✅ Now includes name, phone, etc.
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (user.isValid()) {
-        await SessionService.saveActiveUser(user);
+        await SessionService.saveActiveUser(user); // ✅ Ensures name is persisted
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
