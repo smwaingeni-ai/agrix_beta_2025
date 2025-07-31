@@ -12,7 +12,7 @@ class SessionService {
   static final FlutterSecureStorage? _secureStorage =
       !kIsWeb ? const FlutterSecureStorage() : null;
 
-  /// ✅ Save user session for all roles (Farmer, Trader, etc.)
+  /// ✅ Save user session for all roles (Farmer, Trader, AREX, Official, Investor)
   static Future<void> saveActiveUser(UserModel user) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -44,7 +44,7 @@ class SessionService {
     return prefs.containsKey(_userKey);
   }
 
-  /// ✅ Load active user from prefs (universal for all roles)
+  /// ✅ Load active user from SharedPreferences (used in dashboards)
   static Future<UserModel?> loadActiveUser() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -63,7 +63,7 @@ class SessionService {
     }
   }
 
-  /// ✅ Full fallback (web & file) load
+  /// ✅ Fallback to file if not found in prefs (cross-platform)
   static Future<UserModel?> getActiveUser() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -90,7 +90,7 @@ class SessionService {
     }
   }
 
-  /// 🧹 Clear session from all storage
+  /// 🧹 Clear session from all layers
   static Future<void> clearSession() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -105,13 +105,13 @@ class SessionService {
         await file.delete();
       }
 
-      debugPrint('🧹 Session cleared for all roles');
+      debugPrint('🧹 Session cleared successfully');
     } catch (e) {
       debugPrint('❌ Error clearing session: $e');
     }
   }
 
-  /// 🔐 Biometric-secure session checker
+  /// 🔐 Optional biometric-secure session validation
   static Future<bool> checkSession() async {
     try {
       final file = File('${(await getApplicationDocumentsDirectory()).path}/session.json');
