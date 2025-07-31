@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:agrix_beta_2025/models/farmer_profile.dart' as model;
 
-/// Represents a registered user in the AgriX system.
+/// ✅ Represents any user in the AgriX system.
 class UserModel {
-  final String id;
-  final String name;
-  final String role;
-  final String passcode;
+  final String id;            // required
+  final String name;          // required
+  final String role;          // required
+  final String passcode;      // required
   final String? email;
   final String? phone;
 
@@ -19,7 +19,7 @@ class UserModel {
     this.phone,
   });
 
-  /// Returns an empty/default user model
+  /// 🔄 Default fallback user
   factory UserModel.empty() => const UserModel(
         id: '',
         name: '',
@@ -27,14 +27,14 @@ class UserModel {
         passcode: '',
       );
 
-  /// Parses from raw JSON string
+  /// 🔄 From raw string (e.g. secure storage)
   factory UserModel.fromRawJson(String str) =>
       UserModel.fromJson(json.decode(str));
 
-  /// Converts to raw JSON string
+  /// 🔄 To raw string (e.g. for secure storage)
   String toRawJson() => json.encode(toJson());
 
-  /// Parses from JSON map
+  /// 🔄 From decoded JSON map
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json['id'] ?? '',
         name: json['name'] ?? '',
@@ -44,7 +44,7 @@ class UserModel {
         phone: json['phone'],
       );
 
-  /// Converts this model to JSON map
+  /// 🔄 To JSON for saving into prefs or file
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
@@ -54,16 +54,17 @@ class UserModel {
         if (phone != null) 'phone': phone,
       };
 
-  /// Converts from a FarmerProfile model (during login or profile mapping)
+  /// ✅ Convert from FarmerProfile model
   factory UserModel.fromFarmer(model.FarmerProfile profile) => UserModel(
         id: profile.idNumber,
         name: profile.fullName,
         role: profile.subsidised ? 'subsidised farmer' : 'farmer',
         passcode: '',
         phone: profile.contact,
+        email: null,
       );
 
-  /// Returns a new model with updated fields
+  /// 🛠️ Create updated instance
   UserModel copyWith({
     String? id,
     String? name,
@@ -81,17 +82,18 @@ class UserModel {
         phone: phone ?? this.phone,
       );
 
-  /// Checks if this model is valid
-  bool isValid() => id.isNotEmpty && name.isNotEmpty;
-
-  /// Role match helpers — all normalized (lowercase, trimmed)
+  /// ✅ Role utilities
   bool isFarmer() => role.contains('farmer');
-  bool isOfficer() => role.contains('officer');
-  bool isOfficial() => role.contains('official');
+  bool isOfficer() => role.contains('officer') || role.contains('arex');
+  bool isOfficial() => role.contains('official') || role.contains('government');
   bool isInvestor() => role.contains('investor');
   bool isTrader() => role.contains('trader');
-  bool isAdmin() => role == 'admin';
+  bool isAdmin() => role.trim().toLowerCase() == 'admin';
 
+  /// ✅ Validation
+  bool isValid() => id.trim().isNotEmpty && name.trim().isNotEmpty;
+
+  /// 🧪 Debug
   @override
   String toString() =>
       'UserModel(id: $id, name: $name, role: $role, passcode: $passcode, email: $email, phone: $phone)';
